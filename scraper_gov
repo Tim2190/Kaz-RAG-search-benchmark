@@ -19,138 +19,150 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
-# ИСТОЧНИКИ: ОФИЦИАЛЬНЫЕ САЙТЫ ГОСУДАРСТВЕННЫХ ОРГАНОВ (РУССКИЕ ВЕРСИИ)
+# ========== КОНФИГ СБОРА ==========
+# Язык контента: "kz" — казахский, "ru" — русский.
+# Меняешь тут — меняется во всех API-запросах, referer-ах и ссылках.
+LANG = "kz"
+# Значение для заголовка accept-language. gov.kz исторически принимает
+# тот же код, что и в ?lang=, поэтому зеркалим LANG (как было с "ru").
+ACCEPT_LANG = LANG
+# Сколько новостей тянуть с одного источника (22 источника * 6 = 132 > 100).
+MAX_PER_SOURCE = 6
+# Целевое количество текстов — как только набрали, останавливаемся.
+TARGET_TOTAL = 100
+
+# ИСТОЧНИКИ: ОФИЦИАЛЬНЫЕ САЙТЫ ГОСУДАРСТВЕННЫХ ОРГАНОВ (КАЗАХСКИЕ ВЕРСИИ)
 DIRECT_SCRAPE_SOURCES: List[Dict] = [
     # --- МИНИСТЕРСТВА (GOV.KZ - SPA, гибридный метод) ---
     {
         "name": "МинНацЭкономики",
-        "url": "https://www.gov.kz/memleket/entities/economy/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/economy/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "economy",
     },
     {
         "name": "МинФин",
-        "url": "https://www.gov.kz/memleket/entities/minfin/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/minfin/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "minfin",
     },
     {
         "name": "МИД РК",
-        "url": "https://www.gov.kz/memleket/entities/mfa/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/mfa/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "mfa",
     },
     {
         "name": "МВД РК",
-        "url": "https://www.gov.kz/memleket/entities/qriim/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/qriim/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "qriim",
     },
     {
         "name": "МинТруда",
-        "url": "https://www.gov.kz/memleket/entities/enbek/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/enbek/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "enbek",
     },
     {
         "name": "МинЗдрав",
-        "url": "https://www.gov.kz/memleket/entities/dsm/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/dsm/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "dsm",
     },
     {
         "name": "МинПросвещения",
-        "url": "https://www.gov.kz/memleket/entities/edu/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/edu/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "edu",
     },
     {
         "name": "МинНауки",
-        "url": "https://www.gov.kz/memleket/entities/sci/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/sci/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "sci",
     },
     {
         "name": "МинПромСтрой",
-        "url": "https://www.gov.kz/memleket/entities/mps/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/mps/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "mps",
     },
     {
         "name": "МинТранспорт",
-        "url": "https://www.gov.kz/memleket/entities/transport/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/transport/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "transport",
     },
     {
         "name": "МинЦифры",
-        "url": "https://www.gov.kz/memleket/entities/mdai/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/mdai/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "mdai",
     },
     {
         "name": "МинКультуры",
-        "url": "https://www.gov.kz/memleket/entities/mam/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/mam/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "mam",
     },
     {
         "name": "МинТуризм",
-        "url": "https://www.gov.kz/memleket/entities/tsm/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/tsm/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "tsm",
     },
     {
         "name": "МинЭкологии",
-        "url": "https://www.gov.kz/memleket/entities/ecogeo/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/ecogeo/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "ecogeo",
     },
     {
         "name": "МинСельХоз",
-        "url": "https://www.gov.kz/memleket/entities/moa/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/moa/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "moa",
     },
     {
         "name": "МинЭнерго",
-        "url": "https://www.gov.kz/memleket/entities/energo/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/energo/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "energo",
     },
     {
         "name": "МинЮст",
-        "url": "https://www.gov.kz/memleket/entities/adilet/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/adilet/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "adilet",
     },
     {
         "name": "МЧС РК",
-        "url": "https://www.gov.kz/memleket/entities/emer/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/emer/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "emer",
     },
     {
         "name": "МинТорговли",
-        "url": "https://www.gov.kz/memleket/entities/mti/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/mti/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "mti",
@@ -159,14 +171,14 @@ DIRECT_SCRAPE_SOURCES: List[Dict] = [
     # --- АКИМАТЫ МЕГАПОЛИСОВ ---
     {
         "name": "Акимат Алматы",
-        "url": "https://www.gov.kz/memleket/entities/almaty/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/almaty/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "almaty",
     },
     {
         "name": "Акимат Астаны",
-        "url": "https://www.gov.kz/memleket/entities/astana/press/news?lang=ru",
+        "url": "https://www.gov.kz/memleket/entities/astana/press/news?lang=kz",
         "base_url": "https://www.gov.kz",
         "gov_kz": True,
         "project": "astana",
@@ -194,7 +206,7 @@ async def _fetch_gov_kz_tokens() -> Optional[Dict]:
             context = await browser.new_context(
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
                 viewport={"width": 1920, "height": 1080},
-                locale="ru-RU",
+                locale="kk-KZ",
             )
             page = await context.new_page()
 
@@ -215,7 +227,7 @@ async def _fetch_gov_kz_tokens() -> Optional[Dict]:
             page.on("request", handle_request)
 
             await page.goto(
-                "https://www.gov.kz/memleket/entities/economy/press/news?lang=ru",
+                "https://www.gov.kz/memleket/entities/economy/press/news?lang=kz",
                 wait_until="domcontentloaded",
                 timeout=60000,
             )
@@ -293,17 +305,78 @@ class NewsScraper:
                     logger.error(f"❌ Ошибка обработки {source['name']}: {e}")
                     continue
 
+            # Набрали целевое количество — дальше не ходим
+            if len(all_news) >= TARGET_TOTAL:
+                logger.info(f"🎯 Набрали {len(all_news)} ≥ {TARGET_TOTAL} текстов, останавливаемся")
+                break
+
             if batch_num < total_batches:
                 logger.info(f"⏸️  Пауза 3 сек перед следующим батчем...")
                 time.sleep(3)
 
+        # Подрезаем ровно до целевого количества
+        all_news = all_news[:TARGET_TOTAL]
+
         logger.info(f"✅ Все батчи обработаны. Собрано новостей: {len(all_news)}")
         return all_news
 
+    def _extract_body_html(self, obj: Dict) -> str:
+        """Достаёт HTML тела новости из объекта API (list или detail)."""
+        if not isinstance(obj, dict):
+            return ""
+        # gov.kz хранит текст под разными ключами в зависимости от эндпоинта
+        return (
+            obj.get("body")
+            or obj.get("text")
+            or obj.get("content")
+            or obj.get("description")
+            or ""
+        )
+
+    def _fetch_gov_kz_detail(self, news_id, project: str, base_url: str, tokens: Dict) -> str:
+        """
+        Тянет ПОЛНЫЙ текст одной новости через detail-эндпоинт gov.kz.
+        Списочный API часто отдаёт только анонс, поэтому за полным телом
+        идём адресно по id. Возвращает очищенный от HTML текст ("" при неудаче).
+        """
+        detail_url = (
+            f"{base_url}/api/v1/public/content-manager/news/{news_id}?lang={LANG}"
+        )
+        headers = {
+            "accept": "application/json",
+            "accept-language": ACCEPT_LANG,
+            "user-agent": tokens.get("user-agent", "Mozilla/5.0"),
+            "referer": f"{base_url}/memleket/entities/{project}/press/news/details/{news_id}?lang={LANG}",
+            "hash": tokens["hash"],
+            "token": tokens["token"],
+            "origin": base_url,
+        }
+        try:
+            resp = requests.get(detail_url, headers=headers, timeout=15, verify=False)
+            if resp.status_code != 200:
+                logger.warning(f"detail {news_id}: код {resp.status_code}")
+                return ""
+
+            data = resp.json()
+            # Тело может лежать прямо в корне или внутри data/content
+            obj = data
+            if isinstance(data, dict) and not self._extract_body_html(data):
+                obj = data.get("data") or data.get("content") or data
+
+            raw_body = self._extract_body_html(obj)
+            if not raw_body:
+                return ""
+
+            soup = BeautifulSoup(raw_body, "html.parser")
+            return soup.get_text(separator="\n").strip()
+        except Exception as e:
+            logger.error(f"Ошибка detail {news_id}: {e}")
+            return ""
+
     def _scrape_gov_kz_source(self, config: Dict, tokens: Dict) -> List[Dict]:
         """
-        Парсит ТОЛЬКО ТОП-3 новости из gov.kz источника через API.
-        Теперь СРАЗУ вытаскивает полный текст из JSON-ответа!
+        Парсит топ-MAX_PER_SOURCE новостей из gov.kz источника через API
+        и для каждой ДОТЯГИВАЕТ полный текст через detail-эндпоинт.
         """
         name = config.get("name", "Unknown")
         project = config.get("project")
@@ -313,17 +386,17 @@ class NewsScraper:
             logger.warning(f"'{name}' пропущен: не указан 'project'")
             return []
 
-        # Запрашиваем 20, но берём только топ-3
+        # Запрашиваем запас, берём топ-MAX_PER_SOURCE
         api_url = (
             f"https://www.gov.kz/api/v1/public/content-manager/news"
-            f"?sort-by=created_date:DESC&projects=eq:{project}&page=1&size=20"
+            f"?sort-by=created_date:DESC&projects=eq:{project}&page=1&size=20&lang={LANG}"
         )
 
         headers = {
             "accept": "application/json",
-            "accept-language": "ru",
+            "accept-language": ACCEPT_LANG,
             "user-agent": tokens.get("user-agent", "Mozilla/5.0"),
-            "referer": f"{base_url}/memleket/entities/{project}/press/news?lang=ru",
+            "referer": f"{base_url}/memleket/entities/{project}/press/news?lang={LANG}",
             "hash": tokens["hash"],
             "token": tokens["token"],
             "origin": base_url,
@@ -333,11 +406,11 @@ class NewsScraper:
         try:
             logger.info(f"API запрос: {name}...")
             resp = requests.get(api_url, headers=headers, timeout=15, verify=False)
-            
+
             if resp.status_code != 200:
                 logger.error(f"API {name} вернул код {resp.status_code}")
                 return []
-            
+
             data = resp.json()
 
             items = []
@@ -350,8 +423,8 @@ class NewsScraper:
                 logger.warning(f"{name}: API вернул пустой список")
                 return []
 
-            items = items[:3]
-            logger.info(f"{name}: Берём топ-3")
+            items = items[:MAX_PER_SOURCE]
+            logger.info(f"{name}: берём топ-{len(items)}")
 
             for item in items:
                 if not isinstance(item, dict):
@@ -359,19 +432,24 @@ class NewsScraper:
 
                 title = item.get("name", "").strip() or item.get("title", "").strip()
                 slug = item.get("id") or item.get("slug", "")
-                
+
                 if not title or not slug:
                     continue
 
-                link = f"{base_url}/memleket/entities/{project}/press/news/details/{slug}?lang=ru"
+                link = f"{base_url}/memleket/entities/{project}/press/news/details/{slug}?lang={LANG}"
 
-                # === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: ДОСТАЕМ ТЕКСТ ИЗ JSON ===
-                # В gov.kz текст обычно лежит в 'body' в формате HTML
-                raw_body = item.get("body", "") or item.get("content", "") or ""
-                
-                # Очищаем от HTML тегов
+                # === ПОЛНЫЙ ТЕКСТ ===
+                # 1) пробуем тело прямо из списочного ответа (если оно полное)
+                raw_body = self._extract_body_html(item)
                 soup = BeautifulSoup(raw_body, "html.parser")
                 clean_text = soup.get_text(separator="\n").strip()
+
+                # 2) дотягиваем полный текст по detail-эндпоинту и берём
+                #    самый длинный вариант — он и есть полное содержание
+                detail_text = self._fetch_gov_kz_detail(slug, project, base_url, tokens)
+                if len(detail_text) > len(clean_text):
+                    clean_text = detail_text
+                time.sleep(0.3)  # вежливая пауза между detail-запросами
 
                 # Добываем картинку (если есть в API)
                 image_url = None
@@ -418,6 +496,11 @@ class NewsScraper:
         3. Если дата не найдена — присваивает datetime.now()
         
         Используй эту функцию ПОСЛЕ проверки "есть ли title в БД".
+
+        ВНИМАНИЕ: gov.kz — это SPA, в сыром HTML <p> с текстом нет.
+        Полный текст для gov.kz уже заполняется из detail-API в
+        _scrape_gov_kz_source, поэтому здесь original_text перезаписывай
+        только если реально нашёлся текст (см. условие ниже).
         """
         url = news_item.get("source_url")
         if not url:
@@ -436,10 +519,15 @@ class NewsScraper:
                 
             soup = BeautifulSoup(response.content, "html.parser")
 
-            # 1. Собираем полный текст
+            # 1. Собираем полный текст со страницы.
+            #    На SPA gov.kz <p> обычно пусто — тогда НЕ затираем уже
+            #    полученный из API original_text, оставляем его как есть.
             paragraphs = soup.find_all("p")
             full_text = "\n".join([p.get_text() for p in paragraphs if len(p.get_text()) > 50])
-            news_item["original_text"] = full_text if full_text else news_item["title"]
+            existing_text = news_item.get("original_text") or news_item.get("title", "")
+            news_item["original_text"] = (
+                full_text if len(full_text) > len(existing_text) else existing_text
+            )
 
             # 2. Ищем картинку
             image_url = None

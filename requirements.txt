@@ -1,0 +1,22 @@
+# --- ядро ---
+numpy>=1.26
+
+# --- сбор корпуса (Фаза 1) ---
+requests>=2.31
+beautifulsoup4>=4.12
+trafilatura>=1.8          # извлечение текста статей с любых новостных сайтов
+playwright>=1.40          # только для устаревшего gov_scraper (SPA-токены)
+
+# --- лексический поиск (Фаза 3) ---
+rank-bm25>=0.2.2
+
+# --- dense-поиск: IBM Granite / Google LaBSE / multilingual-e5 (Фаза 3) ---
+sentence-transformers>=2.7
+torch>=2.1
+
+# --- утилиты ---
+scikit-learn>=1.3         # косинус/нормализация, опционально
+tqdm>=4.66
+
+# --- генерация запросов через LLM (Фаза 2), опционально ---
+anthropic>=0.40
