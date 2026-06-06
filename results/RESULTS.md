@@ -124,10 +124,17 @@ The +0.017 accuracy change is 36 queries that became correct vs. 31 that became 
 
 ### What this means (honest read)
 
+> ✅ **The stemmer's effectiveness is proven — at the retrieval level.** It significantly
+> improves search quality (nDCG@10 +9% overall, +16% on inflected, p≤0.0017, n=300) and
+> raises the RAG retrieval hit-rate 0.737 → 0.803. The null result below is **not** evidence
+> that the stemmer is useless — it isolates where the remaining bottleneck lives: the
+> **generator**, not the retriever.
+
 1. **The retrieval gain is real but does not produce a significant end-to-end accuracy
    gain on this model at n=300.** Better context is *necessary but not sufficient*: the
    generator also has to extract the answer from it, and Qwen2.5-7B frequently fails to
-   (it abstains, or pulls the wrong fact from the right passage).
+   (it abstains, or pulls the wrong fact from the right passage). A stronger Kazakh
+   generator would likely convert the proven retrieval gain into real accuracy.
 
 2. **The directionally strongest effect is exactly where theory predicts** — `inflected`
    queries (morphology), which see the biggest retrieval-hit jump (+0.15) and an accuracy

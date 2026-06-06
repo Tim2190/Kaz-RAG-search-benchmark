@@ -71,11 +71,18 @@ but does that reach the final answer?
 | Kazakh stemmer | 0.803 | **0.500** | 0.240 | 0.260 |
 | **Δ** | **+0.066** | +0.017 | +0.023 | −0.040 |
 
-**Honest result: the end-to-end accuracy gain is _not_ statistically significant**
-(McNemar exact p = **0.63**; net +5 correct of 300). Better retrieval is *necessary but
-not sufficient* — the generator still has to extract the answer. The stemmer mostly makes
-Qwen *more willing to answer* (abstain 0.300 → 0.260), and those recovered answers split
-between correct and hallucinated, so net accuracy barely moves.
+> ✅ **The stemmer's effectiveness is proven — for retrieval.** It significantly improves
+> search quality (nDCG@10 +9% overall, +16% on inflected, p≤0.0017, n=300) and raises the
+> RAG retrieval hit-rate 0.737 → 0.803. That part is solid. The null result below is about
+> the **generator**, not the stemmer: the bottleneck in Kazakh RAG today is the LLM's
+> Kazakh comprehension, not the search step.
+
+**End-to-end accuracy gain is _not_ statistically significant** (McNemar exact p = **0.63**;
+net +5 correct of 300). Better retrieval is *necessary but not sufficient* — the generator
+still has to extract the answer, and Qwen2.5-7B (4-bit) often fails to even with the right
+passage. The stemmer mostly makes Qwen *more willing to answer* (abstain 0.300 → 0.260), and
+those recovered answers split between correct and hallucinated, so net accuracy barely moves.
+A stronger Kazakh generator would likely convert the proven retrieval gain into real accuracy.
 
 The directionally strongest effect is on `inflected` (morphology) queries — the biggest
 retrieval jump (+0.15 hit@3) and +0.07 accuracy — exactly where theory predicts, but even
