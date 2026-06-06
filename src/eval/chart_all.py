@@ -12,11 +12,11 @@ import os
 
 
 SYSTEMS = [
-    ("results/bm25_identity_60.json",  "BM25",          "#9e9e9e"),
-    ("results/bm25_kazakh_60.json",    "BM25+Stemmer",   "#1565c0"),
-    ("results/dense_labse.json",       "Dense LaBSE",    "#6a1b9a"),
-    ("results/dense_granite.json",     "Dense Granite",  "#e65100"),
-    ("results/dense_e5.json",          "Dense E5",       "#2e7d32"),
+    ("results/bm25_identity.json",      "BM25",           "#9e9e9e"),
+    ("results/bm25_kazakh.json",         "BM25+Stemmer",   "#1565c0"),
+    ("results/dense_labse_300.json",     "Dense LaBSE",    "#6a1b9a"),
+    ("results/dense_granite_300.json",   "Dense Granite",  "#e65100"),
+    ("results/dense_e5_300.json",        "Dense E5",       "#2e7d32"),
 ]
 
 CATS = ["inflected", "natural", "vocabulary-gap", "ALL"]
@@ -63,7 +63,7 @@ def build_chart(out: str) -> None:
     ax.set_ylabel("nDCG@10", fontsize=11)
     ax.set_title(
         "Kazakh Information Retrieval: 5-system comparison (nDCG@10)\n"
-        "Corpus: 8 370 passages · n=60 queries (consistent across all systems)",
+        "Corpus: 8 370 passages · n=300 queries (consistent across all systems)",
         fontsize=11,
     )
     ax.set_ylim(0, 1.05)
