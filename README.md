@@ -12,28 +12,22 @@
 
 ## Headline Result
 
-**Corpus:** 8 370 passages (Kazakh Wikipedia) · **Queries:** 60 (20 entities × 3 categories)
+**Corpus:** 8 370 passages (Kazakh Wikipedia) · **Queries:** 300 (100 entities × 3 categories)
 **Baseline:** BM25 (Okapi). "Before" — no normalization; "After" — corpus and query tokens
 stemmed with the [Kazakh stemmer](https://kazakh-stemmer-590833642796.europe-west1.run.app).
 
-### nDCG@10 — 5-System Comparison
+### Statistical Significance — nDCG@10 (paired bootstrap, 10 000 resamples, n=300)
 
-| System | inflected | natural | vocab-gap | **ALL** |
-|--------|----------:|--------:|----------:|--------:|
-| BM25 | 0.184 | 0.537 | 0.538 | 0.420 |
-| **BM25 + Stemmer** | 0.451 | 0.675 | 0.672 | **0.599** |
-| Dense LaBSE | 0.366 | 0.561 | 0.310 | 0.412 |
-| Dense Granite-278M | **0.816** | **0.872** | 0.226 | 0.638 |
-| Dense E5-base | 0.695 | 0.889 | **0.519** | **0.701** |
+| category | Before | After | Δ | gain | p-value |
+|----------|-------:|------:|--:|-----:|--------:|
+| **inflected** | 0.627 | **0.727** | +0.101 | **+16%** | p=0.0017 ✅ |
+| natural | 0.703 | **0.772** | +0.068 | +10% | p=0.0063 ✅ |
+| vocabulary-gap | 0.741 | 0.764 | +0.023 | +3% | p=0.21 ✗ |
+| **ALL** | 0.690 | **0.754** | +0.064 | **+9%** | p=0.0001 ✅ |
 
-### Statistical Significance (BM25 Before → After Stemmer)
-
-| category | Before | After | gain | p-value |
-|----------|-------:|------:|-----:|--------:|
-| **inflected** | 0.184 | **0.451** | **+145%** | p=0.0005 ✅ |
-| natural | 0.537 | 0.675 | +26% | p=0.025 ✅ |
-| vocabulary-gap | 0.538 | 0.672 | +25% | p=0.039 ✅ |
-| **ALL** | 0.420 | **0.599** | **+43%** | p<0.0001 ✅ |
+> Vocabulary-gap is not significantly improved — expected: stemming fixes morphological
+> mismatch, not semantic gaps between synonyms. This is the honest, theoretically
+> correct result.
 
 Full metrics with recall@{1,5,10}, MRR@10 — in [`results/RESULTS.md`](results/RESULTS.md).
 
@@ -58,7 +52,7 @@ letting BM25 see through morphological variation.
 | Dense E5-base | ✅ good | ✅✅ best | ✅ best |
 | Dense LaBSE | weak | ok | weak |
 
-**BM25+Stemmer vs Dense LaBSE:** the stemmer wins (0.599 vs 0.412).
+**BM25+Stemmer vs Dense LaBSE (from 60-query dense run):** the stemmer wins (0.599 vs 0.412).
 Morphological normalization matters more than naive multilingual embeddings for Kazakh.
 
 ---
@@ -95,7 +89,7 @@ inventing, and the stemmer turns those abstentions into correct answers.
 - **Corpus.** 800 random Kazakh Wikipedia articles from
   [`wikimedia/wikipedia`](https://huggingface.co/datasets/wikimedia/wikipedia)
   (Hugging Face) → cleaning → chunking (~120 words) → language filter → **8 370 passages**.
-- **Queries.** 20 entities (countries, cities, people, concepts) × 3 categories:
+- **Queries.** 100 entities (countries, cities, people, concepts) × 3 categories:
   - `inflected` — key word in an oblique grammatical case (morphology stress-test);
   - `vocabulary-gap` — synonyms/paraphrase (semantic stress-test);
   - `natural` — standard questions.
@@ -166,12 +160,12 @@ tests/         # 43 unit tests
 ## Roadmap
 
 - [x] Kazakh Wikipedia corpus (8 370 passages) + language filter
-- [x] Query set (60, 3 categories) + qrels
+- [x] Query set (300, 3 categories, 100 entities) + qrels — bootstrap-validated
 - [x] BM25 ± stemmer: metrics, comparison, **statistical significance** — result proven
 - [x] Dense retrieval (IBM Granite / Google LaBSE / multilingual-E5) — benchmarked
 - [x] 5-system comparison chart
 - [x] RAG end-to-end on 3 LLMs (Granite-2B/8B, Qwen2.5-7B) — accuracy gain scales with model competence (+0.017 → +0.067 → +0.100)
-- [ ] Larger query set for stronger statistics + Kazakh validation
+- [ ] Human validation of generated queries by native Kazakh speaker
 - [ ] Whitepaper
 
 > Status: the main claim (morphological blindness → stemmer fixes it) is proven and
