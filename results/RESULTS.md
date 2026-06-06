@@ -88,21 +88,50 @@ Paired bootstrap, 10 000 resamples.
 
 ---
 
-## RAG End-to-End: Retrieval Hit Rate vs Hallucinations
+## RAG End-to-End: Stemmer Effect Across 3 LLMs
 
-**Model:** IBM Granite-2B · **LLM judge:** exact-match on canonical answer
+The stemmer raises the **retrieval hit rate from 0.467 → 0.667** (+43%) — the correct
+passage reaches the LLM context 1.4× more often. We measured how that propagates into
+end-to-end answer quality across three models of increasing capability.
 
-| Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
-|---------|----------------:|--------:|-------------:|--------:|
-| identity | 0.467 | 0.250 | 0.733 | 0.017 |
-| kazakh | **0.667** | 0.267 | 0.700 | 0.033 |
-| Δ | **+0.200** | +0.017 | −0.033 | — |
+![RAG: stemmer effect across models](rag_models.png)
 
-**Note:** Retrieval hit rate improved by +43% with the stemmer — the correct passage
-reached the LLM context significantly more often. Accuracy/hallucination gap reflects
-Granite-2B's limited Kazakh generation quality: the model often repeats the question
-or produces garbled output even with a correct context passage. The retrieval-side
-benefit of the stemmer is real and transferable to any capable LLM.
+| Model | Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
+|-------|---------|----------------:|--------:|-------------:|--------:|
+| **Granite-2B** | identity | 0.467 | 0.250 | 0.733 | 0.017 |
+| | kazakh | 0.667 | 0.267 | 0.700 | 0.033 |
+| | **Δ** | +0.200 | **+0.017** | −0.033 | — |
+| **Granite-8B** (4-bit) | identity | 0.467 | 0.350 | 0.650 | 0.000 |
+| | kazakh | 0.667 | 0.417 | 0.583 | 0.000 |
+| | **Δ** | +0.200 | **+0.067** | −0.067 | — |
+| **Qwen2.5-7B** (4-bit) | identity | 0.467 | 0.400 | 0.183 | 0.417 |
+| | kazakh | 0.667 | 0.500 | 0.167 | 0.333 |
+| | **Δ** | +0.200 | **+0.100** | −0.017 | −0.084 |
+
+**The key pattern — the accuracy gain from the stemmer grows with model competence:**
+`+0.017 → +0.067 → +0.100`. The retrieval improvement is identical for all three
+(+0.200 hit-rate), but a more capable generator converts more of that extra correct
+context into correct answers.
+
+**Model behavior differs:**
+- **Granite-2B** is too weak in Kazakh — it often echoes the question or produces
+  garbled text even with the right context, so the extra context barely helps.
+- **Granite-8B** is balanced: better context → both fewer hallucinations (−0.067)
+  and more correct answers (+0.067).
+- **Qwen2.5-7B** is *honest*: instead of inventing, it abstains (`Ақпарат жоқ` =
+  "no information"). The stemmer converts abstentions into correct answers
+  (abstain 0.417 → 0.333, accuracy 0.400 → **0.500**). It has the highest end-to-end
+  accuracy and the lowest hallucination rate.
+
+### ⚠️ Honesty note on the RAG numbers
+
+These end-to-end deltas are **measured on n = 60 questions, single run, no confidence
+intervals** — unlike the retrieval result, they are **not** bootstrap-validated. A
++0.100 accuracy delta is 6 questions out of 60. The *direction* is consistent across
+all three models and the mechanism (more correct context → more correct answers) is
+clear, but a rigorous statistical claim on the end-to-end effect would require a larger
+query set. We report this as a **demonstrated trend**, not a proven one. The retrieval
+improvement that drives it (hit-rate 0.467 → 0.667) **is** directly measured and solid.
 
 ---
 
@@ -126,9 +155,11 @@ benefit of the stemmer is real and transferable to any capable LLM.
 5. **Dense E5 is the best overall system** (0.701), balanced across all categories.
    BM25+Stemmer remains a strong, fast, interpretable competitor (0.599).
 
-6. **RAG: stemmer raises retrieval hit rate 0.467 → 0.667 (+43%)** — the correct
-   context reaches the LLM significantly more often. End-to-end hallucination
-   reduction requires a generation model competent in Kazakh.
+6. **RAG: stemmer raises retrieval hit rate 0.467 → 0.667 (+43%)** — directly measured,
+   solid. This propagates into end-to-end accuracy, and the gain *scales with model
+   competence*: Granite-2B +0.017, Granite-8B +0.067, Qwen2.5-7B +0.100. The
+   end-to-end deltas are a demonstrated trend (n=60, single run), not bootstrap-proven;
+   the retrieval gain that drives them is.
 
 ---
 

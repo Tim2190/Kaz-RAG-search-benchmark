@@ -1,0 +1,857 @@
+{
+  "identity": {
+    "stemmer": "identity",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.35,
+      "hallucination_rate": 0.65,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 21,
+        "hallucination": 39,
+        "abstain": 0
+      },
+      "retrieval_hit_rate": 0.4666666666666667
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.15,
+        "hallucination_rate": 0.85,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 3,
+          "hallucination": 17,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.2
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.3,
+        "hallucination_rate": 0.7,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 6,
+          "hallucination": 14,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.5
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.6,
+        "hallucination_rate": 0.4,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 12,
+          "hallucination": 8,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 32,
+      "accuracy": 0.0625,
+      "hallucination_rate": 0.9375,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 2,
+        "hallucination": 30,
+        "abstain": 0
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Скандинавия түбегінде\n\nКөрсету:\n[1] Норвегия Скандинавия елдері ішінде екінші орында.\n[2"
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Норвегияны қандай елдер қоршап тұр?\n\nЖАУАП: Норвегияның қоршап тұрды қоршап тұ"
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "ҚАЙТАЛАМА. Фьордтарымен әйгілі солтүстік скандинавиялық патшалық қалай аталмайд"
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1915 жылы"
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Атлант мұхиты"
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Босния мен Герцеговина\n\nКөпшілікті қатыстан, ұлт өкілдері ұлт өкілдері �"
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Фолкленд аралдары"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Париж"
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Бізнес-қала\n\nКөптегі құрастық қала, құрастық қаласы, құрастық қала"
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисау"
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Солтүстік-Батыс шекара аймағы"
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Нидерландта қандай тіл ресми болмайды.\n\nКөптеген мемлекеттерде ресми тіл ретінде ең көп пайдаланыл"
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Голландтар"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Маңғыстау\n\nКөптеген қазақ халқымен бірге қосып санағанда бұл ймақта 15"
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абылай хан\n\nКөптегі құпияқтар қамтамасыз қала, қала қамтамасыз қала.\n\nКө"
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгария"
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия"
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қазақтар болмайды."
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия"
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения Әзірбайжанмен, Армениямен, Грузиямен, Түркиямен, Иранмен шектеседі."
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1. Франция\n2. Либерия\n3. Гвинея\n4. Сьерра-Леоне\n\nҚатысты қамтамасыз, қорғаныс ор"
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения"
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Никарагуа"
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Никарагуада қай тіл ресми тіл болып табылады?\n\nЖАУАП: Никарагуада қай тіл ресми тіл бол"
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Париж"
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адриатика теңізі"
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жаңа Черногорияның қоршап жатыр.\n\nКөп бөлігі қоршап жатыр.\n\nЖаңа Черног"
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Черногория"
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Үндістан"
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан қай түбекте орналасқан?\n\nЖАУАП: Оңтүстік Азияда Үндістан түбегінде ор"
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан"
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Баку (Бақы) қаласы"
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қанша, Баку қалаларының ірі торабы."
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Текелі қаласы"
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қаза тапқандардың біреуі Ақтөбе облысының Ішкі істер Департаментінің экстремизмге қ"
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аға қаласы\n\nКөптегі қаласы үшін қалайды. Қазақстандың үшінші қалас"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай облысы"
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Париж"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Шығыс Қазақстан облысының әкімі болған."
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Даниал Ахметовтің туған жері қай қала?\n\nЖАУАП: Қарағанды облысының Ақтоғай аудан"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Ағпарат жоқ.\n\nКөмекшісі болғаны қатеу."
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Маргарет Тэтчер"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Иманғали Нұрғалиұлы Тасмағамбетов"
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Нил Армстронг шотланд-ирланд және шотланд тектес болған."
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Армстронгтың азаматтығы қалған 55-і болған.\n\nКөптеген қалған азаматтар қал�"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нил Олден Армстронг"
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Меркурийдің өзге де факторлармен сипатталады."
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "88 тәулік"
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Болпан"
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасы қашан болмағанды жорамалмен толтыра бергенде, ол ешқашан өздiгiнен шын"
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасында қазақтар Қалдан Сереннің баласы Шарышты қазақтар кімді же�"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Аңырақай шайқасы"
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адай руы қай тайпадан тарайды?\n\nЖАУАП: Адай руы қай тайпадан тарайды?\n\nАдай руы қ"
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Қазақ хандығының тұңғыш шаңырағын көтерген Барақ ханның ұлы, ал Керей оны�"
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жаппас"
+      }
+    ]
+  },
+  "kazakh": {
+    "stemmer": "kazakh",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.4166666666666667,
+      "hallucination_rate": 0.5833333333333334,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 25,
+        "hallucination": 35,
+        "abstain": 0
+      },
+      "retrieval_hit_rate": 0.6666666666666666
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.3,
+        "hallucination_rate": 0.7,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 6,
+          "hallucination": 14,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.55
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.3,
+        "hallucination_rate": 0.7,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 6,
+          "hallucination": 14,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.75
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.65,
+        "hallucination_rate": 0.35,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 13,
+          "hallucination": 7,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 20,
+      "accuracy": 0.05,
+      "hallucination_rate": 0.95,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 1,
+        "hallucination": 19,
+        "abstain": 0
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Скандинавия"
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Норвегияны қоршап тұр — мұнай қосылғанда.\n\nКөптеген мұнай қосылғанда Норвегияны"
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Швеция"
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас АҚШ-та 42-орында."
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Атлант мұхиты"
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Фолкленд аралдары Ұлыбританияның мемлекет болып табылды."
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Фолкленд\n\nКөптеген түрлер қойнаулары көп.\n\n[3] Германия Оңтүстік-Батыс Африкағ"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Португал тілі\n\nКөптегі құрлықтар қай?\n\n[1] Гвинея-Бисау, Гвинея, Кот-д '"
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Биссау қала\n\nКөптегі қала, қала қай?"
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисау"
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Амстердам қаласы"
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нидерланд тілі - нидерланд (голланд) тілі."
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нидерланд"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Мизия\n\nКөпшілікті қамтама:\n[1] Париж — Францияның астанасы, Сена өзенінің жағасында"
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Православие дінін ұстанады."
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгария"
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Кордильера тау жүйесі"
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Абхазия Автономиялық Республикасы\n\nАқпарат жоқ."
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия"
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения Әзірбайжанмен, Грузиямен, Түркиямен, Иранмен, Қазақстанмен шектеседі."
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1. Франция\n2. Гүржістан\n3. Орыс мемлекеті"
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения"
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Париж"
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Испания"
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Никарагуа Республикасы"
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адриатика теңізі"
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Шкодер көлінің жағалауында жазық рельефті аймақтар бар."
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Черногория"
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Үнді-Ганг жазықтығы"
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан үстінен Үндістан түбегін, Гималай мен Қарақорымның бір бөлігін, Инд-Г"
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан"
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку (Бақы) қаласы"
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қанша, Баку қалаларының ірі торабы."
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Қазақстанның оңтүстік-батысындағы қала, Маңғыстау облысының орталығы. Қала"
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Текелі қаласы"
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Қайнарбеков Талғат Қанатоұлы (27.06.2013 — 09.11.2016 лауазымынан босатылды)."
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Талдықорған"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай облысы"
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қостанайда қандай көлік жолдарының торабы бар?\n\nЖАУАП: Қостанай әлеуметтік-техникалы�"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Шығыс Қазақстан облысының әкімі болған."
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Сыр өңірі"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Ағпарат жоқ.\n\nКөмекшілік қызметінде қызметті атқарып, Қазақстан Республика"
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Маргарет Хильда Тэтчер"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "ТМД Экономикалық Соты Пленумының мүшесі Халықаралық заңгерлер одағы (Мәскеу қ.) т�"
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Нил Олден Армстронг"
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Азаматтық қоғам"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Айға аяқ басқан тұңғыш адам Юрий Гагарин.\n\nКешірім сұраудың ең үлкен жә"
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Меркурийдің өз серігі жоқ."
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "59 тәулікте айналып шығады."
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Меркурий"
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасы қашан болмағандай болып табылады."
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Қазақтар кімді жеңді?\n\nҚазақтар қазақтар жасақтары үш жүз жасақтары 1"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Аңырақай шайқасы"
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адай руы қай тайпадан тарайды?\n\nЖАУАП: Адай\n\nАдам қалдырылған адам адам адам адам ад"
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Париж"
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жағынан қайсы?\n\n[1] Қосқұлақ бөлімі\n[2] 1-жарты\n[3] 12 ата Байұлы"
+      }
+    ]
+  },
+  "llm": "granite8b"
+}

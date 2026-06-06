@@ -63,19 +63,30 @@ Morphological normalization matters more than naive multilingual embeddings for 
 
 ---
 
-## RAG End-to-End: Stemmer Effect on LLM Hallucinations
+## RAG End-to-End: Stemmer Effect Across 3 LLMs
 
-Retrieval hit rate (correct passage in top-3 context) with IBM Granite-2B:
+The stemmer raises the **retrieval hit rate 0.467 → 0.667** (+43%) — the correct passage
+reaches the LLM context 1.4× more often. Tested on three models of increasing capability:
 
-| Stemmer | Retrieval hit@3 | Accuracy | Hallucination |
-|---------|----------------:|--------:|-------------:|
-| identity | 0.467 | 0.250 | 0.733 |
-| kazakh | **0.667** | 0.267 | 0.700 |
-| **Δ** | **+43%** | +7% | −4.5% |
+![RAG: stemmer effect across models](results/rag_models.png)
 
-The stemmer delivers +43% more correct context to the LLM. The limited improvement in
-accuracy reflects Granite-2B's weak Kazakh generation quality (the retrieval gain is
-real and carries over to any capable model).
+| Model | Accuracy (no stem → stem) | Δ acc | Hallucination Δ |
+|-------|:---:|:---:|:---:|
+| Granite-2B | 0.250 → 0.267 | +0.017 | −0.033 |
+| Granite-8B (4-bit) | 0.350 → 0.417 | +0.067 | −0.067 |
+| **Qwen2.5-7B** (4-bit) | **0.400 → 0.500** | **+0.100** | −0.017 |
+
+**Key pattern:** the accuracy gain from the stemmer **grows with model competence**
+(`+0.017 → +0.067 → +0.100`). The retrieval gain is identical for all three; a more
+capable generator converts more of that extra correct context into correct answers.
+Qwen2.5-7B is the best end-to-end system — it abstains (`Ақпарат жоқ`) instead of
+inventing, and the stemmer turns those abstentions into correct answers.
+
+> ⚠️ **Honesty note:** the end-to-end deltas are measured on n=60, single run, **not**
+> bootstrap-validated (unlike the retrieval result). The direction is consistent and the
+> mechanism is clear, but a rigorous statistical claim would need a larger query set. We
+> report a **demonstrated trend**; the retrieval gain that drives it (0.467 → 0.667) is
+> directly measured and solid. Full breakdown in [`results/RESULTS.md`](results/RESULTS.md).
 
 ---
 
@@ -159,7 +170,7 @@ tests/         # 43 unit tests
 - [x] BM25 ± stemmer: metrics, comparison, **statistical significance** — result proven
 - [x] Dense retrieval (IBM Granite / Google LaBSE / multilingual-E5) — benchmarked
 - [x] 5-system comparison chart
-- [x] RAG hallucination harness — retrieval hit +43% with stemmer confirmed
+- [x] RAG end-to-end on 3 LLMs (Granite-2B/8B, Qwen2.5-7B) — accuracy gain scales with model competence (+0.017 → +0.067 → +0.100)
 - [ ] Larger query set for stronger statistics + Kazakh validation
 - [ ] Whitepaper
 
