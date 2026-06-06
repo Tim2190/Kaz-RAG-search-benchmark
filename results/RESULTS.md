@@ -158,6 +158,86 @@ for reference, but we no longer draw a statistical claim from them.
 
 ---
 
+## Hybrid Retrieval (RRF): Can BM25+Stemmer and Granite Be Combined? (n=300)
+
+**Hypothesis (pre-registered, falsifiable).** The two best single channels fail in
+different places: BM25+Stemmer fixes morphology but can't bridge synonyms; Granite-278M
+is strong on semantics but collapses on vocabulary-gap (0.303). Fusing their *ranks* via
+Reciprocal Rank Fusion (RRF, `score(d)=Σ 1/(k+rank)`, **k=60 fixed in advance**) should
+give a retriever that is more robust across all three categories than either channel alone.
+
+**Success criteria (set before running, both required):**
+1. nDCG@10(Hybrid) ≥ max(BM25+Stemmer, Granite) on **ALL**;
+2. on **vocabulary-gap**, Hybrid ≥ BM25+Stemmer (Granite must not drag fusion down).
+
+Both channels were re-run on the **same 300 queries** (no n=60/n=300 mixing — the merge
+script hard-fails if the query sets differ). Retrieval was not re-run for fusion; the
+committed per-query rankings (`runs_bm25_kazakh.json`, `runs_dense_granite.json`) are
+merged deterministically.
+
+![Hybrid 3-system comparison](systems_hybrid_ndcg.png)
+
+### nDCG@10 — three systems × four slices
+
+| System | inflected | natural | vocab-gap | **ALL** |
+|--------|----------:|--------:|----------:|--------:|
+| BM25 + Stemmer | 0.727 | 0.772 | **0.764** | **0.754** |
+| Dense Granite-278M | 0.791 | **0.923** | 0.303 | 0.672 |
+| **Hybrid (RRF, k=60)** | **0.824** | 0.877 | 0.525 | 0.742 |
+
+### Significance (paired bootstrap, 10 000 resamples, nDCG@10)
+
+| slice | Hybrid − BM25 | p | Hybrid − Granite | p |
+|-------|--------------:|--:|-----------------:|--:|
+| inflected | **+0.097** | <0.0001 ✅ | +0.034 | 0.124 ✗ |
+| natural | **+0.105** | <0.0001 ✅ | −0.047 | 0.032 |
+| vocabulary-gap | **−0.239** | <0.0001 | **+0.223** | <0.0001 ✅ |
+| **ALL** | −0.012 | 0.269 ✗ | **+0.070** | <0.0001 ✅ |
+
+### Sensitivity to k (pre-registered k=60; sweep shown for honesty, *not* to pick a winner)
+
+| k | inflected | natural | vocab-gap | ALL |
+|---|----------:|--------:|----------:|----:|
+| 10 | 0.841 | 0.885 | 0.603 | 0.776 |
+| 30 | 0.822 | 0.880 | 0.546 | 0.749 |
+| **60** | **0.824** | **0.877** | **0.525** | **0.742** |
+| 100 | 0.818 | 0.873 | 0.516 | 0.736 |
+
+> Note: at k=10 the **ALL** criterion would *pass* (0.776 ≥ 0.754). We do **not** report
+> that as the result — k=60 was fixed before the experiment, exactly to avoid choosing k
+> after seeing the numbers. Crucially, the **vocabulary-gap criterion fails at every k**
+> (best 0.603 at k=10, still well below BM25's 0.764), so the verdict is robust to k.
+
+### Verdict: hypothesis falsified ❌
+
+**Both pre-registered criteria fail at k=60.** RRF fusion with Granite does **not** yield a
+uniformly more robust retriever:
+
+1. **ALL:** Hybrid 0.742 < BM25+Stemmer 0.754 (p=0.27, not significant — a wash, not a win).
+2. **vocabulary-gap:** Hybrid 0.525 ≪ BM25+Stemmer 0.764 (−0.239, p<0.0001). Granite's
+   collapse on synonyms (0.303) leaks straight through the fusion. **RRF cannot rescue a
+   channel that is actively wrong on an entire category** — it averages the good ranks of
+   BM25 with the bad ranks of Granite and lands in between.
+
+**What *is* real (the honest positive sub-finding):**
+
+- **On morphology (`inflected`), the Hybrid is the single best system of all — 0.824**,
+  significantly beating BM25+Stemmer (+0.097, p<0.0001) and edging Granite (+0.034, n.s.).
+  Where both channels are competent, fusion genuinely helps.
+- **The Hybrid is far more robust than Granite alone** (vocab-gap 0.303 → 0.525), and it
+  beats Granite overall (+0.070, p<0.0001). If your baseline is a dense model, wrapping it
+  in BM25+Stemmer via RRF is a clear win.
+- **But BM25+Stemmer alone remains the most balanced single system** — it never drops below
+  0.727 on any slice. That balance is exactly what the fusion sacrifices.
+
+**Takeaway for practitioners:** there is no free lunch from naive RRF here. Use the Hybrid
+when morphology dominates your queries; use BM25+Stemmer alone when query types are mixed
+and you can't tolerate a vocab-gap regression. A category-aware router (lexical for
+synonyms, hybrid for morphology) would likely beat both — left as future work, *not*
+claimed here.
+
+---
+
 ## Key Findings
 
 1. **Morphological blindness is real and measured on 300 queries.** BM25 on inflected
@@ -191,6 +271,15 @@ for reference, but we no longer draw a statistical claim from them.
    negative result: the retrieval win does not automatically become an answer-quality win
    at this scale.*
 
+7. **Hybrid (RRF, BM25+Stemmer ⊕ Granite, n=300): falsified — no uniform robustness win.**
+   At the pre-registered k=60, the Hybrid is the single best system on `inflected`
+   morphology (0.824, +0.097 vs BM25, p<0.0001) and is far more robust than Granite alone,
+   but it **fails both success criteria**: on `vocabulary-gap` it drops to 0.525 (vs BM25's
+   0.764, p<0.0001) because Granite's synonym collapse (0.303) leaks through the fusion, and
+   on **ALL** it is a wash (0.742 vs 0.754, p=0.27). *Honest negative result: naive RRF
+   cannot rescue a channel that is wrong on a whole category; BM25+Stemmer alone stays the
+   most balanced single system.*
+
 ---
 
 ## Reproduction
@@ -210,6 +299,17 @@ python -m src.eval.run_dense --model e5      --out results/dense_e5.json
 
 # Multi-system chart
 python -m src.eval.chart_all --out results/systems_ndcg.png
+
+# Hybrid RRF (dump per-query rankings on the SAME 300 queries, then merge — CPU only)
+python -m src.eval.run_benchmark --stemmer kazakh --top-k 100 \
+    --runs-out results/runs_bm25_kazakh.json
+python -m src.eval.run_dense --model granite --top-k 100 \
+    --runs-out results/runs_dense_granite.json        # GPU for this dump
+python -m src.eval.run_hybrid \
+    --bm25-runs results/runs_bm25_kazakh.json \
+    --granite-runs results/runs_dense_granite.json \
+    --out results/hybrid_kazakh.json                  # CPU: merge + bootstrap + k-sweep
+python -m src.eval.chart_hybrid --out results/systems_hybrid_ndcg.png
 
 # RAG hallucination benchmark (GPU + Colab recommended)
 python -m src.eval.run_rag --llm granite --top-k 3 --out results/rag_granite.json

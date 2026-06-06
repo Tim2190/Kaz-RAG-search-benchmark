@@ -70,7 +70,8 @@ def build_chart(data: dict, out: str) -> None:
         fontsize=11,
     )
     ax.set_ylim(0, 1.12)
-    ax.legend(loc="upper left", fontsize=9)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=3, fontsize=9,
+              frameon=False)
     ax.grid(axis="y", alpha=0.3)
     plt.tight_layout()
     plt.savefig(out, dpi=150)
