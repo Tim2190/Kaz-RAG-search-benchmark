@@ -1,0 +1,857 @@
+{
+  "identity": {
+    "stemmer": "identity",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.4,
+      "hallucination_rate": 0.18333333333333332,
+      "abstention_rate": 0.4166666666666667,
+      "counts": {
+        "correct": 24,
+        "hallucination": 11,
+        "abstain": 25
+      },
+      "retrieval_hit_rate": 0.4666666666666667
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.15,
+        "hallucination_rate": 0.1,
+        "abstention_rate": 0.75,
+        "counts": {
+          "correct": 3,
+          "hallucination": 2,
+          "abstain": 15
+        },
+        "retrieval_hit_rate": 0.2
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.4,
+        "hallucination_rate": 0.3,
+        "abstention_rate": 0.3,
+        "counts": {
+          "correct": 8,
+          "hallucination": 6,
+          "abstain": 6
+        },
+        "retrieval_hit_rate": 0.5
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.65,
+        "hallucination_rate": 0.15,
+        "abstention_rate": 0.2,
+        "counts": {
+          "correct": 13,
+          "hallucination": 3,
+          "abstain": 4
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 32,
+      "accuracy": 0.03125,
+      "hallucination_rate": 0.3125,
+      "abstention_rate": 0.65625,
+      "counts": {
+        "correct": 1,
+        "hallucination": 10,
+        "abstain": 21
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "4"
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Атлант мұхиты"
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Фолкленд аралдары"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Африка Одағы"
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Биссау"
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисау"
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Батыс Еуропа"
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгария"
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия"
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения Әзірбайжанмен, Түркиямен және Иранмен шектеседі."
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Арменияны қоршаған көршілес мемлекеттер селжүктер."
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения"
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Никарагуа"
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адриатика"
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Подгорица астаналы, Адрия теңізі жағасындағы Балқан мемлекеті Черногория."
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан"
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай облысының орталығы."
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Атырау"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Шығыс Қазақстан облысы"
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "ҰҚШҰ Бас хатшысы"
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Иманғали Нұрғалиұлы Тасмағамбетов"
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Огайо штатында"
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нил Армстронг"
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Отецінен айналасындағы атмосфераны тұрақты ұстай алмайды."
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "88 тәулік"
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Меркурий"
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасы қазақ қолының жоңғар басқыншылығына қарсы жүз жылдық азаттық соғысында бетб"
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Аңырақай"
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Байұлы"
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Адай рулар Байұлы рулар бірлестігіне кіреді."
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Алшын тайпасынан тарайтын, Байұлына кіретін ру - Жаппас."
+      }
+    ]
+  },
+  "kazakh": {
+    "stemmer": "kazakh",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.5,
+      "hallucination_rate": 0.16666666666666666,
+      "abstention_rate": 0.3333333333333333,
+      "counts": {
+        "correct": 30,
+        "hallucination": 10,
+        "abstain": 20
+      },
+      "retrieval_hit_rate": 0.6666666666666666
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.35,
+        "hallucination_rate": 0.05,
+        "abstention_rate": 0.6,
+        "counts": {
+          "correct": 7,
+          "hallucination": 1,
+          "abstain": 12
+        },
+        "retrieval_hit_rate": 0.55
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.45,
+        "hallucination_rate": 0.35,
+        "abstention_rate": 0.2,
+        "counts": {
+          "correct": 9,
+          "hallucination": 7,
+          "abstain": 4
+        },
+        "retrieval_hit_rate": 0.75
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.7,
+        "hallucination_rate": 0.1,
+        "abstention_rate": 0.2,
+        "counts": {
+          "correct": 14,
+          "hallucination": 2,
+          "abstain": 4
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 20,
+      "accuracy": 0.1,
+      "hallucination_rate": 0.15,
+      "abstention_rate": 0.75,
+      "counts": {
+        "correct": 2,
+        "hallucination": 3,
+        "abstain": 15
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Атлант мұхитынан соғатын суық желдің әсері бар"
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Атлант мұхиты"
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Фолкленд аралдары"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Африка"
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Биссау"
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисау"
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Солтүстік және батыс бөлігі"
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "нидерланд тілі"
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нидерланд"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Балқан түбегінің шығыс бөлігіндегі мемлекетінің тарихының кезеңдері 1 кезең – «Жеті тайпа одағы"
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "болгарлар"
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгария"
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Кең алқапты"
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гүржістан, Иран, Армения, Түркия"
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Мәмлүктер"
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Армения"
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Орта Америка"
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Никарагуа"
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адриатика"
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Хорватия Республикасы, Босния және Герцеговина, Сербия Республикасы, Албания Республикасы"
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Подгорица астаналы, Адрия теңізі жағасындағы Балқан мемлекеті Черногория."
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Үндістан"
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку"
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "1952 жылдан"
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "26,9 мың тұрғын"
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай Қызылорда облысының орталығында орналасқан."
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Шығыс Қазақстан облысы"
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "ҰҚШҰ Бас хатшысы"
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Огайо"
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Армстронг"
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "өте баяу айналады"
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "88 тәулік"
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Болпан"
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Аңырақай"
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ"
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Адайларды Байұлы рулар бірлестігіне жатқызды."
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Орта жүз"
+      }
+    ]
+  },
+  "llm": "qwen7b"
+}
