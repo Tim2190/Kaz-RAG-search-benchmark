@@ -78,12 +78,12 @@ git push origin claude/adoring-newton-GmiMr
 
 ```bash
 pip install sentence-transformers torch
-python -m src.eval.run_dense --model labse   --out results/dense_labse.json
-python -m src.eval.run_dense --model e5      --out results/dense_e5.json
-python -m src.eval.run_dense --model granite --out results/dense_granite.json
+python -m src.eval.run_dense --model labse   --out results/dense_labse_300.json
+python -m src.eval.run_dense --model e5      --out results/dense_e5_300.json
+python -m src.eval.run_dense --model granite --out results/dense_granite_300.json
 ```
 Эмбеддинги корпуса кэшируются (`results/emb_<model>.npy`) — повтор не пересчитывает.
-Сравнить с лексикой: `python -m src.eval.compare --before results/bm25_kazakh.json --after results/dense_labse.json`.
+Сравнить с лексикой: `python -m src.eval.compare --before results/bm25_kazakh.json --after results/dense_labse_300.json`.
 
 ## 6. RAG-галлюцинации: IBM Granite / Google Gemma (Colab, GPU)
 
