@@ -1,0 +1,857 @@
+{
+  "identity": {
+    "stemmer": "identity",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.25,
+      "hallucination_rate": 0.7333333333333333,
+      "abstention_rate": 0.016666666666666666,
+      "counts": {
+        "correct": 15,
+        "hallucination": 44,
+        "abstain": 1
+      },
+      "retrieval_hit_rate": 0.4666666666666667
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.2,
+        "hallucination_rate": 0.8,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 4,
+          "hallucination": 16,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.2
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.2,
+        "hallucination_rate": 0.8,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 4,
+          "hallucination": 16,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.5
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.35,
+        "hallucination_rate": 0.6,
+        "abstention_rate": 0.05,
+        "counts": {
+          "correct": 7,
+          "hallucination": 12,
+          "abstain": 1
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 32,
+      "accuracy": 0.125,
+      "hallucination_rate": 0.875,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 4,
+        "hallucination": 28,
+        "abstain": 0
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Норвегия қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Норвегияны әлем елдерінің ресми қазақ тілінде орын таппағандықтарынан бұл тізімге е"
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "СҰРАҚ: Фьордтарымен әйгілі солтүстік скандинавиялық патшалық қалай аталады?\nЖА"
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас штаты қай елдіңиштік болуы керек."
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас АҚШ-та халық саны бойынша 308 миллион 745 мың 538 адам тұрды."
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "АҚШ-тың аумағы жөнінен екінші орындағы ірі штаты қайсы: Канада."
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Фолкленд аралдары қай мұхитта орналасқан."
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Фолклендті қай мемлекет басқарады."
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Аталышы: Бұл қатысты болуы мүмкін.\n\nЖауап: Атлантадағы Оңтүстік Америкада�"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Гвинея-Бисау қай құрлықта орналасқан."
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисаудың астанасы Биссау қ. қай қала."
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Африканың батысындағы, астанасы Биссау болатын мемлекет қайсы: Ангола."
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Нидерланд қай аймақта орналасқан: Солтүстік-Батыс шекара аймағы"
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Нидерландта қандай ағылшын тіл ресми болып саналады."
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Сұрақ: Сауда тауы\nЖауап: Сауд Арабиясындағы климат тұтастай алғанда ыстық және қ"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Болгария қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Болгарияны мекендейтін негізгі халық Абылай хан."
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Балқандағы, астанасы София болатын мемлекет Болгария."
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жауап: Бұл текти қайта КОНТЕКСТтін ғана сұраққа қысқа жауап болуы керек."
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Грузияда қандай автономиялық республикалар бар?\n\nЖАУАП:\n\n1. Чиңхай өлкесі\n2. Санжы Д"
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия — Кавказдың оңтүстігіндегі, құрамында қалай аталады."
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Армения қай елдермен шектеседі, болот."
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Арменияны қоршаған көршілес мемлекеттер қайсы: Байбарыс."
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Түркиямен және Иранмен шектесетін, теңізге шыға алмайтын Кавказ елі қайсы — Ауғанстан."
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Никарагуа қай аймақта орналасқан: Ахмадабад, Деһли, Дакка, Файсалабад, Хайдарабад, Канпур"
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Никарагуада қай тіл ресми тіл болып табылады."
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Астанасы Манагуа болатын Орталық Америка мемлекеті қайсы — Никарагуа Республикасы."
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жауап: Черногория қай теңіздің жағалауында орналасқан."
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Черногорияны қандай елдер қоршап жатыр:\n\n1. Бедағ (3086 м.)\n2. Аджиғөл, Ақшекер (т"
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Балқан мемлекеті қайсы: Адрия теңізі жағасындағы Балқан мемлекеті."
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Үндістан қай аймақта орналасқан."
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Үндістан қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Оңтүстік Азиядағы, Үндістан — өзінің аса бай мәдениетімен әйгілі түбек елі."
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Астанасы Баку (Бақы) қаласы."
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1. Олардың жасырын әскерлері қай жерлерде орналасқан, қандай мекенде, саны қанша, Ресей ж"
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Апшерон түбегіндегі, мұнаймен әйгілі порт-қала қалай аталады."
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Текелі қала қазақстан Республикасынын Жетісу облысынын қала."
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1. Олардың жасырын әскерлері қай жерлерде орналасқан, қандай мекенде, саны қанша, Ресей ж"
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жетісу облысындағы, Талдықорғанға жақын шағын тау қаласы қайсы:\n\nЖетісу"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай қай облыстың орталығы Петропавл Қаласынын құрайындай, 1752 жылы негізі"
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қостанайда қандай көлік жолдарының торабы бар:\n\n1. Астана — Қазақстандык үлкүнүн �"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Тобыл өзені бойындағы, темір жол торабы саналатын облыс орталығы Өскемен қаласында 200"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Даниал Ахметов қай облыстың әкімі болған."
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Даниал Ахметовтің туған жері қай қала:\n\n[1] Шығыс Қазақстан облысының әкімі"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Иманғали Тасмағамбетов 2022 жылдан бері қандай қызмет атқарады:\n\n1. Қазақстан Рес"
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1979 жылы"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "ҰҚШҰ-ның қазіргі бас хатшысы Иманғали Тасмағамбетов."
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нил Армстронг — АҚШ ғарышкері, айға ұшу Айға ұшу сапарынын 11-жылы 1969 ж"
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Армстронгтың азаматтығы Германиянын азаматтығын болуп, Фрэнсиске ғана берілген 16 жы"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Айға аяқ басқан тұғыш адам Нил Олден Армстронг."
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Меркурийдің ауысымдылығының ерекшелігімен сипатталады."
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Меркурийдің Күнді айналып шығу мерзімі қанша, 88 тәулік."
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болпан, Меркурий, Шолпан, Таңшолпан, Кіші Шолпан — Күнге ең жақын және Күн жүйес"
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасы қашан болды."
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасында қазақтар әлеки көптөгөн жана бирок, бирге болған Төле мен"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ."
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Адай руы қай тайпадан тарайды, Алшын тайпасынан тарайды және Кіші жүз құрамына кіреді"
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Адайларды қай рулар бірлестігіне жатқызады, ал эми олардың саны 200 мың адамға жетір"
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Кіші жүздегі Алшыннан тарайтын, Байұлына кіретін ру қайсы: Кіші жүздің Байұл"
+      }
+    ]
+  },
+  "kazakh": {
+    "stemmer": "kazakh",
+    "n_queries": 60,
+    "overall": {
+      "n": 60,
+      "accuracy": 0.26666666666666666,
+      "hallucination_rate": 0.7,
+      "abstention_rate": 0.03333333333333333,
+      "counts": {
+        "correct": 16,
+        "hallucination": 42,
+        "abstain": 2
+      },
+      "retrieval_hit_rate": 0.6666666666666666
+    },
+    "by_category": {
+      "inflected": {
+        "n": 20,
+        "accuracy": 0.3,
+        "hallucination_rate": 0.7,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 6,
+          "hallucination": 14,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.55
+      },
+      "natural": {
+        "n": 20,
+        "accuracy": 0.15,
+        "hallucination_rate": 0.85,
+        "abstention_rate": 0.0,
+        "counts": {
+          "correct": 3,
+          "hallucination": 17,
+          "abstain": 0
+        },
+        "retrieval_hit_rate": 0.75
+      },
+      "vocabulary-gap": {
+        "n": 20,
+        "accuracy": 0.35,
+        "hallucination_rate": 0.55,
+        "abstention_rate": 0.1,
+        "counts": {
+          "correct": 7,
+          "hallucination": 11,
+          "abstain": 2
+        },
+        "retrieval_hit_rate": 0.7
+      }
+    },
+    "on_retrieval_miss": {
+      "n": 20,
+      "accuracy": 0.1,
+      "hallucination_rate": 0.9,
+      "abstention_rate": 0.0,
+      "counts": {
+        "correct": 2,
+        "hallucination": 18,
+        "abstain": 0
+      }
+    },
+    "per_query": [
+      {
+        "query_id": "q001",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Норвегия қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q002",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Норвегияны қандай мұнайдын элдер қоршап тұр."
+      },
+      {
+        "query_id": "q003",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Фьордтарымен әйгілі солтүстік скандинавиялық патшалық қалай аталады."
+      },
+      {
+        "query_id": "q004",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас штаты қай елдіңи Техас штаты."
+      },
+      {
+        "query_id": "q005",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Техас АҚШ-та 18 076 акр (73.15 шаршы км) ауданымен дүниеде төртінші орында тұрады."
+      },
+      {
+        "query_id": "q006",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Техас"
+      },
+      {
+        "query_id": "q007",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Фолкленд аралдары қай мұхитта орналасқан."
+      },
+      {
+        "query_id": "q008",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Фолклендті қай мемлекет басқарады, Ағылшын тіліндегі Артмантын аралында болгон."
+      },
+      {
+        "query_id": "q009",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Бұл қате, Оңтүстік Атлантадағы британдық иеліктегі топарал қалай аталады, ал эми Ф"
+      },
+      {
+        "query_id": "q010",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Гвинея-Бисау қай құрлықта орналасқан."
+      },
+      {
+        "query_id": "q011",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Гвинея-Бисау астанасы Биссау қ. (160 мың) болушу мүмкін."
+      },
+      {
+        "query_id": "q012",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Африканың батысындағы, астанасы Биссау болатын мемлекет қайсы: Гвинея-Бисау Республикасы."
+      },
+      {
+        "query_id": "q013",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Нидерланд қай аймақта орналасқан, бірақ қайтанып, солтүстік-батыс шекара аймағы."
+      },
+      {
+        "query_id": "q014",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нидерландта француз тілі болып саналады."
+      },
+      {
+        "query_id": "q015",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Голландтар тұратын, Солтүстік теңіз жағалауындағы ел қайсы:\n\nСолтүстік теңізд"
+      },
+      {
+        "query_id": "q016",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Болгария қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q017",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгарияны мекендейтін негізгі халық кім: Болгарлар."
+      },
+      {
+        "query_id": "q018",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Болгария"
+      },
+      {
+        "query_id": "q019",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Грузия қай тау жүйесінде орналасқан."
+      },
+      {
+        "query_id": "q020",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Грузияда қандай автономиялық республикалар бар:\n\n1. Абхазия\n2. Абаза (Абхазиянын бүкіл белгисі"
+      },
+      {
+        "query_id": "q021",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Абхазия — Кавказдың оңтүстігіндегі, құрамында қалай аталады."
+      },
+      {
+        "query_id": "q022",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Армения қай елдермен шектеседі."
+      },
+      {
+        "query_id": "q023",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Арменияны қоршаған көршілес мемлекеттер қайсы: Багратион әулетінен шыққан патшалар, Давид"
+      },
+      {
+        "query_id": "q024",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Түркиямен және Иранмен шектесетін, теңізге шыға алмайтын Кавказ елі қайсы — Армения."
+      },
+      {
+        "query_id": "q025",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Никарагуа қай аймақта орналасқан 1523-ж."
+      },
+      {
+        "query_id": "q026",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Никарагуада қай тіл ресми тіл болып табылады."
+      },
+      {
+        "query_id": "q027",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Астанасы Манагуа болатын Орталық Америка мемлекеті қайсы — Никарагуа Республикасы."
+      },
+      {
+        "query_id": "q028",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Жауап: Болушу мүмкін.\n\nКОНТЕКСТ:\n[2] Еліміздегі тамырлы өсімдік түрлер"
+      },
+      {
+        "query_id": "q029",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Черногорияны қандай елдер қоршап жатыр:\n\n1. Адриатикалық теңіз бассейні\n2. Хорватия Республи"
+      },
+      {
+        "query_id": "q030",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Адрия теңізі жағасындағы Балқан мемлекеті қайсы:\n\nАум. 13,8 мың км².\nАстанасы — Под"
+      },
+      {
+        "query_id": "q031",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Үндістан қай аймақта орналасқан."
+      },
+      {
+        "query_id": "q032",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Үндістан қай түбекте орналасқан."
+      },
+      {
+        "query_id": "q033",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Оңтүстік Азиядағы, ежелгі өркениетімен әйгілі түбек елі Тәж Махал үчүн."
+      },
+      {
+        "query_id": "q034",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Баку (Бақы)"
+      },
+      {
+        "query_id": "q035",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "1. Олардың жасырын әскерлері қай жерлерде орналасқан, қандай мекенде, саны қанша, Ресей ж"
+      },
+      {
+        "query_id": "q036",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ."
+      },
+      {
+        "query_id": "q037",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Текелі қала атанды Қазақстан Республикасы, Жетісу облысының қала."
+      },
+      {
+        "query_id": "q038",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Текеліде қанша тұрғын бар.\n\nКОНТЕКСТ:\n[1] Текелі — Қазақстан Республикасы, Жетісу"
+      },
+      {
+        "query_id": "q039",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Талдықорған — Қазақстанның оңтүстік-шығысында орналасқан қала, Жетісу облысыны"
+      },
+      {
+        "query_id": "q040",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Қостанай қай облыстың орталығы — Қазақстандағы әкімшілік, экономикалық, мәдени о"
+      },
+      {
+        "query_id": "q041",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Қостанайда қандай көлік жолдарының торабы бар:\n\n1. Оңтүстік Қазақстан мемлекеттік фарм"
+      },
+      {
+        "query_id": "q042",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Тобыл өзені бойындағы, темір жол торабы саналатын облыс орталығы Өскемен қаласында қай"
+      },
+      {
+        "query_id": "q043",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Даниал Ахметов қай облыстың әкімі болған."
+      },
+      {
+        "query_id": "q044",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "СҰРАҚ: Даниал Ахметовтің туған жері қай қала?\nЖАУАП: Шығыс Қазақстан облысы"
+      },
+      {
+        "query_id": "q045",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Даниал Кенжетайұлы Ахметов"
+      },
+      {
+        "query_id": "q046",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Иманғали Тасмағамбетов 2022 жылдан бері қандай қызмет атқарады Астана қаласының ә"
+      },
+      {
+        "query_id": "q047",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Тасмағамбетовті қай жылдары премьер-министр етіп тағайындады:\n\n1. [1] 1979-1990 ж"
+      },
+      {
+        "query_id": "q048",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "ҰҚШҰ-ның қазіргі бас хатшысы БҰҰ Бас Хатшысы К.Аннанның Қазақстанға 200"
+      },
+      {
+        "query_id": "q049",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Нил Армстронг — АҚШ ғарышкері (астронавты). Айға ұшу Джон Кеннедидің одан алты жыл бұ"
+      },
+      {
+        "query_id": "q050",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Армстронгтың азаматтығы әлемдік әлеуметтік-философиялық ғылымда болған, бір"
+      },
+      {
+        "query_id": "q051",
+        "retrieval_hit": false,
+        "label": "correct",
+        "answer": "Айға аяқ басқан тұңғыш адам — Армстронг."
+      },
+      {
+        "query_id": "q052",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Меркурий қандай ерекшелігімен сипатталады."
+      },
+      {
+        "query_id": "q053",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Меркурийдің Күнді айналып шығу мерзімі қанша 88 тәулік."
+      },
+      {
+        "query_id": "q054",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Болпан — қатысты, Күнге ең жақын әрі ең кіші ғаламшар қалай аталады."
+      },
+      {
+        "query_id": "q055",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасы қашан болды."
+      },
+      {
+        "query_id": "q056",
+        "retrieval_hit": true,
+        "label": "hallucination",
+        "answer": "Аңырақай шайқасында қазақтар жоғары, бирок қазақтардын әрекетін сезген оларды"
+      },
+      {
+        "query_id": "q057",
+        "retrieval_hit": true,
+        "label": "abstain",
+        "answer": "Ақпарат жоқ."
+      },
+      {
+        "query_id": "q058",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Адай руы қай тайпадан тарайды."
+      },
+      {
+        "query_id": "q059",
+        "retrieval_hit": true,
+        "label": "correct",
+        "answer": "Адайларды қай рулар бірлестігіне жатқызады, ал эми байұлы рулар бірлестігі мен ежелгі байы"
+      },
+      {
+        "query_id": "q060",
+        "retrieval_hit": false,
+        "label": "hallucination",
+        "answer": "Кіші жүздегі Алшыннан тарайтын, Байұлына кіретін ру қайсы:\n\nКіші жүздегі Алшы"
+      }
+    ]
+  },
+  "llm": "granite"
+}
