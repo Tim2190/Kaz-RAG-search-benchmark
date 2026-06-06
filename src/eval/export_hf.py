@@ -95,9 +95,12 @@ Evidence-based benchmark for Kazakh information retrieval.
 
 ## Key result
 
-BM25 with a Kazakh morphological stemmer outperforms Dense LaBSE overall (nDCG@10 0.599 vs 0.412).
-On inflected queries (different word forms), the stemmer gives +145% nDCG@10 (p=0.0005).
+A Kazakh morphological stemmer significantly improves lexical search: **+16% nDCG@10 on
+inflected queries** (p=0.0017) and **+9% overall** (p=0.0001), on 300 queries with
+paired-bootstrap significance. BM25+stemmer also outperforms Dense LaBSE overall
+(nDCG@10 0.599 vs 0.412).
 
+This benchmark is the evidence base for the [Kazakh Stemmer](https://qaz-api.vercel.app/).
 See [github.com/Tim2190/Kaz-RAG-search-benchmark](https://github.com/Tim2190/Kaz-RAG-search-benchmark)
 for full results, code, and reproduction instructions.
 

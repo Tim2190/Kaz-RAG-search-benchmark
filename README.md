@@ -1,12 +1,23 @@
-# Kaz-RAG-Search-Benchmark
+# Kazakh Stemmer — Effectiveness, Proven
 
-**Evidence-based benchmark: why basic search "goes blind" on Kazakh — and how morphological normalization fixes it.**
+> **This repository is the independent evidence base for my
+> [Kazakh Stemmer](https://qaz-api.vercel.app/).**
+> A reproducible, statistically validated benchmark showing the stemmer measurably
+> improves Kazakh search — on 300 queries over 8 370 Wikipedia passages.
+
+**What the stemmer does:** give it a word in any grammatical form → it returns the root,
+plus the suffixes it stripped. *балаларымызда → бала (суффиксы: да, ымыз, лар).*
+Kazakh is agglutinative — one word appears in hundreds of forms, and ordinary search
+misses them. The stemmer lets search see through that.
 
 ![5-system comparison](results/systems_ndcg.png)
 
-> On inflected queries, BM25 baseline scores **nDCG@10 = 0.18**.
-> A Kazakh stemmer brings it to **0.45 (+145%)**, recall@1 **+200%**, p = 0.0005.
-> BM25+Stemmer (0.599) **outperforms Dense LaBSE** (0.412) overall.
+> **The proof:** stemming improves search quality by **+16% nDCG@10 on inflected queries**
+> (p=0.0017) and **+9% overall** (p=0.0001), on **300 queries** with paired-bootstrap
+> significance. It also **outperforms Google's multilingual LaBSE** embeddings (0.599 vs
+> 0.412) — for Kazakh, morphological normalization matters more than naive multilingual vectors.
+
+→ **[Try the Kazakh Stemmer](https://qaz-api.vercel.app/)** · full methodology and numbers below
 
 ---
 
@@ -14,7 +25,7 @@
 
 **Corpus:** 8 370 passages (Kazakh Wikipedia) · **Queries:** 300 (100 entities × 3 categories)
 **Baseline:** BM25 (Okapi). "Before" — no normalization; "After" — corpus and query tokens
-stemmed with the [Kazakh stemmer](https://kazakh-stemmer-590833642796.europe-west1.run.app).
+stemmed with the [Kazakh stemmer](https://qaz-api.vercel.app/).
 
 ### Statistical Significance — nDCG@10 (paired bootstrap, 10 000 resamples, n=300)
 
