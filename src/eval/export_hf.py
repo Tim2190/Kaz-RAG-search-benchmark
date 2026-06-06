@@ -83,15 +83,34 @@ tags:
 pretty_name: Kaz-RAG-Search-Benchmark
 size_categories:
   - 1K<n<10K
+configs:
+  - config_name: corpus
+    default: true
+    data_files:
+      - split: corpus
+        path: corpus.jsonl
+  - config_name: queries
+    data_files:
+      - split: queries
+        path: queries.jsonl
+  - config_name: qrels
+    data_files:
+      - split: test
+        path: qrels/test.tsv
 ---
 
 # Kaz-RAG-Search-Benchmark
 
-Evidence-based benchmark for Kazakh information retrieval.
+Evidence-based benchmark for Kazakh information retrieval — the independent proof base
+for the [**Kazakh Stemmer**](https://qaz-api.vercel.app/).
 
 **Corpus:** {n_passages:,} passages from Kazakh Wikipedia
 **Queries:** {n_queries} queries × 3 categories (natural / inflected / vocabulary-gap)
-**Format:** BEIR-compatible (corpus + queries + qrels)
+**Format:** BEIR-compatible — three subsets: `corpus`, `queries`, `qrels`
+
+> Browse the data: use the **subset switcher** at the top of the Data Studio viewer to
+> move between `corpus` (Kazakh passages), `queries` (the 300 questions), and `qrels`
+> (relevance judgements). The default view is the corpus.
 
 ## Key result
 
@@ -99,6 +118,11 @@ A Kazakh morphological stemmer significantly improves lexical search: **+16% nDC
 inflected queries** (p=0.0017) and **+9% overall** (p=0.0001), on 300 queries with
 paired-bootstrap significance. BM25+stemmer also outperforms Dense LaBSE overall
 (nDCG@10 0.599 vs 0.412).
+
+End-to-end RAG (Qwen2.5-7B, n=300) is reported honestly: the stemmer raises retrieval
+hit@3 (0.737 → 0.803), but the end-to-end accuracy gain is **not** statistically
+significant (McNemar p=0.63) — the bottleneck is the Kazakh-language generator, not the
+retriever. The stemmer's value is proven *at the retrieval level*.
 
 This benchmark is the evidence base for the [Kazakh Stemmer](https://qaz-api.vercel.app/).
 See [github.com/Tim2190/Kaz-RAG-search-benchmark](https://github.com/Tim2190/Kaz-RAG-search-benchmark)
@@ -115,9 +139,9 @@ attribute the source and share derivatives alike.
 ```python
 from datasets import load_dataset
 
-corpus  = load_dataset("your-username/kaz-rag-search-benchmark", "corpus",  split="train")
-queries = load_dataset("your-username/kaz-rag-search-benchmark", "queries", split="queries")
-qrels   = load_dataset("your-username/kaz-rag-search-benchmark", "qrels",   split="test")
+corpus  = load_dataset("tim2190/kaz-rag-search-benchmark", "corpus",  split="corpus")
+queries = load_dataset("tim2190/kaz-rag-search-benchmark", "queries", split="queries")
+qrels   = load_dataset("tim2190/kaz-rag-search-benchmark", "qrels",   split="test")
 ```
 """
     (dst / "README.md").write_text(text, encoding="utf-8")
