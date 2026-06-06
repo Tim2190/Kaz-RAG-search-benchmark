@@ -82,6 +82,27 @@ def _fmt(res: Dict) -> str:
             f"поиск-попал={o['retrieval_hit_rate']:.3f}")
 
 
+def _mcnemar_accuracy(pq_identity: list, pq_kazakh: list):
+    """Exact McNemar two-sided p-value on accuracy (correct vs not) between stemmers."""
+    from math import comb
+
+    def correct_map(per_query):
+        return {pq["query_id"]: (pq["label"] == "correct") for pq in per_query}
+
+    ci, ck = correct_map(pq_identity), correct_map(pq_kazakh)
+    ids = set(ci) & set(ck)
+    if not ids:
+        return None
+    b = sum(1 for i in ids if ci[i] and not ck[i])   # lost (was correct, now wrong)
+    c = sum(1 for i in ids if not ci[i] and ck[i])    # gained (was wrong, now correct)
+    n = b + c
+    if n == 0:
+        return 1.0
+    k = min(b, c)
+    p = sum(comb(n, i) for i in range(0, k + 1)) / (2 ** n) * 2
+    return min(p, 1.0)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="RAG-бенчмарк галлюцинаций (До/После стеммера)")
     ap.add_argument("--llm", default="granite", help="granite | gemma | echo | HF id")
@@ -123,6 +144,13 @@ def main() -> None:
         print(f"\n>>> ИТОГ (LLM={args.llm}): "
               f"галлюцинации {b['hallucination_rate']:.3f} → {a['hallucination_rate']:.3f} "
               f"({dh:+.3f}); accuracy {b['accuracy']:.3f} → {a['accuracy']:.3f} ({da:+.3f})")
+
+        # McNemar paired significance test on accuracy (identity vs kazakh)
+        p_val = _mcnemar_accuracy(results["identity"]["per_query"],
+                                  results["kazakh"]["per_query"])
+        if p_val is not None:
+            verdict = "ЗНАЧИМО (p<0.05) ✅" if p_val < 0.05 else "не значимо ✗"
+            print(f">>> McNemar p={p_val:.4f} — {verdict}")
 
     if args.out:
         import os
