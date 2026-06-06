@@ -70,7 +70,7 @@ def write_readme(dst: Path, n_passages: int, n_queries: int) -> None:
     text = f"""---
 language:
   - kk
-license: cc-by-4.0
+license: cc-by-sa-4.0
 task_categories:
   - question-answering
   - text-retrieval
@@ -100,6 +100,12 @@ On inflected queries (different word forms), the stemmer gives +145% nDCG@10 (p=
 
 See [github.com/Tim2190/Kaz-RAG-search-benchmark](https://github.com/Tim2190/Kaz-RAG-search-benchmark)
 for full results, code, and reproduction instructions.
+
+## Source & license
+
+The corpus is derived from Kazakh Wikipedia (the `wikimedia/wikipedia` dump on
+Hugging Face), licensed under **CC BY-SA 4.0**. This dataset inherits the same license:
+attribute the source and share derivatives alike.
 
 ## Usage
 
