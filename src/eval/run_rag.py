@@ -103,6 +103,15 @@ def _mcnemar_accuracy(pq_identity: list, pq_kazakh: list):
     return min(p, 1.0)
 
 
+def _save_results(path: str, results: Dict, llm_name: str) -> None:
+    """Persist current results (checkpoint after each pass)."""
+    import os
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    out = dict(results)
+    out["llm"] = llm_name
+    json.dump(out, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="RAG-бенчмарк галлюцинаций (До/После стеммера)")
     ap.add_argument("--llm", default="granite", help="granite | gemma | echo | HF id")
@@ -114,17 +123,35 @@ def main() -> None:
     ap.add_argument("--show", type=int, default=8, help="сколько примеров ответов печатать")
     ap.add_argument("--4bit", dest="four_bit", action="store_true",
                     help="4-битная загрузка (для 7-9B моделей на T4)")
+    ap.add_argument("--resume", action="store_true",
+                    help="пропустить проходы, уже сохранённые в --out (докатить только недостающие)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     corpus_pairs = dataset.load_corpus(args.corpus)
     queries = dataset.load_queries(args.queries)
-    llm = EchoLLM() if args.llm == "echo" else HFTransformersLLM(
-        args.llm, max_new_tokens=args.max_new_tokens, load_in_4bit=args.four_bit)
+
+    # --resume: подхватываем уже посчитанные проходы из файла
+    results = {}
+    if args.resume and args.out:
+        import os
+        if os.path.exists(args.out):
+            saved = json.load(open(args.out, encoding="utf-8"))
+            for st in args.stemmers:
+                if st in saved and "per_query" in saved.get(st, {}):
+                    results[st] = saved[st]
+                    print(f"[resume] стеммер={st} уже посчитан — пропускаю "
+                          f"(accuracy={saved[st]['overall']['accuracy']:.3f})")
+
+    todo = [st for st in args.stemmers if st not in results]
+    # модель грузим только если есть что считать
+    llm = None
+    if todo:
+        llm = EchoLLM() if args.llm == "echo" else HFTransformersLLM(
+            args.llm, max_new_tokens=args.max_new_tokens, load_in_4bit=args.four_bit)
 
     gold_by_id = {q["query_id"]: q.get("answer", "") for q in queries}
-    results = {}
-    for st in args.stemmers:
+    for st in todo:
         print(f"\n=== RAG прогон: стеммер={st}, LLM={args.llm} ===")
         res = run_system(corpus_pairs, queries, st, llm, top_k=args.top_k)
         print(_fmt(res))
@@ -135,6 +162,10 @@ def main() -> None:
                   f"эталон='{gold_by_id.get(pq['query_id'])}' "
                   f"ответ='{pq['answer'][:90]}'")
         results[st] = res
+        # ЧЕКПОИНТ: сохраняем сразу после прохода, чтобы не терять при сбое
+        if args.out:
+            _save_results(args.out, results, args.llm)
+            print(f"  [чекпоинт] сохранено → {args.out}")
 
     if "identity" in results and "kazakh" in results:
         b = results["identity"]["overall"]
@@ -153,12 +184,7 @@ def main() -> None:
             print(f">>> McNemar p={p_val:.4f} — {verdict}")
 
     if args.out:
-        import os
-        os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
-        # сохраняем ПОЛНОСТЬЮ, включая сырые ответы — чтобы пере-оценивать офлайн
-        out = dict(results)
-        out["llm"] = args.llm
-        json.dump(out, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        _save_results(args.out, results, args.llm)
         print(f"\nСохранено → {args.out}")
 
 
