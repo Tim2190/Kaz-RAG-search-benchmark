@@ -57,30 +57,35 @@ Morphological normalization matters more than naive multilingual embeddings for 
 
 ---
 
-## RAG End-to-End: Stemmer Effect Across 3 LLMs
+## RAG End-to-End: Does Better Retrieval Reach the Answer? (Qwen2.5-7B, n=300)
 
-The stemmer raises the **retrieval hit rate 0.467 → 0.667** (+43%) — the correct passage
-reaches the LLM context 1.4× more often. Tested on three models of increasing capability:
+We ran the full RAG chain (BM25 → context → Qwen2.5-7B 4-bit) on the **same 300 queries**,
+changing only the retriever. The stemmer improves retrieval (**hit@3 0.737 → 0.803**) —
+but does that reach the final answer?
 
-![RAG: stemmer effect across models](results/rag_models.png)
+![RAG end-to-end: Qwen2.5-7B, n=300](results/rag_models.png)
 
-| Model | Accuracy (no stem → stem) | Δ acc | Hallucination Δ |
-|-------|:---:|:---:|:---:|
-| Granite-2B | 0.250 → 0.267 | +0.017 | −0.033 |
-| Granite-8B (4-bit) | 0.350 → 0.417 | +0.067 | −0.067 |
-| **Qwen2.5-7B** (4-bit) | **0.400 → 0.500** | **+0.100** | −0.017 |
+| Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
+|---------|:---:|:---:|:---:|:---:|
+| No stemmer | 0.737 | 0.483 | 0.217 | 0.300 |
+| Kazakh stemmer | 0.803 | **0.500** | 0.240 | 0.260 |
+| **Δ** | **+0.066** | +0.017 | +0.023 | −0.040 |
 
-**Key pattern:** the accuracy gain from the stemmer **grows with model competence**
-(`+0.017 → +0.067 → +0.100`). The retrieval gain is identical for all three; a more
-capable generator converts more of that extra correct context into correct answers.
-Qwen2.5-7B is the best end-to-end system — it abstains (`Ақпарат жоқ`) instead of
-inventing, and the stemmer turns those abstentions into correct answers.
+**Honest result: the end-to-end accuracy gain is _not_ statistically significant**
+(McNemar exact p = **0.63**; net +5 correct of 300). Better retrieval is *necessary but
+not sufficient* — the generator still has to extract the answer. The stemmer mostly makes
+Qwen *more willing to answer* (abstain 0.300 → 0.260), and those recovered answers split
+between correct and hallucinated, so net accuracy barely moves.
 
-> ⚠️ **Honesty note:** the end-to-end deltas are measured on n=60, single run, **not**
-> bootstrap-validated (unlike the retrieval result). The direction is consistent and the
-> mechanism is clear, but a rigorous statistical claim would need a larger query set. We
-> report a **demonstrated trend**; the retrieval gain that drives it (0.467 → 0.667) is
-> directly measured and solid. Full breakdown in [`results/RESULTS.md`](results/RESULTS.md).
+The directionally strongest effect is on `inflected` (morphology) queries — the biggest
+retrieval jump (+0.15 hit@3) and +0.07 accuracy — exactly where theory predicts, but even
+there p=0.25. A trend, not a proof.
+
+> ⚠️ **Replication note:** an earlier version claimed a Qwen +0.100 accuracy gain that
+> "scales with model competence," measured on **n=60**. That signal **did not replicate at
+> n=300** (+0.100 → +0.017, p=0.63) — it was sampling noise. The retrieval result survived
+> the jump to 300 queries and got *stronger*; the end-to-end RAG claim did not. We keep the
+> honest negative result. Full breakdown in [`results/RESULTS.md`](results/RESULTS.md).
 
 ---
 
@@ -149,7 +154,7 @@ src/
   rag/         # LLM prompt, scorer, hallucination harness
 data/
   corpus/      # corpus.jsonl — 8 370 passages
-  queries/     # queries.jsonl — 60 queries with qrels
+  queries/     # queries.jsonl — 300 queries with qrels
   resources/   # stem_cache.json — stemmer cache (102k words)
 results/       # metrics JSON, charts, RESULTS.md
 tests/         # 43 unit tests
@@ -164,7 +169,7 @@ tests/         # 43 unit tests
 - [x] BM25 ± stemmer: metrics, comparison, **statistical significance** — result proven
 - [x] Dense retrieval (IBM Granite / Google LaBSE / multilingual-E5) — benchmarked
 - [x] 5-system comparison chart
-- [x] RAG end-to-end on 3 LLMs (Granite-2B/8B, Qwen2.5-7B) — accuracy gain scales with model competence (+0.017 → +0.067 → +0.100)
+- [x] RAG end-to-end (Qwen2.5-7B, n=300) — retrieval hit@3 0.74→0.80, but end-to-end accuracy gain not significant (McNemar p=0.63); honest negative result
 - [ ] Human validation of generated queries by native Kazakh speaker
 - [ ] Whitepaper
 

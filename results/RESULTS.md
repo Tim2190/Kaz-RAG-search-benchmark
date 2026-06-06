@@ -94,50 +94,60 @@ Vocabulary-gap requires semantic retrieval (dense embeddings or query expansion)
 
 ---
 
-## RAG End-to-End: Stemmer Effect Across 3 LLMs
+## RAG End-to-End: Does Better Retrieval Reach the Answer? (Qwen2.5-7B, n=300)
 
-The stemmer raises the **retrieval hit rate from 0.467 → 0.667** (+43%) — the correct
-passage reaches the LLM context 1.4× more often. We measured how that propagates into
-end-to-end answer quality across three models of increasing capability.
+We ran the full RAG chain (BM25 retrieval → context → Qwen2.5-7B, 4-bit) on the
+**same 300 queries**, swapping only the retriever: BM25 without vs. with the Kazakh
+stemmer. The stemmer does improve retrieval — **hit@3 rises 0.737 → 0.803**. The
+question is whether that propagates into a measurably better final answer.
 
-![RAG: stemmer effect across models](rag_models.png)
+![RAG end-to-end: Qwen2.5-7B, n=300](rag_models.png)
 
-| Model | Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
-|-------|---------|----------------:|--------:|-------------:|--------:|
-| **Granite-2B** | identity | 0.467 | 0.250 | 0.733 | 0.017 |
-| | kazakh | 0.667 | 0.267 | 0.700 | 0.033 |
-| | **Δ** | +0.200 | **+0.017** | −0.033 | — |
-| **Granite-8B** (4-bit) | identity | 0.467 | 0.350 | 0.650 | 0.000 |
-| | kazakh | 0.667 | 0.417 | 0.583 | 0.000 |
-| | **Δ** | +0.200 | **+0.067** | −0.067 | — |
-| **Qwen2.5-7B** (4-bit) | identity | 0.467 | 0.400 | 0.183 | 0.417 |
-| | kazakh | 0.667 | 0.500 | 0.167 | 0.333 |
-| | **Δ** | +0.200 | **+0.100** | −0.017 | −0.084 |
+| Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
+|---------|----------------:|--------:|-------------:|--------:|
+| identity (no stemmer) | 0.737 | 0.483 | 0.217 | 0.300 |
+| kazakh stemmer | 0.803 | 0.500 | 0.240 | 0.260 |
+| **Δ** | **+0.066** | **+0.017** | +0.023 | −0.040 |
 
-**The key pattern — the accuracy gain from the stemmer grows with model competence:**
-`+0.017 → +0.067 → +0.100`. The retrieval improvement is identical for all three
-(+0.200 hit-rate), but a more capable generator converts more of that extra correct
-context into correct answers.
+**McNemar exact test on per-query accuracy: p = 0.625 — not significant.**
+The +0.017 accuracy change is 36 queries that became correct vs. 31 that became wrong
+(net +5 of 300). Within the noise.
 
-**Model behavior differs:**
-- **Granite-2B** is too weak in Kazakh — it often echoes the question or produces
-  garbled text even with the right context, so the extra context barely helps.
-- **Granite-8B** is balanced: better context → both fewer hallucinations (−0.067)
-  and more correct answers (+0.067).
-- **Qwen2.5-7B** is *honest*: instead of inventing, it abstains (`Ақпарат жоқ` =
-  "no information"). The stemmer converts abstentions into correct answers
-  (abstain 0.417 → 0.333, accuracy 0.400 → **0.500**). It has the highest end-to-end
-  accuracy and the lowest hallucination rate.
+### Per-category breakdown (accuracy, McNemar)
 
-### ⚠️ Honesty note on the RAG numbers
+| category | hit@3 (id→kk) | acc (id→kk) | gained | lost | McNemar p |
+|----------|:-------------:|:-----------:|-------:|-----:|----------:|
+| **inflected** | 0.64 → 0.79 | 0.41 → 0.48 | 17 | 10 | 0.25 ✗ |
+| natural | 0.75 → 0.83 | 0.56 → 0.57 | 10 | 9 | 1.00 ✗ |
+| vocabulary-gap | 0.82 → 0.79 | 0.48 → 0.45 | 9 | 12 | 0.66 ✗ |
+| **ALL** | 0.74 → 0.80 | 0.483 → 0.500 | 36 | 31 | 0.63 ✗ |
 
-These end-to-end deltas are **measured on n = 60 questions, single run, no confidence
-intervals** — unlike the retrieval result, they are **not** bootstrap-validated. A
-+0.100 accuracy delta is 6 questions out of 60. The *direction* is consistent across
-all three models and the mechanism (more correct context → more correct answers) is
-clear, but a rigorous statistical claim on the end-to-end effect would require a larger
-query set. We report this as a **demonstrated trend**, not a proven one. The retrieval
-improvement that drives it (hit-rate 0.467 → 0.667) **is** directly measured and solid.
+### What this means (honest read)
+
+1. **The retrieval gain is real but does not produce a significant end-to-end accuracy
+   gain on this model at n=300.** Better context is *necessary but not sufficient*: the
+   generator also has to extract the answer from it, and Qwen2.5-7B frequently fails to
+   (it abstains, or pulls the wrong fact from the right passage).
+
+2. **The directionally strongest effect is exactly where theory predicts** — `inflected`
+   queries (morphology), which see the biggest retrieval-hit jump (+0.15) and an accuracy
+   gain of +0.07 (gained 17, lost 10). But even there p=0.25 — a trend, not a proof.
+
+3. **Behaviour shift, not just accuracy:** the stemmer pushes Qwen out of abstention
+   (abstain 0.300 → 0.260). Some of those recovered answers are correct, some become
+   hallucinations (hallucination 0.217 → 0.240). Net accuracy barely moves. Better
+   retrieval makes the model *more willing to answer*, not reliably *more correct*.
+
+### ⚠️ Note on the earlier n=60 RAG numbers
+
+A previous version of this section reported a Qwen accuracy gain of **+0.100** and a
+"scales with model competence" pattern across Granite-2B/8B/Qwen — all measured on
+**n=60, single run**. **That signal did not replicate at n=300** (+0.100 → +0.017,
+p=0.63). It was sampling noise. This is precisely why we expanded the query set: the
+retrieval result survived the jump to 300 queries (and got *stronger* statistically);
+the end-to-end RAG claim did not. We keep the honest n=300 result. The exploratory
+n=60 Granite-2B/8B runs remain in `results/rag_granite.json` / `rag_granite8b.json`
+for reference, but we no longer draw a statistical claim from them.
 
 ---
 
@@ -165,11 +175,14 @@ improvement that drives it (hit-rate 0.467 → 0.667) **is** directly measured a
 5. **Dense E5 is the best overall system** (0.701), balanced across all categories.
    BM25+Stemmer remains a strong, fast, interpretable competitor (0.599).
 
-6. **RAG: stemmer raises retrieval hit rate 0.467 → 0.667 (+43%)** — directly measured,
-   solid. This propagates into end-to-end accuracy, and the gain *scales with model
-   competence*: Granite-2B +0.017, Granite-8B +0.067, Qwen2.5-7B +0.100. The
-   end-to-end deltas are a demonstrated trend (n=60, single run), not bootstrap-proven;
-   the retrieval gain that drives them is.
+6. **RAG end-to-end (Qwen2.5-7B, n=300): better retrieval, but no significant accuracy
+   gain.** The stemmer raises retrieval hit@3 0.737 → 0.803 (directly measured), yet
+   end-to-end accuracy moves only 0.483 → 0.500 (McNemar p=0.63, not significant). Better
+   context is necessary but not sufficient — the generator must also extract the answer.
+   The directionally strongest effect is on `inflected` queries (+0.07 acc, p=0.25),
+   consistent with the morphology mechanism, but still a trend, not a proof. *Honest
+   negative result: the retrieval win does not automatically become an answer-quality win
+   at this scale.*
 
 ---
 
