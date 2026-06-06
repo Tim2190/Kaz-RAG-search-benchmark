@@ -4,9 +4,9 @@ multilingual-e5) поверх корпуса, метрики всего и по 
 результата совпадает с run_benchmark -> работает в compare.py.
 
 ЗАПУСК (Colab/GPU; нужны sentence-transformers + torch):
-    python -m src.eval.run_dense --model labse   --out results/dense_labse.json
-    python -m src.eval.run_dense --model e5      --out results/dense_e5.json
-    python -m src.eval.run_dense --model granite --out results/dense_granite.json
+    python -m src.eval.run_dense --model labse   --out results/dense_labse_300.json
+    python -m src.eval.run_dense --model e5      --out results/dense_e5_300.json
+    python -m src.eval.run_dense --model granite --out results/dense_granite_300.json
 
 Эмбеддинги корпуса кэшируются (.npy), повторный прогон не пересчитывает.
 """

@@ -14,70 +14,71 @@
 
 ---
 
-## Main Result: nDCG@10
+## Main Result: nDCG@10 (n=300)
 
 ![5-system comparison](systems_ndcg.png)
 
 | System | inflected | natural | vocab-gap | **ALL** |
 |--------|----------:|--------:|----------:|--------:|
-| BM25 | 0.184 | 0.537 | 0.538 | 0.420 |
-| BM25 + Stemmer | 0.451 | 0.675 | 0.672 | **0.599** |
-| Dense LaBSE | 0.366 | 0.561 | 0.310 | 0.412 |
-| Dense Granite | **0.816** | **0.872** | 0.226 | 0.638 |
-| Dense E5 | 0.695 | 0.889 | 0.519 | **0.701** |
+| BM25 | 0.627 | 0.703 | 0.741 | 0.690 |
+| BM25 + Stemmer | 0.727 | 0.772 | **0.764** | 0.754 |
+| Dense LaBSE | 0.477 | 0.546 | 0.419 | 0.481 |
+| Dense Granite | 0.791 | 0.923 | 0.303 | 0.672 |
+| Dense E5 | **0.845** | **0.947** | 0.562 | **0.785** |
 
-## Full Metrics Table
+> All five systems on the **same 300 queries**. Tables regenerated from committed JSON via
+> `python -m src.eval.gen_results_tables` — no hand-edited numbers.
 
-### BM25 (identity) — n=300
+## Full Metrics Tables (n=300)
+
+### BM25 — n=300
 
 | category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
 |----------|--------:|---------:|----------:|-------:|--------:|
-| inflected | 0.49 | 0.71 | 0.77 | 0.584 | 0.627 |
+| inflected | 0.49 | 0.71 | 0.76 | 0.584 | 0.627 |
 | natural | 0.53 | 0.82 | 0.87 | 0.649 | 0.703 |
-| vocabulary-gap | 0.60 | 0.84 | 0.87 | 0.701 | 0.741 |
-| **ALL** | 0.54 | 0.79 | 0.84 | 0.645 | 0.690 |
+| vocabulary-gap | 0.60 | 0.84 | 0.86 | 0.701 | 0.741 |
+| **ALL** | 0.54 | 0.79 | 0.83 | 0.645 | 0.690 |
 
-### BM25 + Kazakh Stemmer — n=300
+### BM25 + Stemmer — n=300
 
 | category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
 |----------|--------:|---------:|----------:|-------:|--------:|
-| inflected | 0.59 | 0.82 | 0.87 | 0.690 | 0.727 |
-| natural | 0.61 | 0.88 | 0.93 | 0.723 | 0.772 |
-| vocabulary-gap | 0.61 | 0.84 | 0.88 | 0.715 | 0.764 |
+| inflected | 0.59 | 0.82 | 0.84 | 0.690 | 0.727 |
+| natural | 0.61 | 0.88 | 0.92 | 0.723 | 0.772 |
+| vocabulary-gap | 0.61 | 0.84 | 0.92 | 0.715 | 0.764 |
 | **ALL** | 0.60 | 0.85 | 0.89 | 0.709 | 0.754 |
 
-### Dense LaBSE
+### Dense LaBSE — n=300
 
 | category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
 |----------|--------:|---------:|----------:|-------:|--------:|
-| inflected | 0.25 | 0.40 | 0.50 | 0.325 | 0.366 |
-| natural | 0.35 | 0.65 | 0.80 | 0.486 | 0.561 |
-| vocabulary-gap | 0.20 | 0.40 | 0.40 | 0.279 | 0.310 |
-| **ALL** | 0.27 | 0.48 | 0.57 | 0.363 | 0.412 |
+| inflected | 0.34 | 0.54 | 0.64 | 0.426 | 0.477 |
+| natural | 0.35 | 0.66 | 0.78 | 0.473 | 0.546 |
+| vocabulary-gap | 0.24 | 0.52 | 0.61 | 0.359 | 0.419 |
+| **ALL** | 0.31 | 0.57 | 0.68 | 0.419 | 0.481 |
 
-### Dense Granite (granite-embedding-278m)
-
-| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
-|----------|--------:|---------:|----------:|-------:|--------:|
-| inflected | **0.65** | **0.95** | **0.95** | **0.771** | **0.816** |
-| natural | **0.80** | 0.90 | 0.95 | **0.848** | **0.872** |
-| vocabulary-gap | 0.05 | 0.35 | 0.40 | 0.170 | 0.226 |
-| **ALL** | 0.50 | 0.73 | 0.77 | 0.596 | 0.638 |
-
-### Dense E5 (multilingual-e5-base)
+### Dense Granite — n=300
 
 | category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
 |----------|--------:|---------:|----------:|-------:|--------:|
-| inflected | 0.50 | 0.90 | 0.90 | 0.628 | 0.695 |
-| natural | 0.75 | **1.00** | **1.00** | 0.852 | 0.889 |
-| vocabulary-gap | 0.30 | 0.65 | 0.75 | 0.445 | 0.519 |
-| **ALL** | 0.52 | 0.85 | 0.88 | 0.642 | **0.701** |
+| inflected | 0.64 | 0.91 | 0.92 | 0.748 | 0.791 |
+| natural | 0.88 | 0.95 | 0.97 | 0.909 | 0.923 |
+| vocabulary-gap | 0.18 | 0.38 | 0.43 | 0.262 | 0.303 |
+| **ALL** | 0.57 | 0.75 | 0.77 | 0.639 | 0.672 |
+
+### Dense E5 — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.71 | 0.96 | 0.96 | 0.806 | 0.845 |
+| natural | 0.88 | 1.00 | 1.00 | 0.929 | 0.947 |
+| vocabulary-gap | 0.39 | 0.67 | 0.73 | 0.508 | 0.562 |
+| **ALL** | 0.66 | 0.88 | 0.90 | 0.748 | 0.785 |
 
 ---
 
 ## Statistical Significance (BM25 Before → After Stemmer)
-
-Paired bootstrap, 10 000 resamples.
 
 Paired bootstrap, 10 000 resamples, **n=300 queries**.
 
@@ -252,17 +253,20 @@ claimed here.
    This is the theoretically expected result: stemming reduces morphological variation
    but cannot bridge semantic gaps between synonyms. Dense retrieval is needed there.
 
-4. **BM25+Stemmer (n=60 dense run) beats Dense LaBSE** (0.599 vs 0.412 overall).
-   Morphological normalization matters more than naive multilingual embeddings for Kazakh.
+4. **BM25+Stemmer beats Dense LaBSE on n=300** (0.754 vs 0.481 overall) — and beats it on
+   every category. Naive multilingual embeddings (LaBSE) are weak for Kazakh; morphological
+   normalization on a lexical index is far stronger.
 
-4. **Dense Granite-278M is exceptional on morphology** (inflected ndcg@10 = 0.816),
-   likely because its training captures subword patterns. But it collapses on
-   vocabulary-gap (0.226) — no semantic bridging for synonyms.
+5. **Dense Granite-278M is exceptional on morphology and natural queries** (inflected 0.791,
+   natural 0.923) but **collapses on vocabulary-gap** (0.303) — no semantic bridging for
+   synonyms despite strong dense performance elsewhere.
 
-5. **Dense E5 is the best overall system** (0.701), balanced across all categories.
-   BM25+Stemmer remains a strong, fast, interpretable competitor (0.599).
+6. **Dense E5 is the best overall system on n=300** (0.785), and the best on inflected (0.845)
+   and natural (0.947). BM25+Stemmer remains the most *balanced* system — best on
+   vocabulary-gap (0.764) and never below 0.727 on any slice — while being fast, network-free
+   and interpretable.
 
-6. **RAG end-to-end (Qwen2.5-7B, n=300): better retrieval, but no significant accuracy
+7. **RAG end-to-end (Qwen2.5-7B, n=300): better retrieval, but no significant accuracy
    gain.** The stemmer raises retrieval hit@3 0.737 → 0.803 (directly measured), yet
    end-to-end accuracy moves only 0.483 → 0.500 (McNemar p=0.63, not significant). Better
    context is necessary but not sufficient — the generator must also extract the answer.
@@ -271,7 +275,7 @@ claimed here.
    negative result: the retrieval win does not automatically become an answer-quality win
    at this scale.*
 
-7. **Hybrid (RRF, BM25+Stemmer ⊕ Granite, n=300): falsified — no uniform robustness win.**
+8. **Hybrid (RRF, BM25+Stemmer ⊕ Granite, n=300): falsified — no uniform robustness win.**
    At the pre-registered k=60, the Hybrid is the single best system on `inflected`
    morphology (0.824, +0.097 vs BM25, p<0.0001) and is far more robust than Granite alone,
    but it **fails both success criteria**: on `vocabulary-gap` it drops to 0.525 (vs BM25's
@@ -292,10 +296,13 @@ python -m src.eval.compare --before results/bm25_identity.json \
     --after results/bm25_kazakh.json --chart results/before_after.png
 python -m src.eval.significance
 
-# Dense (requires GPU, downloads ~1–5 GB models)
-python -m src.eval.run_dense --model granite --out results/dense_granite.json
-python -m src.eval.run_dense --model labse   --out results/dense_labse.json
-python -m src.eval.run_dense --model e5      --out results/dense_e5.json
+# Dense, n=300 (requires GPU, downloads ~1–5 GB models)
+python -m src.eval.run_dense --model granite --out results/dense_granite_300.json
+python -m src.eval.run_dense --model labse   --out results/dense_labse_300.json
+python -m src.eval.run_dense --model e5      --out results/dense_e5_300.json
+
+# Regenerate all n=300 tables in this file from the JSON above (single source of truth)
+python -m src.eval.gen_results_tables
 
 # Multi-system chart
 python -m src.eval.chart_all --out results/systems_ndcg.png
