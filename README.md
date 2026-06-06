@@ -169,20 +169,14 @@ tests/         # 43 unit tests
 
 ---
 
-## Roadmap
+## What's proven
 
-- [x] Kazakh Wikipedia corpus (8 370 passages) + language filter
-- [x] Query set (300, 3 categories, 100 entities) + qrels — bootstrap-validated
-- [x] BM25 ± stemmer: metrics, comparison, **statistical significance** — result proven
-- [x] Dense retrieval (IBM Granite / Google LaBSE / multilingual-E5) — benchmarked
-- [x] 5-system comparison chart
-- [x] RAG end-to-end (Qwen2.5-7B, n=300) — retrieval hit@3 0.74→0.80, but end-to-end accuracy gain not significant (McNemar p=0.63); honest negative result
-- [ ] Human validation of generated queries by native Kazakh speaker
-- [ ] Whitepaper
-
-> Status: the main claim (morphological blindness → stemmer fixes it) is proven and
-> reproducible. Dense systems benchmarked; end-to-end RAG measured. Results in
-> [`results/RESULTS.md`](results/RESULTS.md).
+The central claim — **Kazakh morphology breaks lexical search, and a stemmer fixes it** —
+is statistically proven and fully reproducible (nDCG@10 +9% overall, +16% on inflected,
+p≤0.0017, n=300). Five retrieval systems are benchmarked; the end-to-end RAG effect on
+Qwen2.5-7B is measured and honestly reported (retrieval improves, end-to-end accuracy gain
+not significant — the bottleneck is the generator). Full numbers in
+[`results/RESULTS.md`](results/RESULTS.md).
 
 ---
 
