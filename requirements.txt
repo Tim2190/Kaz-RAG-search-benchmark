@@ -18,5 +18,14 @@ torch>=2.1
 scikit-learn>=1.3         # косинус/нормализация, опционально
 tqdm>=4.66
 
-# --- генерация запросов через LLM (Фаза 2), опционально ---
+# --- RAG: LLM generation (Colab/GPU recommended) ---
+transformers>=4.40
+accelerate>=0.29
+bitsandbytes>=0.43          # 4-bit quantization for 7-9B models on T4
+
+# --- query generation via Claude API ---
 anthropic>=0.40
+
+# --- HF Dataset export / upload ---
+huggingface_hub>=0.23
+datasets>=2.19              # optional: for programmatic HF upload
