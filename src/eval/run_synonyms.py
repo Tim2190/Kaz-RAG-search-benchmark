@@ -172,8 +172,9 @@ def main() -> None:
     print(f"\nМетрики сохранены → {args.out}")
 
     if args.runs_out:
-        from ..retrieval.hybrid import save_run
-        save_run(args.runs_out, result["run"])
+        os.makedirs(os.path.dirname(args.runs_out) or ".", exist_ok=True)
+        with open(args.runs_out, "w", encoding="utf-8") as f:
+            json.dump(result["run"], f, ensure_ascii=False)
         print(f"Ранжировки сохранены → {args.runs_out}")
 
 
