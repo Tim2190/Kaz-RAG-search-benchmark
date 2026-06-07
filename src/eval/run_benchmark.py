@@ -97,7 +97,10 @@ def main() -> None:
     ap.add_argument("--queries", default="data/queries/queries.jsonl")
     ap.add_argument("--stemmer", choices=["identity", "kazakh"], default="identity")
     ap.add_argument("--top-k", type=int, default=10)
-    ap.add_argument("--out", default=None, help="куда сохранить JSON с результатами")
+    ap.add_argument("--out", default=None, help="куда сохранить JSON с метриками")
+    ap.add_argument("--runs-out", default=None,
+                    help="куда сохранить per-query ранжировки {query_id: [doc_id,...]} "
+                         "(нужно для RRF-гибрида; используй --top-k 100)")
     args = ap.parse_args()
 
     result = run(args.corpus, args.queries, args.stemmer, args.top_k)
@@ -111,6 +114,11 @@ def main() -> None:
         with open(args.out, "w", encoding="utf-8") as f:
             json.dump(compact, f, ensure_ascii=False, indent=2)
         print(f"\nМетрики сохранены → {args.out}")
+
+    if args.runs_out:
+        from ..retrieval.hybrid import save_run
+        save_run(args.runs_out, result["run"])
+        print(f"Ранжировки сохранены → {args.runs_out}")
 
 
 if __name__ == "__main__":

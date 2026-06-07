@@ -4,9 +4,9 @@ multilingual-e5) поверх корпуса, метрики всего и по 
 результата совпадает с run_benchmark -> работает в compare.py.
 
 ЗАПУСК (Colab/GPU; нужны sentence-transformers + torch):
-    python -m src.eval.run_dense --model labse   --out results/dense_labse.json
-    python -m src.eval.run_dense --model e5      --out results/dense_e5.json
-    python -m src.eval.run_dense --model granite --out results/dense_granite.json
+    python -m src.eval.run_dense --model labse   --out results/dense_labse_300.json
+    python -m src.eval.run_dense --model e5      --out results/dense_e5_300.json
+    python -m src.eval.run_dense --model granite --out results/dense_granite_300.json
 
 Эмбеддинги корпуса кэшируются (.npy), повторный прогон не пересчитывает.
 """
@@ -106,6 +106,9 @@ def main() -> None:
     ap.add_argument("--top-k", type=int, default=10)
     ap.add_argument("--batch-size", type=int, default=64)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--runs-out", default=None,
+                    help="куда сохранить per-query ранжировки {query_id: [doc_id,...]} "
+                         "(нужно для RRF-гибрида; используй --top-k 100)")
     args = ap.parse_args()
 
     if not args.emb_cache:
@@ -122,6 +125,11 @@ def main() -> None:
         compact = {k: v for k, v in result.items() if k != "run"}
         json.dump(compact, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
         print(f"\nМетрики сохранены → {args.out}")
+
+    if args.runs_out:
+        from ..retrieval.hybrid import save_run
+        save_run(args.runs_out, result["run"])
+        print(f"Ранжировки сохранены → {args.runs_out}")
 
 
 if __name__ == "__main__":
