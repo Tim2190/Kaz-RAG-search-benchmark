@@ -180,6 +180,36 @@ tests/         # 43 unit tests
 
 ---
 
+## What We Tried That Didn't Help: Synonym Query Expansion
+
+We also tested a **synonym expansion** layer on top of the stemmer: for every query
+term, its stemmed synonyms (from a ~10k-word dictionary) are appended to the query
+before BM25 search (corpus untouched). The intuition was that synonyms might close the
+`vocabulary-gap` that morphology alone can't.
+
+**It made retrieval worse across the board** — including on `vocabulary-gap`, where
+we expected it to help:
+
+| nDCG@10 (n=300) | Stemmer | Stemmer + Synonyms | Δ |
+|-----------------|--------:|-------------------:|--:|
+| **ALL** | **0.754** | 0.539 | −0.215 |
+| vocabulary-gap | **0.764** | 0.627 | −0.137 |
+| inflected | **0.727** | 0.537 | −0.190 |
+
+End-to-end RAG confirmed it: accuracy **0.500 → 0.393** (McNemar exact p = **0.0002** —
+significantly *worse*).
+
+**Why:** the stemmer already gives a strong lexical signal (0.754 nDCG@10). Expansion
+bloats each query from ~6.5 to ~26.5 tokens, and most of those added synonyms are *not*
+in the relevant passage — they pull in spurious documents and bury the right one. When
+the lexical match is already good, unweighted synonym expansion is just noise. Synonyms
+are a tool for a *weak* lexical signal (short documents, no normalization, domain
+jargon); here the signal is strong, so **the stemmer works better on its own.**
+
+Reproducible: `python -m src.eval.run_synonyms` and `python -m src.eval.hit_at_k`.
+
+---
+
 ## What's proven
 
 The central claim — **Kazakh morphology breaks lexical search, and a stemmer fixes it** —
