@@ -86,3 +86,32 @@ class BM25Index:
             qid: [doc_id for doc_id, _ in self.search(text, top_k)]
             for qid, text in queries.items()
         }
+
+    def search_terms(self, q_terms: List[str], top_k: int = 10) -> List[Tuple[str, float]]:
+        """Как search(), но принимает уже разобранные токены (минуя анализатор).
+
+        Используется для synonym-expanded запросов, где токены уже стеммлены
+        и к ним добавлены синонимы из внешнего словаря.
+        """
+        scores: List[Tuple[str, float]] = []
+        for i, doc_id in enumerate(self.doc_ids):
+            freqs = self.doc_freqs[i]
+            dl = self.doc_len[i]
+            denom_norm = self.k1 * (1 - self.b + self.b * dl / self.avgdl) if self.avgdl else self.k1
+            s = 0.0
+            for term in q_terms:
+                tf = freqs.get(term, 0)
+                if tf == 0:
+                    continue
+                s += self.idf.get(term, 0.0) * (tf * (self.k1 + 1)) / (tf + denom_norm)
+            if s > 0:
+                scores.append((doc_id, s))
+        scores.sort(key=lambda x: x[1], reverse=True)
+        return scores[:top_k]
+
+    def run_terms(self, queries: Dict[str, List[str]], top_k: int = 10) -> Dict[str, List[str]]:
+        """Как run(), но каждый запрос задан списком уже разобранных токенов."""
+        return {
+            qid: [doc_id for doc_id, _ in self.search_terms(terms, top_k)]
+            for qid, terms in queries.items()
+        }
