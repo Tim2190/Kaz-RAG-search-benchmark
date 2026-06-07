@@ -239,6 +239,77 @@ claimed here.
 
 ---
 
+## Synonym Query Expansion: Does Expanding Queries with Synonyms Help? (n=300)
+
+**Motivation.** The Kazakh stemmer leaves vocabulary-gap queries statistically unimproved
+(p=0.21, see §Statistical Significance). Can explicit synonym expansion bridge semantic gaps
+where stemming cannot?
+
+**Setup.** BM25 + Kazakh Stemmer baseline with query-side synonym expansion. For each query
+stem, synonyms are fetched from a Kazakh synonym dictionary (736 unique query stems; 224 of
+them — 30% — returned at least one synonym; cache committed at
+`data/resources/synonym_cache.json`). Queries expand from an average of 6.5 to 26.5 tokens.
+**Corpus is not touched** — only queries are expanded. Expansion is unweighted (all synonym
+tokens receive the same BM25 weight as the original query tokens).
+
+### nDCG@10 — BM25+Stemmer vs BM25+Synonym Expansion
+
+| System | inflected | natural | vocab-gap | **ALL** |
+|--------|----------:|--------:|----------:|--------:|
+| BM25 + Kazakh Stemmer | 0.727 | 0.772 | **0.764** | **0.754** |
+| BM25 + Synonym Expansion | 0.537 | 0.451 | 0.627 | 0.539 |
+| **Δ** | **−0.190** | **−0.321** | **−0.137** | **−0.215** |
+
+Synonym expansion hurts retrieval on every category. The hardest hit is `natural` (−0.321),
+where queries already matched well lexically; flooding them with irrelevant synonyms pushes
+spurious documents into the top ranks.
+
+### Root cause: signal dilution, not dictionary gaps
+
+We split vocabulary-gap queries into three subgroups to distinguish two hypotheses:
+
+- **H1 "Dictionary doesn't cover the needed words"** → drop should be concentrated in `uncovered`
+- **H2 "Expansion mechanism dilutes signal"** → drop should appear even in `covered_bridge`
+
+| Subgroup | n (%) | BM25+Stemmer nDCG@10 | +Synonym nDCG@10 | Δ |
+|----------|------:|--------------------:|----------------:|--:|
+| uncovered (no synonyms found) | 2 (2%) | 1.000 | 1.000 | ≈ 0.000 |
+| covered\_noise (synonyms found, none in gold passage) | 73 (73%) | 0.751 | 0.570 | ▼ 0.181 |
+| covered\_bridge (synonyms found, ≥1 in gold passage) | 25 (25%) | 0.783 | 0.766 | ▼ 0.017 |
+
+Even `covered_bridge` — where the dictionary found exactly the right bridge word — degrades
+slightly (−0.017). **H2 is confirmed: the mechanism is the problem.** 73% of vocabulary-gap
+queries receive contextually wrong synonyms (`covered_noise`), bloating the query from ~6.5
+to ~26.5 tokens and flooding BM25 with noise signals. Even correct bridges (25% of queries)
+provide minimal lift because the rest of the expanded query still carries noise.
+
+### Verdict: hypothesis falsified ❌
+
+Unweighted synonym expansion hurts a strong lexical baseline. The vocabulary-gap problem
+requires smarter weighting (e.g., lower BM25 term weight for synonym tokens), hard negative
+filtering, or semantic retrieval — not naive query concatenation.
+
+> **Note on RAG synonym run (Colab, JSON not committed).** A full RAG chain
+> (BM25+Synonym retrieval → Qwen2.5-7B, 4-bit, n=300) was also run. Accuracy dropped
+> to 0.393 vs. 0.500 for the kazakh-stemmer baseline (McNemar p=0.0002 — significant
+> degradation). This is consistent with the retrieval-level finding above: worse retrieval
+> translates directly into worse end-to-end accuracy. The result JSON was not committed;
+> re-run with `--synonym-runs` flag if needed (see Reproduction below).
+
+### Reproduction (CPU only — synonym cache committed)
+
+```bash
+python -m src.eval.run_synonyms \
+    --out results/bm25_synonym_300.json \
+    --runs-out results/runs_bm25_synonym.json
+
+python -m src.eval.vocab_gap_analysis \
+    --kazakh-runs  results/runs_bm25_kazakh.json \
+    --synonym-runs results/runs_bm25_synonym.json
+```
+
+---
+
 ## Key Findings
 
 1. **Morphological blindness is real and measured on 300 queries.** BM25 on inflected
@@ -284,6 +355,15 @@ claimed here.
    cannot rescue a channel that is wrong on a whole category; BM25+Stemmer alone stays the
    most balanced single system.*
 
+9. **Synonym query expansion (n=300): falsified — hurts all categories.** Unweighted query
+   expansion via a Kazakh synonym dictionary (30% stem coverage) drops ALL nDCG@10 from 0.754
+   to 0.539 (−0.215). Vocab-gap subanalysis confirms the mechanism is the problem: 73% of
+   vocabulary-gap queries receive contextually wrong synonyms (`covered_noise`, −0.181), and
+   even queries with a correct synonym bridge (`covered_bridge`, 25%) drop slightly (−0.017)
+   because surrounding noise terms dilute the signal. RAG accuracy also drops significantly
+   (0.500 → 0.393, McNemar p=0.0002 in Colab run). *Honest negative result: better vocabulary
+   coverage does not help if synonym tokens are unweighted and contextually mismatched.*
+
 ---
 
 ## Reproduction
@@ -320,4 +400,12 @@ python -m src.eval.chart_hybrid --out results/systems_hybrid_ndcg.png
 
 # RAG hallucination benchmark (GPU + Colab recommended)
 python -m src.eval.run_rag --llm granite --top-k 3 --out results/rag_granite.json
+
+# Synonym query expansion (CPU only — cache committed)
+python -m src.eval.run_synonyms \
+    --out results/bm25_synonym_300.json \
+    --runs-out results/runs_bm25_synonym.json
+python -m src.eval.vocab_gap_analysis \
+    --kazakh-runs  results/runs_bm25_kazakh.json \
+    --synonym-runs results/runs_bm25_synonym.json
 ```
