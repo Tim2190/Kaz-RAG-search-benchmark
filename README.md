@@ -224,6 +224,25 @@ jargon); here the signal is strong, so **the stemmer works better on its own.**
 
 Reproducible: `python -m src.eval.run_synonyms` and `python -m src.eval.hit_at_k`.
 
+**Diagnosing the failure — vocabulary-gap subanalysis.** To distinguish between two
+hypotheses ("dictionary doesn't cover the right words" vs "expansion dilutes the signal"),
+we split the 100 vocabulary-gap queries by whether the synonym cache bridged the actual
+gap to the gold passage (`python -m src.eval.vocab_gap_analysis`):
+
+| subgroup | n | kazakh nDCG@10 | synonym nDCG@10 | Δ |
+|---|---|---|---|---|
+| uncovered (no synonyms found) | 2 | 1.000 | 1.000 | ≈0 |
+| covered\_noise (synonyms found, none in gold passage) | 73 | 0.751 | 0.570 | **▼0.181** |
+| covered\_bridge (synonyms found, ≥1 in gold passage) | 25 | 0.783 | 0.766 | **▼0.017** |
+
+**The mechanism is the problem, not the dictionary.** The dictionary covers 98% of queries
+(only 2 uncovered). But in 73% of cases it returns synonyms for a *different sense* of the
+word — contextually wrong, pulling in spurious documents (▼0.181). Critically, even in the
+25% where the correct synonym IS added (`covered_bridge`), retrieval still slightly drops
+(▼0.017) because the other query terms each add their own wrong-context synonyms. Unweighted
+expansion is the wrong tool here: what's needed is context-aware disambiguation, not a flat
+synonym lookup.
+
 ---
 
 ## What's proven
