@@ -14,8 +14,8 @@ misses them. The stemmer lets search see through that.
 
 > **The proof:** stemming improves search quality by **+16% nDCG@10 on inflected queries**
 > (p=0.0017) and **+9% overall** (p=0.0001), on **300 queries** with paired-bootstrap
-> significance. It also **outperforms Google's multilingual LaBSE** embeddings (0.599 vs
-> 0.412) — for Kazakh, morphological normalization matters more than naive multilingual vectors.
+> significance. It also **outperforms zero-shot Google LaBSE** embeddings (0.754 vs 0.481,
+> n=300) — for Kazakh, morphological normalization matters more than naive multilingual vectors.
 
 → **[Try the Kazakh Stemmer](https://qaz-api.vercel.app/)** · full methodology and numbers below
 
@@ -59,12 +59,16 @@ letting BM25 see through morphological variation.
 | | inflected (morphology) | natural | vocabulary-gap (synonyms) |
 |--|:---:|:---:|:---:|
 | BM25+Stemmer | ✅ fixed | ✅ | ✅ |
-| Dense Granite-278M | ✅✅ best (0.816) | ✅✅ best | ❌ collapses (0.226) |
-| Dense E5-base | ✅ good | ✅✅ best | ✅ best |
-| Dense LaBSE | weak | ok | weak |
+| Dense Granite-278M | ✅✅ best inflected (0.791) | ✅✅ best natural (0.923) | ❌ collapses (0.303) |
+| Dense E5-base | ✅ good (0.845) | ✅✅ best (0.947) | ✅ best (0.562) |
+| Dense LaBSE | weak (0.477) | ok (0.546) | weak (0.419) |
 
-**BM25+Stemmer vs Dense LaBSE (from 60-query dense run):** the stemmer wins (0.599 vs 0.412).
-Morphological normalization matters more than naive multilingual embeddings for Kazakh.
+**BM25+Stemmer (0.754) outperforms zero-shot LaBSE (0.481) on n=300.** LaBSE is a strong
+multilingual model — but it receives no Kazakh-specific fine-tuning here, and for a
+highly agglutinative language, morphological normalization turns out to matter more than
+raw multilingual embeddings. E5-base (0.785) does beat the stemmer overall at the cost of
+GPU inference and 15–30 min embedding time; Granite collapses on vocabulary-gap (0.303)
+despite leading on inflected queries.
 
 ---
 
@@ -117,11 +121,23 @@ there p=0.25. A trend, not a proof.
   - `vocabulary-gap` — synonyms/paraphrase (semantic stress-test);
   - `natural` — standard questions.
   Each query has a known ground-truth passage (qrels).
-- **Systems.** BM25 ± Kazakh stemmer. Dense: IBM Granite-278M, Google LaBSE,
-  multilingual-E5-base (embeddings pre-computed and cached).
+- **Systems.** BM25 Okapi (k₁=1.5, b=0.75) ± Kazakh stemmer. Dense retrieval:
+  three models evaluated **zero-shot** (no fine-tuning, no hard-negative training):
+  - `sentence-transformers/LaBSE` — no query/passage prefixes (symmetric model);
+  - `intfloat/multilingual-e5-base` — `query: ` / `passage: ` prefixes per model card;
+  - `ibm-granite/granite-embedding-278m-multilingual` — no prefixes (symmetric).
+  Similarity: cosine (L2-normalized embeddings → dot product). Brute-force exact search,
+  no FAISS, no hybrid, no re-ranking. Same ~120-word chunks for all systems.
+  Embeddings pre-computed and cached; BM25 re-indexing takes seconds.
 - **Metrics.** Recall@{1,5,10}, MRR@10, nDCG@10 + statistical significance
   (paired bootstrap, 10 000 resamples).
-- **Reproducibility.** Stem cache committed; BM25 results require no network.
+- **Why not lemmatization?** The Kazakh stemmer performs full morphological analysis
+  (dictionary lookup → base form + suffix list), which for an agglutinative language is
+  functionally equivalent to lemmatization for retrieval purposes. No standalone Kazakh
+  lemmatizer with a public API exists for direct comparison; this is an acknowledged
+  limitation. The stemmer's base forms are the same forms that appear in corpus text, so
+  the normalization is symmetric and consistent — which is what retrieval requires.
+- **Reproducibility.** Stem cache committed (102k tokens); BM25 results require no network.
   Dense results require GPU (~15–30 min in Colab).
 
 ---
