@@ -289,6 +289,29 @@ https://github.com/Tim2190/Kaz-RAG-search-benchmark.
 
 ---
 
+## Conflict of Interest
+
+The author is the developer of the Kazakh stemmer evaluated in this benchmark (System 2,
+https://qaz-api.vercel.app/). To mitigate bias, all systems were evaluated on identical
+queries, corpus, and metrics; all code and data are publicly available and independently
+reproducible; and results unfavorable to the author's system — its statistical
+insignificance on vocabulary-gap (p=0.21), and E5's superior overall performance
+(0.785 vs 0.754) — are reported in full.
+
+---
+
+## Acknowledgments
+
+The author conceived the research, designed the experiments and query taxonomy, directed
+all evaluation decisions, and is solely responsible for the interpretation and final
+conclusions. Large language models (Claude, Anthropic) were used as a technical assistant
+for code implementation, running the evaluation scripts under the author's direction,
+English-language writing, and manuscript formatting. All numerical results were produced
+by committed, publicly available code and are independently reproducible. The author
+takes full responsibility for the correctness of all results and claims.
+
+---
+
 ## References
 
 Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). Reciprocal rank fusion
