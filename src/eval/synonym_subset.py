@@ -44,11 +44,12 @@ QUERIES = os.path.join(ROOT, "data/queries/queries.jsonl")
 
 # Системы, для которых есть сохранённые ранжировки
 SYSTEMS: List[Tuple[str, str]] = [
-    ("BM25 + stemmer",        "runs_bm25_kazakh.json"),
-    ("Granite-278m (R1)",     "runs_dense_granite.json"),
-    ("Granite-97m (R2)",      "runs_dense_granite_r2_97m.json"),
-    ("Granite-311m (R2)",     "runs_dense_granite_r2_311m.json"),
-    ("kazakh-e5 (shyngys879)", "runs_dense_shyngys.json"),
+    ("BM25 + stemmer",          "runs_bm25_kazakh.json"),
+    ("BM25 + stemmer + synonym", "runs_bm25_synonym.json"),
+    ("Granite-278m (R1)",       "runs_dense_granite.json"),
+    ("Granite-97m (R2)",        "runs_dense_granite_r2_97m.json"),
+    ("Granite-311m (R2)",       "runs_dense_granite_r2_311m.json"),
+    ("kazakh-e5 (shyngys879)",  "runs_dense_shyngys.json"),
 ]
 
 THRESHOLDS = [0.30, 0.20]  # «настоящий gap» = пересечение ниже порога
@@ -154,14 +155,27 @@ def main() -> None:
         lines.append("")
 
         winner = max(rows, key=lambda r: r[1]["ndcg@10"])
-        bm25 = next(m for n, m in rows if n.startswith("BM25"))
+        mdict = {n: m for n, m in rows}
+        bm25 = mdict["BM25 + stemmer"]["ndcg@10"]
+        syn = mdict["BM25 + stemmer + synonym"]["ndcg@10"]
         verdict = (
             "плотная модель обгоняет BM25 → на честных синонимах лексика НЕ лучшая"
             if not winner[0].startswith("BM25")
-            else "BM25+стеммер всё равно лучший → лексика держится даже на low-overlap"
+            else "BM25 всё равно лучший → лексика держится даже на low-overlap"
         )
-        lines.append(f"**Лидер:** {winner[0]} (nDCG@10 {winner[1]['ndcg@10']:.3f}); "
-                     f"BM25 {bm25['ndcg@10']:.3f}. {verdict}\n")
+        lines.append(f"**Лидер:** {winner[0]} (nDCG@10 {winner[1]['ndcg@10']:.3f}). "
+                     f"{verdict}\n")
+        syn_delta = syn - bm25
+        syn_note = (
+            f"**Синонимайзер на этом подмножестве:** {syn:.3f} против "
+            f"BM25+стеммер {bm25:.3f} (Δ {syn_delta:+.3f}). "
+            + ("Расширение запросов ПОМОГАЕТ там, где есть реальный gap — "
+               "в отличие от полных 300, где оно вредило (−0.215)."
+               if syn_delta > 0 else
+               "Даже на реальном gap расширение не помогает — мост через "
+               "синонимы оно не строит.") + "\n"
+        )
+        lines.append(syn_note)
 
     lines.append("## Ограничения\n")
     lines.append("- Базовый multilingual-e5 и LaBSE не включены: их per-query "
