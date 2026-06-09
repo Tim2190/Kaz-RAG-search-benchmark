@@ -70,7 +70,8 @@ def _save_emb_cache(path: str, doc_ids, matrix) -> None:
 
 
 def run(corpus_path: str, queries_path: str, model_key: str,
-        emb_cache: str = None, top_k: int = 10, batch_size: int = 64) -> Dict:
+        emb_cache: str = None, top_k: int = 10, batch_size: int = 64,
+        max_seq_len: int = 512) -> Dict:
     hf_id, qpref, dpref = MODELS.get(model_key, (model_key, "", ""))
     corpus_pairs = dataset.load_corpus(corpus_path)
     queries = dataset.load_queries(queries_path)
@@ -79,7 +80,7 @@ def run(corpus_path: str, queries_path: str, model_key: str,
     cats = dataset.categories_from_queries(queries)
 
     index = DenseIndex(model_name=hf_id, query_prefix=qpref, doc_prefix=dpref,
-                       batch_size=batch_size)
+                       batch_size=batch_size, max_seq_len=max_seq_len)
     doc_ids = [d for d, _ in corpus_pairs]
     cached = _load_emb_cache(emb_cache, doc_ids)
     if cached is not None:
@@ -110,6 +111,8 @@ def main() -> None:
                     help="префикс пути кэша эмбеддингов (напр. results/emb_labse)")
     ap.add_argument("--top-k", type=int, default=10)
     ap.add_argument("--batch-size", type=int, default=64)
+    ap.add_argument("--max-seq-len", type=int, default=512,
+                    help="лимит длины контекста (ModernBERT/Granite-R2 иначе OOM)")
     ap.add_argument("--out", default=None)
     ap.add_argument("--runs-out", default=None,
                     help="куда сохранить per-query ранжировки {query_id: [doc_id,...]} "
@@ -119,7 +122,7 @@ def main() -> None:
     if not args.emb_cache:
         args.emb_cache = f"results/emb_{args.model}"
     result = run(args.corpus, args.queries, args.model, args.emb_cache,
-                 args.top_k, args.batch_size)
+                 args.top_k, args.batch_size, args.max_seq_len)
 
     # таблица
     from .run_benchmark import _fmt_table

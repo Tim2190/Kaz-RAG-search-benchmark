@@ -27,6 +27,7 @@ class DenseIndex:
         device: Optional[str] = None,
         query_prefix: str = "",
         doc_prefix: str = "",
+        max_seq_len: Optional[int] = 512,
     ) -> None:
         self.model_name = model_name
         self._encoder = encoder
@@ -34,6 +35,7 @@ class DenseIndex:
         self.device = device
         self.query_prefix = query_prefix
         self.doc_prefix = doc_prefix
+        self.max_seq_len = max_seq_len
         self.doc_ids: List[str] = []
         self.matrix: Optional[np.ndarray] = None
 
@@ -43,6 +45,11 @@ class DenseIndex:
         if self._encoder is None:
             from sentence_transformers import SentenceTransformer
             self._encoder = SentenceTransformer(self.model_name, device=self.device)
+            # Ограничиваем длину контекста: ModernBERT-модели (Granite R2)
+            # поддерживают 8192 токена и без лимита строят attention O(n²) на
+            # 55+ ГБ -> OOM на 14 ГБ GPU. 512 совпадает с e5 (сравнимость).
+            if self.max_seq_len is not None:
+                self._encoder.max_seq_length = self.max_seq_len
         return self._encoder
 
     def _encode(self, texts: Sequence[str], show_progress: bool = False) -> np.ndarray:
