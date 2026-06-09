@@ -1,5 +1,7 @@
 # Kazakh Stemmer — Effectiveness, Proven
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20605663.svg)](https://doi.org/10.5281/zenodo.20605663)
+
 > **This repository is the independent evidence base for my
 > [Kazakh Stemmer](https://qaz-api.vercel.app/).**
 > A reproducible, statistically validated benchmark showing the stemmer measurably
@@ -261,6 +263,28 @@ p≤0.0017, n=300). Five retrieval systems are benchmarked; the end-to-end RAG e
 Qwen2.5-7B is measured and honestly reported (retrieval improves, end-to-end accuracy gain
 not significant — the bottleneck is the generator). Full numbers in
 [`results/RESULTS.md`](results/RESULTS.md).
+
+---
+
+## Citation
+
+A preprint of this benchmark is archived on Zenodo with a permanent DOI:
+
+> Seidalin, T. (2026). *Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+> A 300-Query Benchmark with Honest Negative Results.* Zenodo.
+> https://doi.org/10.5281/zenodo.20605663
+
+```bibtex
+@misc{seidalin2026kazakh,
+  author       = {Seidalin, Timur},
+  title        = {Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+                  A 300-Query Benchmark with Honest Negative Results},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.20605663},
+  url          = {https://doi.org/10.5281/zenodo.20605663}
+}
+```
 
 ---
 

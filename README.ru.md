@@ -1,5 +1,7 @@
 # Казахский стеммер — эффективность доказана
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20605663.svg)](https://doi.org/10.5281/zenodo.20605663)
+
 > **Этот репозиторий — независимая доказательная база для моего
 > [казахского стеммера](https://qaz-api.vercel.app/).**
 > Воспроизводимый, статистически проверенный бенчмарк, показывающий, что стеммер
@@ -233,3 +235,29 @@ End-to-end RAG подтвердил: accuracy **0.500 → 0.393** (McNemar exact
 inflected, p≤0.0017, n=300). Прогнаны пять систем поиска; end-to-end эффект на Qwen2.5-7B
 измерен и честно подан (поиск улучшается, прирост end-to-end accuracy не значим — узкое
 место в генераторе). Полные числа в [`results/RESULTS.md`](results/RESULTS.md).
+
+---
+
+## Цитирование
+
+Препринт бенчмарка заархивирован на Zenodo с постоянным DOI:
+
+> Seidalin, T. (2026). *Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+> A 300-Query Benchmark with Honest Negative Results.* Zenodo.
+> https://doi.org/10.5281/zenodo.20605663
+
+```bibtex
+@misc{seidalin2026kazakh,
+  author       = {Seidalin, Timur},
+  title        = {Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+                  A 300-Query Benchmark with Honest Negative Results},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.20605663},
+  url          = {https://doi.org/10.5281/zenodo.20605663}
+}
+```
+
+---
+
+[English version](README.md)
