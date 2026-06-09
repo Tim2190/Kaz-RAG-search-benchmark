@@ -170,7 +170,7 @@ Dense retrieval and RAG require GPU (Colab T4 is sufficient). See [`PIPELINE.md`
 
 Core logic (metrics, tokenization, chunking, stem client, retrieval) covered by tests:
 ```bash
-python -m unittest discover tests      # 43 tests, no network
+python -m unittest discover tests      # 79 tests, no network
 ```
 
 ---
@@ -191,7 +191,7 @@ data/
   queries/     # queries.jsonl — 300 queries with qrels
   resources/   # stem_cache.json — stemmer cache (102k words)
 results/       # metrics JSON, charts, RESULTS.md
-tests/         # 43 unit tests
+tests/         # 79 unit tests
 ```
 
 ---
@@ -211,6 +211,7 @@ we expected it to help:
 | **ALL** | **0.754** | 0.539 | −0.215 |
 | vocabulary-gap | **0.764** | 0.627 | −0.137 |
 | inflected | **0.727** | 0.537 | −0.190 |
+| natural | **0.772** | 0.451 | −0.321 |
 
 End-to-end RAG confirmed it: accuracy **0.500 → 0.393** (McNemar exact p = **0.0002** —
 significantly *worse*).

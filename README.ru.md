@@ -144,7 +144,7 @@ python -m src.eval.significance
 
 Логика метрик, токенизации, чанкинга, стем-клиента и поиска покрыта тестами:
 ```bash
-python -m unittest discover tests      # 43 теста, без сети
+python -m unittest discover tests      # 79 тестов, без сети
 ```
 
 ---
@@ -164,7 +164,7 @@ data/
   queries/     # queries.jsonl — 300 запросов с qrels
   resources/   # stem_cache.json — кэш стеммера (102k слов)
 results/       # метрики, график, сводка
-tests/         # 43 теста
+tests/         # 79 тестов
 ```
 
 ---
@@ -183,6 +183,7 @@ tests/         # 43 теста
 | **ALL** | **0.754** | 0.539 | −0.215 |
 | vocabulary-gap | **0.764** | 0.627 | −0.137 |
 | inflected | **0.727** | 0.537 | −0.190 |
+| natural | **0.772** | 0.451 | −0.321 |
 
 End-to-end RAG подтвердил: accuracy **0.500 → 0.393** (McNemar exact p = **0.0002** —
 значимо *хуже*).
