@@ -28,25 +28,35 @@ OUT = os.path.join(RESULTS, "SPRINT2_NEW_MODELS.md")
 CATS = ["inflected", "natural", "vocabulary-gap"]
 CAT_SHORT = {"inflected": "inflected", "natural": "natural", "vocabulary-gap": "vocab-gap"}
 
-# Порядок строк в таблице: (отображаемое имя, файл результата, происхождение)
-#  — 4 системы из Статьи 1 (готовы)
-#  — 3 новые системы Спринта 2 (привозятся из Colab)
-SYSTEMS: List[Tuple[str, str, str]] = [
-    ("BM25 + stemmer",          "bm25_kazakh.json",            "Статья 1"),
-    ("multilingual-e5-base",    "dense_e5_300.json",           "Статья 1"),
-    ("LaBSE",                   "dense_labse_300.json",        "Статья 1"),
-    ("Granite-278m (R1)",       "dense_granite_300.json",      "Статья 1"),
-    ("Granite-97m (R2)",        "dense_granite_r2_97m.json",   "Спринт 2"),
-    ("Granite-311m (R2)",       "dense_granite_r2_311m.json",  "Спринт 2"),
-    ("kazakh-e5 (shyngys879)",  "dense_shyngys.json",          "Спринт 2"),
+# Порядок строк в таблице: (отображаемое имя, файл результата, происхождение, kind)
+#  kind="dense"  -> JSON c полями overall/by_category (run_dense)
+#  kind="hybrid" -> JSON от run_hybrid; берём metrics.hybrid.{overall,by_category}
+#  — 4 системы из Статьи 1 (готовы, dense/lexical)
+#  — 3 новые dense-системы Спринта 2 (без стеммера)
+#  — 3 гибрида Спринта 2 (BM25+стеммер ⊕ новая модель, RRF)
+SYSTEMS: List[Tuple[str, str, str, str]] = [
+    ("BM25 + stemmer",            "bm25_kazakh.json",            "Статья 1", "dense"),
+    ("multilingual-e5-base",      "dense_e5_300.json",           "Статья 1", "dense"),
+    ("LaBSE",                     "dense_labse_300.json",        "Статья 1", "dense"),
+    ("Granite-278m (R1)",         "dense_granite_300.json",      "Статья 1", "dense"),
+    ("Granite-97m (R2)",          "dense_granite_r2_97m.json",   "Спринт 2", "dense"),
+    ("Granite-311m (R2)",         "dense_granite_r2_311m.json",  "Спринт 2", "dense"),
+    ("kazakh-e5 (shyngys879)",    "dense_shyngys.json",          "Спринт 2", "dense"),
+    ("Granite-97m R2 ⊕ BM25+st",  "hybrid_granite_r2_97m.json",  "Спринт 2", "hybrid"),
+    ("Granite-311m R2 ⊕ BM25+st", "hybrid_granite_r2_311m.json", "Спринт 2", "hybrid"),
+    ("kazakh-e5 ⊕ BM25+st",       "hybrid_shyngys.json",         "Спринт 2", "hybrid"),
 ]
 
 
-def _load(fname: str) -> Optional[Dict]:
+def _load(fname: str, kind: str = "dense") -> Optional[Dict]:
+    """Вернуть нормализованный блок {overall, by_category} независимо от kind."""
     path = os.path.join(RESULTS, fname)
     if not os.path.exists(path):
         return None
-    return json.load(open(path, encoding="utf-8"))
+    d = json.load(open(path, encoding="utf-8"))
+    if kind == "hybrid":
+        return d.get("metrics", {}).get("hybrid")  # run_hybrid формат
+    return d  # run_dense формат: overall/by_category на верхнем уровне
 
 
 def _cell(block: Optional[Dict], cat: Optional[str], metric: str) -> str:
@@ -75,7 +85,7 @@ def _bold_max(values: List[str]) -> List[str]:
 
 
 def build() -> str:
-    rows = [(name, _load(fname), origin) for name, fname, origin in SYSTEMS]
+    rows = [(name, _load(fname, kind), origin) for name, fname, origin, kind in SYSTEMS]
     n_ready = sum(1 for _, d, _ in rows if d is not None)
 
     lines: List[str] = []
@@ -86,7 +96,8 @@ def build() -> str:
         "8 370 пассажей). README и выводы Статьи 1 не меняются — это отдельный "
         "артефакт.\n"
     )
-    lines.append(f"**Статус прогонов:** {n_ready}/7 систем готово.\n")
+    lines.append(f"**Статус прогонов:** {n_ready}/{len(SYSTEMS)} систем готово "
+                 "(4 baseline + 3 dense + 3 hybrid).\n")
 
     # --- Главная таблица: nDCG@10 по категориям (критический артефакт) ---
     lines.append("## Главное: nDCG@10 по категориям\n")
