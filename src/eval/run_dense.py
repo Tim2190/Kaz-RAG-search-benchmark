@@ -29,6 +29,11 @@ MODELS = {
     "labse":   ("sentence-transformers/LaBSE", "", ""),
     "e5":      ("intfloat/multilingual-e5-base", "query: ", "passage: "),
     "granite": ("ibm-granite/granite-embedding-278m-multilingual", "", ""),
+    # --- Спринт 2: новые модели на том же бенчмарке ---
+    "granite-r2-97m":  ("ibm-granite/granite-embedding-97m-multilingual-r2", "", ""),
+    "granite-r2-311m": ("ibm-granite/granite-embedding-311m-multilingual-r2", "", ""),
+    # дообучена от multilingual-e5 -> нужны e5-префиксы query:/passage:
+    "shyngys-e5":      ("shyngys879/kazakh-e5-rag-embedding", "query: ", "passage: "),
 }
 
 
