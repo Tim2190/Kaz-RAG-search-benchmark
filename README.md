@@ -78,6 +78,13 @@ We ran the full RAG chain (BM25 → context → Qwen2.5-7B 4-bit) on the **same 
 changing only the retriever. The stemmer improves retrieval (**hit@3 0.737 → 0.803**) —
 but does that reach the final answer?
 
+**Queries and scoring.** All 300 queries are short factual questions with a one-to-two word
+gold answer (e.g. "Қазақстанның астанасы қайда?" → "Астана"). Accuracy is measured by
+substring match: the answer is `correct` if the gold string appears in the LLM's response,
+`abstain` if the model wrote "Ақпарат жоқ" (no information), and `hallucination` otherwise.
+This approach requires no LLM judge and is fully reproducible, but it is conservative —
+a semantically correct answer phrased differently counts as hallucination.
+
 ![RAG end-to-end: Qwen2.5-7B, n=300](results/rag_models.png)
 
 | Stemmer | Retrieval hit@3 | Accuracy | Hallucination | Abstain |
