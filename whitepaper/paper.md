@@ -2,7 +2,8 @@
 # A 300-Query Benchmark with Honest Negative Results
 
 **[ИМЯ / NAME]**  
-Independent Researcher
+Independent Researcher  
+9189920ts@gmail.com
 
 ---
 
@@ -63,20 +64,37 @@ reporting only what worked.
 
 ## 2. Related Work
 
-[КОРОТКИЙ РАЗДЕЛ — 1 страница максимум]
+**Morphological normalization in lexical IR.** The effect of stemming and lemmatization
+on retrieval quality is well established for morphologically rich languages. Stemming
+yields substantial gains for highly inflected and agglutinative languages such as
+Finnish, Hungarian, and Turkish, while offering little benefit for morphologically
+simple languages like English (Robertson & Zaragoza, 2009). Kazakh, as a Turkic
+agglutinative language, sits firmly in the high-benefit category, yet no published
+benchmark quantifies this effect on Kazakh retrieval with statistical validation —
+the gap this work addresses.
 
-**Kazakh NLP.** Казахский остаётся низкоресурсным языком в NLP. [2-3 ссылки на
-существующие работы по казахскому NLP если найдёшь — KazNLP, KazBERT и т.п.]
+**Multilingual dense retrieval.** Multilingual sentence encoders such as LaBSE
+(Feng et al., 2022), multilingual-E5 (Wang et al., 2024), and IBM Granite embeddings
+(IBM Research, 2024) advertise coverage of 100+ languages and strong cross-lingual
+retrieval. However, headline benchmarks are dominated by high-resource languages, and
+zero-shot performance on low-resource agglutinative languages is rarely reported in
+isolation. We evaluate three such models head-to-head against a lexical baseline on
+Kazakh, and find that morphological normalization on a sparse index outperforms
+zero-shot LaBSE — a result that cautions against assuming multilingual embeddings
+transfer cleanly to this setting.
 
-**Morphology in IR.** Влияние морфологии на IR хорошо изучено для турецкого,
-финского, арабского [ссылки]. Для казахского аналогичных исследований не публиковалось.
+**Query expansion.** Expanding queries with synonyms or related terms is a classic
+technique for closing the vocabulary gap between queries and documents (Voorhees, 1994).
+Its effect is known to depend heavily on the strength of the underlying retrieval
+signal: when the lexical match is already strong, unweighted expansion can introduce
+more noise than signal (Robertson & Zaragoza, 2009). We confirm this empirically for
+Kazakh and provide a fine-grained subgroup analysis isolating the failure mechanism.
 
-**Dense retrieval for low-resource languages.** LaBSE [Feng et al. 2022],
-multilingual-e5 [Wang et al. 2024], Granite [IBM 2024] — модели претендуют на
-поддержку 100+ языков. Реальное качество на агглютинативных языках мало исследовано.
-
-**Synonym query expansion.** Классический подход [Voorhees 1994] — расширение запроса
-синонимами. Известно что на сильном лексическом baseline может не помочь [Robertson 2004].
+**Retrieval-augmented generation.** RAG pipelines couple a retriever with a generative
+LLM. A common implicit assumption is that improving retrieval improves end-to-end answer
+quality. We test this assumption directly on Kazakh and find that a significant retrieval
+improvement does not yield a significant end-to-end accuracy gain on a 7B-parameter
+generator — localizing the bottleneck to generation rather than retrieval.
 
 ---
 
@@ -288,6 +306,9 @@ proportions or percentages. *Psychometrika*, 12(2), 153–157.
 
 Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and
 beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+
+Voorhees, E. M. (1994). Query expansion using lexical-semantic relations. *Proceedings
+of SIGIR 1994*, 61–69.
 
 Wang, L., Yang, N., Huang, X., Yang, L., Majumder, R., & Wei, F. (2024). Multilingual
 E5 text embeddings: A technical report. *arXiv preprint arXiv:2402.05672*.
