@@ -1,9 +1,8 @@
 # Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
 # A 300-Query Benchmark with Honest Negative Results
 
-**[YOUR NAME]**  
-Independent Researcher  
-[your email]
+**[ИМЯ / NAME]**  
+Independent Researcher
 
 ---
 
@@ -26,16 +25,39 @@ Qwen2.5-7B (McNemar p=0.63). All code, data, and results are publicly available.
 
 ## 1. Introduction
 
-[НАПИШИ СВОИМИ СЛОВАМИ — 2-3 абзаца. Примерно так:]
+Kazakh is a Turkic agglutinative language spoken by approximately 13 million people,
+primarily in Kazakhstan. Its morphology is exceptionally productive: a single root can
+generate dozens of surface forms through the sequential attachment of suffixes encoding
+case, number, possession, tense, and other grammatical categories. A word such as
+*теңіз* (sea) appears in text as *теңіздерге* (to the seas), *теңізде* (at the sea),
+or *теңіздің* (of the sea) — all sharing the same root but differing in surface form.
+For lexical retrieval systems that rely on exact or near-exact token matching, this
+morphological diversity is a direct failure mode: a query containing *теңіз* will
+not match a passage containing *теңіздерге* unless some form of normalization is applied.
+In our corpus of 800 Wikipedia articles, we observe **102 408 unique surface forms** —
+a scale of lexical fragmentation that makes morphological normalization a first-order
+concern for any Kazakh information retrieval system.
 
-[Абзац 1: Казахский язык, агглютинативная морфология, почему это проблема для поиска.
-Одно слово → сотни словоформ. Обычный поиск их не видит.]
+Despite Kazakh's significance as a national language and growing digital footprint,
+it remains severely underrepresented in information retrieval research. To our
+knowledge, no prior work has presented a statistically validated, reproducible IR
+benchmark for Kazakh that (a) covers multiple query types, (b) compares sparse and
+dense retrieval systems on the same query set, and (c) reports significance tests on
+the results. Practitioners building Kazakh search or RAG systems must currently rely
+on intuition, multilingual model documentation, or benchmarks from morphologically
+simpler languages — none of which adequately predict behavior on agglutinative input.
+We address this gap directly.
 
-[Абзац 2: Зачем этот бенчмарк. Нет публичных IR-бенчмарков для казахского с
-статистической проверкой. Хотели честно измерить: что реально работает, что нет.]
-
-[Абзац 3: Что нашли. Главный результат — одно предложение. + «мы публикуем три
-честных негативных результата, что редко встречается в публикациях».]
+In this paper we present a 300-query retrieval benchmark over 8 370 Kazakh Wikipedia
+passages. We evaluate five systems — BM25 with and without a morphological stemmer,
+and three zero-shot multilingual dense models — and report results with paired bootstrap
+significance tests. Our central finding is that a Kazakh stemmer (+9% nDCG@10 overall,
+p=0.0001) outperforms zero-shot LaBSE embeddings (0.754 vs 0.481), establishing that
+morphological normalization is more valuable than naive multilingual vectorization for
+this language. We also report three pre-registered negative results — synonym query
+expansion, RRF hybrid fusion, and end-to-end RAG accuracy — which we include in full,
+as negative results clarify the remaining open problems more honestly than selectively
+reporting only what worked.
 
 ---
 
@@ -251,11 +273,24 @@ https://github.com/Tim2190/Kaz-RAG-search-benchmark.
 
 ## References
 
-[ЗАПОЛНИТЬ — найди и вставь ссылки:]
-- BM25: Robertson & Zaragoza, 2009
-- LaBSE: Feng et al., 2022
-- multilingual-e5: Wang et al., 2024
-- Granite embeddings: IBM, 2024
-- RRF: Cormack et al., 2009
-- McNemar test: McNemar, 1947
-- Kazakh Wikipedia statistics: [wikimedia/wikipedia HF dataset]
+Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). Reciprocal rank fusion
+outperforms condorcet and individual rank learning methods. *Proceedings of SIGIR 2009*,
+758–759.
+
+Feng, F., Yang, Y., Cer, D., Arivazhagan, N., & Wang, W. (2022). Language-agnostic BERT
+sentence embedding. *Proceedings of ACL 2022*, 878–891.
+
+IBM Research. (2024). Granite embedding models. *ibm-granite/granite-embedding-models*,
+https://github.com/ibm-granite/granite-embedding-models.
+
+McNemar, Q. (1947). Note on the sampling error of the difference between correlated
+proportions or percentages. *Psychometrika*, 12(2), 153–157.
+
+Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and
+beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389.
+
+Wang, L., Yang, N., Huang, X., Yang, L., Majumder, R., & Wei, F. (2024). Multilingual
+E5 text embeddings: A technical report. *arXiv preprint arXiv:2402.05672*.
+
+Wikimedia Foundation. (2024). Wikipedia Kazakh dump. *wikimedia/wikipedia* dataset,
+Hugging Face Datasets, https://huggingface.co/datasets/wikimedia/wikipedia.
