@@ -155,13 +155,12 @@ the benchmark, please cite:
 
 ```bibtex
 @misc{{seidalin2026kazakh,
-  author       = {{Seidalin, Timur}},
-  title        = {{Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
-                  A 300-Query Benchmark with Honest Negative Results}},
-  year         = {{2026}},
-  publisher    = {{Zenodo}},
-  doi          = {{10.5281/zenodo.20605663}},
-  url          = {{https://doi.org/10.5281/zenodo.20605663}}
+  author    = {{Seidalin, Timur}},
+  title     = {{Morphology Beats Multilingual Embeddings for Kazakh Retrieval: A 300-Query Benchmark with Honest Negative Results}},
+  year      = {{2026}},
+  publisher = {{Zenodo}},
+  doi       = {{10.5281/zenodo.20605663}},
+  url       = {{https://doi.org/10.5281/zenodo.20605663}}
 }}
 ```
 
