@@ -1,6 +1,6 @@
 # Казахский стеммер — эффективность доказана
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20605663.svg)](https://doi.org/10.5281/zenodo.20605663)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20605663-blue)](https://doi.org/10.5281/zenodo.20605663)
 
 > **Этот репозиторий — независимая доказательная база для моего
 > [казахского стеммера](https://qaz-api.vercel.app/).**
