@@ -1,7 +1,7 @@
 # Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
 # A 300-Query Benchmark with Honest Negative Results
 
-**[ИМЯ / NAME]**  
+**Timur Seidalin**  
 Independent Researcher  
 9189920ts@gmail.com
 
