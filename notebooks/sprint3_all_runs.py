@@ -1,7 +1,7 @@
-# Sprint 3 (v2) — ЕДИНЫЙ прогон: все системы, все запросы (v1+v2), полные выдачи
+# Sprint 3 (v2) — ЕДИНЫЙ прогон: все системы, все запросы, полные выдачи
 # ============================================================================
 # Отличия от прежних ноутбуков:
-#   * запросы = synonym_queries.jsonl (70) + synonym_queries_v2.jsonl (75) = 145
+#   * запросы = synonym_queries_final.jsonl (127, прошли носительскую валидацию)
 #   * КАЖДАЯ система сохраняет полную выдачу top-20 -> один sprint3_runs.json
 #     (нужен для pooling-разметки и article-level пересчёта, см.
 #      src/eval/sprint3_pool.py и src/eval/sprint3_rescore.py)
@@ -54,17 +54,13 @@ print(f"Корпус: {len(corpus_pairs)} пассажей")
 
 queries: Dict[str, str] = {}
 qrels: Dict[str, Set[str]] = {}
-qid_n = 0
-for fname in ("data/queries/synonym_queries.jsonl",
-              "data/queries/synonym_queries_v2.jsonl"):
-    with open(fname, encoding="utf-8") as f:
-        for line in f:
-            item = json.loads(line)
-            qid = f"syn_{qid_n:03d}"
-            queries[qid] = item["query"]
-            qrels[qid] = {item["gold_doc_id"]}
-            qid_n += 1
-print(f"Запросов: {len(queries)} (v1+v2)")
+with open("data/queries/synonym_queries_final.jsonl", encoding="utf-8") as f:
+    for line in f:
+        item = json.loads(line)
+        qid = item["qid"]            # сохранённый id, совместим с разметкой
+        queries[qid] = item["query"]
+        qrels[qid] = {item["gold_doc_id"]}
+print(f"Запросов: {len(queries)} (носительски валидированы)")
 
 def show(name: str, run: Dict[str, List[str]]):
     run10 = {q: r[:10] for q, r in run.items()}

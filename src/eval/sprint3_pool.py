@@ -21,18 +21,13 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 
 
 def load_queries() -> dict:
-    """qid -> {query, gold_doc_id, topic}; v1 + v2, нумерация как в ноутбуке."""
-    out, qid = {}, 0
-    for fname in ("data/queries/synonym_queries.jsonl",
-                  "data/queries/synonym_queries_v2.jsonl"):
-        path = os.path.join(ROOT, fname)
-        if not os.path.exists(path):
-            continue
-        with open(path, encoding="utf-8") as f:
-            for line in f:
-                item = json.loads(line)
-                out[f"syn_{qid:03d}"] = item
-                qid += 1
+    """qid -> {query, gold_doc_id, topic}; носительски валидированный набор."""
+    out = {}
+    path = os.path.join(ROOT, "data/queries/synonym_queries_final.jsonl")
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            item = json.loads(line)
+            out[item["qid"]] = item
     return out
 
 
