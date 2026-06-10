@@ -95,6 +95,44 @@ python -m src.eval.run_rag --llm gemma   --top-k 3 --out results/rag_gemma.json
 Прогоняет вопросы через LLM с контекстом от BM25 (без/со стеммером) и считает
 долю correct / hallucination / abstain. Печатает дельту галлюцинаций «До→После».
 
+## 7. Sprint 3 — synonym / vocabulary-gap бенчмарк (семантический разрыв)
+
+Отдельный «злой» тест: запросы написаны **другими словами**, чем gold-пассаж
+(лексический пересек ≤ 0.30). Проверяет понимание смысла, а не совпадение токенов.
+Итог и числа — `results/SPRINT3_SYNONYM.md`; обзор R2-моделей — `results/GRANITE_R2_REVIEW.md`.
+
+**7.1. Набор запросов (носительски валидирован).**
+127 запросов в `data/queries/synonym_queries_final.jsonl` (71 gold-док, 33 статьи,
+средний overlap 0.145). Получены так: сгенерированы кандидаты → отфильтрованы по
+overlap → проверены живым носителем (`annotation/queries_validation_done.tsv`:
+104 ок, 23 правки, 18 удалены). Пересобрать фильтр overlap при новых кандидатах:
+```bash
+python -m src.eval.synonym_filter --in <candidates>.jsonl --out <passed>.jsonl --threshold 0.30
+```
+
+**7.2. Прогон всех систем (Kaggle, GPU T4 + Internet ON).**
+```bash
+# notebooks/sprint3_all_runs.py  → /kaggle/working/sprint3_runs.json
+```
+Считает 11 систем (BM25 identity/prefix-5/стеммер/synonym, LaBSE, E5,
+Granite-R1-278M, Granite-R2-97M, Granite-R2-311M, два гибрида RRF) на 127 запросах
+и сохраняет полные выдачи top-20. Скачать `sprint3_runs.json` и положить в `results/`.
+
+> R2-модели (ModernBERT, 32K контекст) на T4 ловят CUDA OOM при дефолтном окне —
+> ноутбук режет `max_seq_length=512` и чистит GPU между моделями. Не убирать.
+
+**7.3. Пересчёт метрик с двумя вариантами и CI95 (локально, без сети).**
+```bash
+python -m src.eval.sprint3_rescore --runs results/sprint3_runs.json --out results/sprint3_final.json
+```
+Печатает две таблицы: **passage-level** (строгая, один назначенный пассаж) и
+**article-level** (нашёл любой пассаж нужной статьи — снимает single-gold смещение),
+обе с bootstrap-CI95 для Hit@10.
+
+> Опционально — multi-gold пулинг (`src/eval/sprint3_pool.py` → ручная разметка
+> `RELEVANT` 1/0 → `--pool` в rescore). На нашем наборе пропущен: article-level уже
+> даёт честную метрику document-retrieval, а ручная разметка — это дни работы.
+
 ---
 
 ### Проверка кода без сети
