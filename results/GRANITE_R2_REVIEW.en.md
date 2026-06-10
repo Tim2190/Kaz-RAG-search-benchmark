@@ -49,20 +49,31 @@ lexical channel (0.740) still does not.
 
 ## 3. Tokenization analysis
 
-For 100 morphologically rich Kazakh surface forms (length ≥ 9 characters) drawn
-from the corpus, we measured the mean number of sub-word tokens per word (lower
-is closer to the morpheme; less fragmentation):
+For 100 frequent, morphologically rich Kazakh surface forms (length ≥ 9
+characters) drawn from the corpus, we measured the mean number of sub-word
+tokens per word (lower = closer to the morpheme; less fragmentation). Frequent
+words are, if anything, *better* known to a tokenizer, so this sampling is
+conservative — it tends to understate rather than inflate any gap. We report two
+conditions per word — the word in isolation and the word with a leading space —
+because R2 (ModernBERT) uses byte-level BPE, in which a leading space is part of
+the token, whereas R1/e5 (SentencePiece) are nearly insensitive to it.
 
-| Tokenizer | sub-words / word |
-|-----------|-----------------:|
-| multilingual-e5-base | 1.81 |
-| Granite R1-278M | 1.81 |
-| Granite R2-97M | 4.00 |
-| Granite R2-311M | 4.20 |
+| Tokenizer | sub-words / word (isolated) | sub-words / word (leading space) |
+|-----------|---------------------------:|---------------------------------:|
+| multilingual-e5-base | 1.81 | *pending re-run* |
+| Granite R1-278M | 1.81 | *pending re-run* |
+| Granite R2-97M | 4.00 | *pending re-run* |
+| Granite R2-311M | 4.20 | *pending re-run* |
 
-The ModernBERT tokenizer used by R2 splits Kazakh words approximately 2.3× more
-finely than the R1/e5 tokenizer, which is consistent with the lower retrieval
-quality observed for R2 on this morphologically rich language.
+*(Isolated-word column from the original run; the leading-space column and
+per-word split examples are produced by `src/eval/tokenization_test.py` and will
+be filled from a fresh run.)*
+
+In the isolated condition the ModernBERT tokenizer used by R2 splits Kazakh words
+about 2.3× more finely than the R1/e5 tokenizer. We treat this as **one factor**
+contributing to R2's overall regression on Kazakh, not as the sole cause and not
+as an explanation of any single query category — see Limitations §6, where we
+note that the larger R2-311M does *not* regress on the morphological category.
 
 ## 4. Validated semantic set (n=127), independent replication
 
@@ -127,8 +138,15 @@ statistically comparable rather than R2 being an improvement.
   (lower bound) and article-level (upper bound, standard document retrieval).
 - **Domain.** The corpus is Kazakh Wikipedia only; results may not transfer to
   other domains or registers.
-- **Tokenization metric.** The 2.3× figure is a descriptive sub-word count on a
-  100-word sample, offered as a plausible mechanism, not a controlled ablation.
+- **Tokenization metric is one factor, not a single cause.** The 2.3× figure is a
+  descriptive sub-word count on a 100-word sample, offered as a contributing
+  factor, not a controlled ablation. Notably, R2-311M does not regress on the
+  *inflected* (morphology) category (0.791, equal to R1), which shows that
+  fragmentation alone does not determine category-level outcomes — model capacity
+  evidently compensates in the 311M case. The clearest fragmentation-linked
+  regression is the small R2-97M, which is weaker across the board. We also report
+  isolated-word and leading-space tokenizations separately, since byte-level BPE
+  (R2) and SentencePiece (R1/e5) handle a leading space differently.
 
 ## 7. Summary
 

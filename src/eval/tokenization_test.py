@@ -1,17 +1,31 @@
 """
-Спринт 2 — токенизационный тест (опциональный бонус, без GPU).
+Токенизационный тест: насколько сильно каждый токенизатор дробит казахские
+словоформы на sub-word-токены. Меньше — целее морфология.
 
-Гипотеза: если Granite-97m-R2 рвёт морфологически богатые казахские слова на
-большее число sub-word токенов, чем e5/311m — это готовое объяснение возможной
-просадки на категории `inflected`.
+Что считаем и почему так:
 
-Прогоняет N морфологически богатых казахских слов через токенизаторы и считает
-среднее число sub-word на слово. Меньше — лучше (целее морфология).
+  * Слова берём из корпуса бенчмарка (частые длинные словоформы, len≥9) —
+    не синтетика. Частотный отбор СКОРЕЕ ЗАНИЖАЕТ разрыв (частые слова
+    токенизатор знает лучше), то есть это безопасная, консервативная сторона.
 
-Слова берутся из реальных запросов/корпуса бенчмарка (длинные словоформы),
-поэтому тест не синтетический.
+  * Считаем ДВА варианта на каждое слово:
+      (1) слово в изоляции:         "сөзжасам"
+      (2) слово с ведущим пробелом: " сөзжасам"
+    Это важно, потому что R2 (ModernBERT) использует byte-level BPE, где
+    ведущий пробел — часть токена, а R1/e5 (SentencePiece) к нему почти
+    нечувствительны. Показываем ОБА числа, чтобы сравнение нельзя было
+    оспорить как «несправедливое из-за отсутствия пробела».
 
-ЗАПУСК (Colab; нужен transformers, доступ к HF):
+  * Печатаем примеры разбиения (слово → куски у каждого токенизатора), чтобы
+    результат можно было проверить глазами за секунды.
+
+Интерпретация (осторожно): более сильная фрагментация казахского — ОДИН ИЗ
+ФАКТОРОВ общей просадки R2 на казахском, не единственная причина и не
+объяснение конкретно морфологической категории. По данным бенчмарка R2-311m
+на `inflected` не просел (≈ R1), просел в агрегате и на семантике; везде просел
+только маленький R2-97m. Это дескриптивный замер, не контролируемая абляция.
+
+ЗАПУСК (нужен transformers + доступ к HF; модели не качаются, только токенизаторы):
     python -m src.eval.tokenization_test
 """
 
@@ -33,6 +47,9 @@ TOKENIZERS = {
     "granite-278m-r1": "ibm-granite/granite-embedding-278m-multilingual",
 }
 
+# несколько репрезентативных слов для наглядных примеров (морфологически богатые)
+EXAMPLE_WORDS = ["сөзжасам", "мүмкіндіктерін", "ұйымдастырушылық", "халықаралық"]
+
 # Кириллица казахского (вкл. спецбуквы ә і ң ғ ү ұ қ ө һ)
 _WORD = re.compile(r"[А-Яа-яЁёӘәІіҢңҒғҮүҰұҚқӨөҺһ]+")
 
@@ -50,8 +67,15 @@ def _harvest_words(n: int = 100, min_len: int = 9) -> List[str]:
             for w in _WORD.findall(text.lower()):
                 if len(w) >= min_len:
                     counter[w] += 1
-    # частые длинные слова = реально употребимые словоформы, не опечатки
     return [w for w, _ in counter.most_common(n)]
+
+
+def _avg_subwords(tok, words: List[str], lead_space: bool) -> float:
+    total = 0
+    for w in words:
+        s = (" " + w) if lead_space else w
+        total += len(tok.encode(s, add_special_tokens=False))
+    return total / max(len(words), 1)
 
 
 def main() -> None:
@@ -61,29 +85,44 @@ def main() -> None:
     print(f"Морфологически богатых слов (len≥9): {len(words)}")
     print("Примеры:", ", ".join(words[:8]), "…\n")
 
-    results = {}
+    loaded = {}
     for alias, hf_id in TOKENIZERS.items():
         try:
-            tok = AutoTokenizer.from_pretrained(hf_id)
+            loaded[alias] = AutoTokenizer.from_pretrained(hf_id)
         except Exception as e:
             print(f"[skip] {alias}: {e}")
-            continue
-        total = 0
-        for w in words:
-            ids = tok.encode(w, add_special_tokens=False)
-            total += len(ids)
-        avg = total / max(len(words), 1)
-        results[alias] = avg
-        print(f"{alias:18s} среднее sub-word/слово: {avg:.2f}")
+
+    # --- средние: два варианта (без пробела / с ведущим пробелом) ---
+    print(f"{'токенизатор':18s} {'без пробела':>12s} {'с пробелом':>12s}")
+    print("-" * 44)
+    results = {}
+    for alias, tok in loaded.items():
+        a_bare = _avg_subwords(tok, words, lead_space=False)
+        a_lead = _avg_subwords(tok, words, lead_space=True)
+        results[alias] = (a_bare, a_lead)
+        print(f"{alias:18s} {a_bare:12.2f} {a_lead:12.2f}")
+
+    # --- наглядные примеры разбиения ---
+    print("\n--- Примеры разбиения (слово → куски; ▁/Ġ = ведущий пробел) ---")
+    for w in EXAMPLE_WORDS:
+        print(f"\n«{w}»")
+        for alias, tok in loaded.items():
+            bare = tok.tokenize(w)
+            lead = tok.tokenize(" " + w)
+            print(f"  {alias:18s} {len(bare)}: {bare}")
+            print(f"  {'':18s} +пробел {len(lead)}: {lead}")
 
     if results:
-        print("\n--- Вывод ---")
-        worst = max(results, key=results.get)
-        best = min(results, key=results.get)
-        print(f"Сильнее всех дробит казахский: {worst} ({results[worst]:.2f})")
-        print(f"Бережнее всех:                {best} ({results[best]:.2f})")
-        print("Чем больше sub-word на слово, тем сильнее модель рвёт морфологию — "
-              "что коррелирует с просадкой на inflected.")
+        print("\n--- Вывод (осторожно) ---")
+        worst = max(results, key=lambda k: results[k][0])
+        best = min(results, key=lambda k: results[k][0])
+        print(f"Сильнее всех дробит казахский: {worst} "
+              f"(без пробела {results[worst][0]:.2f}, с пробелом {results[worst][1]:.2f})")
+        print(f"Бережнее всех:                {best} "
+              f"(без пробела {results[best][0]:.2f}, с пробелом {results[best][1]:.2f})")
+        print("Более сильная фрагментация — ОДИН ИЗ факторов общей просадки R2 на "
+              "казахском (см. докстринг), а не единственная причина и не объяснение "
+              "конкретно категории inflected.")
 
 
 if __name__ == "__main__":
