@@ -133,16 +133,25 @@ m_syn = show("BM25+synonym", run_syn)
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-def dense_run(model_name, top_k=100, query_prefix="", doc_prefix="", cache_tag=""):
+def dense_run(model_name, top_k=100, query_prefix="", doc_prefix="", cache_tag="",
+              max_seq_length=512, batch_size=32):
     print(f"  модель: {model_name}")
     model = SentenceTransformer(model_name)
+    # ВАЖНО: R2 (ModernBERT) по умолчанию ставит контекст 8K–32K → attention
+    # пытается выделить десятки ГБ на T4. Пассажи короткие, режем до 512 токенов.
+    try:
+        model.max_seq_length = min(int(model.max_seq_length or max_seq_length), max_seq_length)
+    except Exception:
+        model.max_seq_length = max_seq_length
+    print(f"  max_seq_length={model.max_seq_length}, batch_size={batch_size}")
+
     npy = f"/kaggle/working/emb_{cache_tag}.npy"
     ids = f"/kaggle/working/emb_{cache_tag}_ids.json"
     if os.path.exists(npy) and os.path.exists(ids):
         doc_ids = json.load(open(ids)); doc_emb = np.load(npy)
     else:
         texts = [doc_prefix + t for _, t in corpus_pairs]
-        doc_emb = model.encode(texts, batch_size=64, show_progress_bar=True,
+        doc_emb = model.encode(texts, batch_size=batch_size, show_progress_bar=True,
                                normalize_embeddings=True)
         doc_ids = [d for d, _ in corpus_pairs]
         np.save(npy, doc_emb); json.dump(doc_ids, open(ids, "w"))
@@ -150,7 +159,7 @@ def dense_run(model_name, top_k=100, query_prefix="", doc_prefix="", cache_tag="
     n = np.linalg.norm(doc_emb, axis=1, keepdims=True); n[n == 0] = 1; doc_emb /= n
     qids = sorted(queries)
     q_emb = model.encode([query_prefix + queries[q] for q in qids],
-                         batch_size=64, normalize_embeddings=True)
+                         batch_size=batch_size, normalize_embeddings=True)
     q_emb = np.asarray(q_emb, dtype=np.float32)
     out = {}
     for i, qid in enumerate(qids):
@@ -158,6 +167,12 @@ def dense_run(model_name, top_k=100, query_prefix="", doc_prefix="", cache_tag="
         top = np.argpartition(-sc, top_k)[:top_k]
         top = top[np.argsort(-sc[top])]
         out[qid] = [doc_ids[j] for j in top]
+    # освобождаем GPU-память перед следующей моделью
+    del model
+    try:
+        import torch, gc; gc.collect(); torch.cuda.empty_cache()
+    except Exception:
+        pass
     return out
 
 # --- R1 (старое поколение, БЕЗ явного обучения на казахском) ---
