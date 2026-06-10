@@ -1,5 +1,7 @@
 # Kazakh Stemmer — Effectiveness, Proven
 
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20605663-blue)](https://doi.org/10.5281/zenodo.20605663)
+
 > **This repository is the independent evidence base for my
 > [Kazakh Stemmer](https://qaz-api.vercel.app/).**
 > A reproducible, statistically validated benchmark showing the stemmer measurably
@@ -77,6 +79,13 @@ despite leading on inflected queries.
 We ran the full RAG chain (BM25 → context → Qwen2.5-7B 4-bit) on the **same 300 queries**,
 changing only the retriever. The stemmer improves retrieval (**hit@3 0.737 → 0.803**) —
 but does that reach the final answer?
+
+**Queries and scoring.** All 300 queries are short factual questions with a one-to-two word
+gold answer (e.g. "Қазақстанның астанасы қайда?" → "Астана"). Accuracy is measured by
+substring match: the answer is `correct` if the gold string appears in the LLM's response,
+`abstain` if the model wrote "Ақпарат жоқ" (no information), and `hallucination` otherwise.
+This approach requires no LLM judge and is fully reproducible, but it is conservative —
+a semantically correct answer phrased differently counts as hallucination.
 
 ![RAG end-to-end: Qwen2.5-7B, n=300](results/rag_models.png)
 
@@ -170,7 +179,7 @@ Dense retrieval and RAG require GPU (Colab T4 is sufficient). See [`PIPELINE.md`
 
 Core logic (metrics, tokenization, chunking, stem client, retrieval) covered by tests:
 ```bash
-python -m unittest discover tests      # 43 tests, no network
+python -m unittest discover tests      # 79 tests, no network
 ```
 
 ---
@@ -191,7 +200,7 @@ data/
   queries/     # queries.jsonl — 300 queries with qrels
   resources/   # stem_cache.json — stemmer cache (102k words)
 results/       # metrics JSON, charts, RESULTS.md
-tests/         # 43 unit tests
+tests/         # 79 unit tests
 ```
 
 ---
@@ -211,6 +220,7 @@ we expected it to help:
 | **ALL** | **0.754** | 0.539 | −0.215 |
 | vocabulary-gap | **0.764** | 0.627 | −0.137 |
 | inflected | **0.727** | 0.537 | −0.190 |
+| natural | **0.772** | 0.451 | −0.321 |
 
 End-to-end RAG confirmed it: accuracy **0.500 → 0.393** (McNemar exact p = **0.0002** —
 significantly *worse*).
@@ -253,6 +263,28 @@ p≤0.0017, n=300). Five retrieval systems are benchmarked; the end-to-end RAG e
 Qwen2.5-7B is measured and honestly reported (retrieval improves, end-to-end accuracy gain
 not significant — the bottleneck is the generator). Full numbers in
 [`results/RESULTS.md`](results/RESULTS.md).
+
+---
+
+## Citation
+
+A preprint of this benchmark is archived on Zenodo with a permanent DOI:
+
+> Seidalin, T. (2026). *Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+> A 300-Query Benchmark with Honest Negative Results.* Zenodo.
+> https://doi.org/10.5281/zenodo.20605663
+
+```bibtex
+@misc{seidalin2026kazakh,
+  author       = {Seidalin, Timur},
+  title        = {Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+                  A 300-Query Benchmark with Honest Negative Results},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.20605663},
+  url          = {https://doi.org/10.5281/zenodo.20605663}
+}
+```
 
 ---
 

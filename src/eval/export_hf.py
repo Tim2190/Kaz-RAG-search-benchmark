@@ -143,6 +143,32 @@ corpus  = load_dataset("tim2190/kaz-rag-search-benchmark", "corpus",  split="cor
 queries = load_dataset("tim2190/kaz-rag-search-benchmark", "queries", split="queries")
 qrels   = load_dataset("tim2190/kaz-rag-search-benchmark", "qrels",   split="test")
 ```
+
+## Citation
+
+This dataset accompanies a preprint archived on Zenodo with a permanent DOI. If you use
+the benchmark, please cite:
+
+> Seidalin, T. (2026). *Morphology Beats Multilingual Embeddings for Kazakh Retrieval:
+> A 300-Query Benchmark with Honest Negative Results.* Zenodo.
+> https://doi.org/10.5281/zenodo.20605663
+
+```bibtex
+@misc{{seidalin2026kazakh,
+  author    = {{Seidalin, Timur}},
+  title     = {{Morphology Beats Multilingual Embeddings for Kazakh Retrieval: A 300-Query Benchmark with Honest Negative Results}},
+  year      = {{2026}},
+  publisher = {{Zenodo}},
+  doi       = {{10.5281/zenodo.20605663}},
+  url       = {{https://doi.org/10.5281/zenodo.20605663}}
+}}
+```
+
+## Links
+
+- **Preprint (Zenodo, DOI):** https://doi.org/10.5281/zenodo.20605663
+- **Code & full results (GitHub):** https://github.com/Tim2190/Kaz-RAG-search-benchmark
+- **Kazakh Stemmer:** https://qaz-api.vercel.app/
 """
     (dst / "README.md").write_text(text, encoding="utf-8")
 
