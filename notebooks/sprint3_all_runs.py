@@ -156,17 +156,23 @@ RUNS["e5_base"] = dense_run("intfloat/multilingual-e5-base",
                             cache_tag="e5")
 show("E5-base", RUNS["e5_base"])
 
-print("[7/9] Granite-278M (R1)...")
+print("[7/12] shyngys879/kazakh-e5 (дообученная под казахский)...")
+RUNS["shyngys_e5"] = dense_run("shyngys879/kazakh-e5-rag-embedding",
+                               query_prefix="query: ", doc_prefix="passage: ",
+                               cache_tag="shyngys_e5")
+show("shyngys-e5", RUNS["shyngys_e5"])
+
+print("[8/12] Granite-278M (R1)...")
 RUNS["granite_r1_278m"] = dense_run(
     "ibm-granite/granite-embedding-278m-multilingual", cache_tag="granite_r1")
 show("Granite-R1-278M", RUNS["granite_r1_278m"])
 
-print("[8/9] Granite-97M-R2...")
+print("[9/12] Granite-97M-R2...")
 RUNS["granite_r2_97m"] = dense_run(
     "ibm-granite/granite-embedding-97m-multilingual-r2", cache_tag="granite_r2_97")
 show("Granite-R2-97M", RUNS["granite_r2_97m"])
 
-print("[9/9] Granite-311M-R2...")
+print("[10/12] Granite-311M-R2...")
 RUNS["granite_r2_311m"] = dense_run(
     "ibm-granite/granite-embedding-311m-multilingual-r2", cache_tag="granite_r2_311")
 show("Granite-R2-311M", RUNS["granite_r2_311m"])
@@ -182,6 +188,11 @@ RUNS["hybrid_rrf_r2_311m"] = reciprocal_rank_fusion(
     {"bm25": RUNS["bm25_stemmer"], "dense": RUNS["granite_r2_311m"]},
     k=60, top_k=TOP_K)
 show("Hybrid ⊕ R2-311M", RUNS["hybrid_rrf_r2_311m"])
+
+RUNS["hybrid_rrf_shyngys"] = reciprocal_rank_fusion(
+    {"bm25": RUNS["bm25_stemmer"], "dense": RUNS["shyngys_e5"]},
+    k=60, top_k=TOP_K)
+show("Hybrid ⊕ shyngys-e5", RUNS["hybrid_rrf_shyngys"])
 
 # %% [8] Сохранение: ОДИН файл с полными выдачами
 OUT = "/kaggle/working/sprint3_runs.json"
