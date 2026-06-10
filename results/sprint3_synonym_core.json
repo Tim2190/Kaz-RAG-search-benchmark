@@ -1,0 +1,29 @@
+{
+  "sprint": 3,
+  "benchmark": "synonym_vocabulary_gap",
+  "note": "core 5 systems from sprint3_synonym_benchmark.py (self-contained notebook)",
+  "n_queries": 70,
+  "avg_overlap": 0.142,
+  "systems": {
+    "BM25_identity": {
+      "hit@1": 0.029, "hit@5": 0.086, "hit@10": 0.086,
+      "mrr@10": 0.046, "ndcg@10": 0.056
+    },
+    "BM25_prefix5": {
+      "hit@1": 0.043, "hit@5": 0.100, "hit@10": 0.143,
+      "mrr@10": 0.067, "ndcg@10": 0.085
+    },
+    "LaBSE": {
+      "hit@1": 0.129, "hit@5": 0.214, "hit@10": 0.271,
+      "mrr@10": 0.159, "ndcg@10": 0.185
+    },
+    "E5_base": {
+      "hit@1": 0.043, "hit@5": 0.200, "hit@10": 0.257,
+      "mrr@10": 0.100, "ndcg@10": 0.137
+    },
+    "Granite_278M_R1": {
+      "hit@1": 0.086, "hit@5": 0.100, "hit@10": 0.171,
+      "mrr@10": 0.097, "ndcg@10": 0.114
+    }
+  }
+}
