@@ -288,4 +288,20 @@ A preprint of this benchmark is archived on Zenodo with a permanent DOI:
 
 ---
 
+## Follow-up experiments
+
+Work extending the original 300-query study (the conclusions above are unchanged):
+
+- **New embedding models on the same n=300 benchmark** — IBM Granite R2 (97M/311M),
+  a Kazakh-fine-tuned E5, and lexical–dense RRF hybrids, plus a tokenization
+  analysis: [`results/SPRINT2_NEW_MODELS.md`](results/SPRINT2_NEW_MODELS.md).
+- **IBM Granite R2 review** (R2 vs R1 on Kazakh, with limitations) —
+  [English](results/GRANITE_R2_REVIEW.en.md) ·
+  [Русский](results/GRANITE_R2_REVIEW.md).
+- **Validated semantic-gap benchmark** — 127 native-speaker-validated low-overlap
+  queries, passage- and article-level scoring with bootstrap CI:
+  [`results/SPRINT3_SYNONYM.md`](results/SPRINT3_SYNONYM.md).
+
+---
+
 [Русская версия](README.ru.md)

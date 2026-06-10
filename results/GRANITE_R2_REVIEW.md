@@ -1,5 +1,7 @@
 # IBM Granite Embedding R2 на казахском — обзор
 
+> 🇬🇧 English version: [`GRANITE_R2_REVIEW.en.md`](GRANITE_R2_REVIEW.en.md)
+
 Разбор новых эмбеддинг-моделей **IBM Granite Embedding R2** на казахском поиске,
 в сравнении с предыдущим поколением **R1**. Сводит **все валидные результаты**,
 которые мы признали: основной бенчмарк Sprint 2 (n=300, 3 категории) и

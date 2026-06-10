@@ -260,4 +260,20 @@ inflected, p≤0.0017, n=300). Прогнаны пять систем поиск
 
 ---
 
+## Дополнительные эксперименты
+
+Работа, расширяющая исходное исследование на 300 запросов (выводы выше не меняются):
+
+- **Новые embedding-модели на том же бенчмарке n=300** — IBM Granite R2 (97M/311M),
+  казахская дообученная E5 и гибриды RRF (лексика+dense), плюс анализ токенизации:
+  [`results/SPRINT2_NEW_MODELS.md`](results/SPRINT2_NEW_MODELS.md).
+- **Обзор IBM Granite R2** (R2 против R1 на казахском, с ограничениями) —
+  [English](results/GRANITE_R2_REVIEW.en.md) ·
+  [Русский](results/GRANITE_R2_REVIEW.md).
+- **Валидированный бенчмарк семантического разрыва** — 127 запросов, проверенных
+  носителем, метрики passage- и article-level с bootstrap-CI:
+  [`results/SPRINT3_SYNONYM.md`](results/SPRINT3_SYNONYM.md).
+
+---
+
 [English version](README.md)
