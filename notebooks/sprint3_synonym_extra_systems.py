@@ -129,7 +129,7 @@ print(f"  расширение: {tot_o/len(query_stems):.1f} → {tot_e/len(quer
 run_syn = idx_stem.run_terms(expanded, top_k=10)
 m_syn = show("BM25+synonym", run_syn)
 
-# %% [7] Канал Granite-278M (нужен для гибрида)
+# %% [7] Dense-каналы Granite: R1 (278M) + R2 (97M, 311M — казахский kk явно обучен)
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
@@ -160,23 +160,42 @@ def dense_run(model_name, top_k=100, query_prefix="", doc_prefix="", cache_tag="
         out[qid] = [doc_ids[j] for j in top]
     return out
 
-print("\n[канал] Granite-278M (для гибрида)...")
+# --- R1 (старое поколение, БЕЗ явного обучения на казахском) ---
+print("\n[канал] Granite-278M (R1)...")
 run_granite_100 = dense_run("ibm-granite/granite-embedding-278m-multilingual",
                             top_k=100, cache_tag="granite")
-m_granite = show("Granite-278M", {q: r[:10] for q, r in run_granite_100.items()})
+m_granite = show("Granite-278M (R1)", {q: r[:10] for q, r in run_granite_100.items()})
 
-# %% [8] Система 8 — Hybrid (RRF, k=60) = BM25+стеммер ⊕ Granite
-print("\n[8] Hybrid (RRF, k=60) = BM25+стеммер ⊕ Granite...")
-channels = {"bm25_stemmer": run_stem_100, "granite": run_granite_100}
-run_hybrid = reciprocal_rank_fusion(channels, k=60, top_k=10)
-m_hybrid = show("Hybrid (RRF)", run_hybrid)
+# --- R2 (новое поколение, казахский kk В ЧИСЛЕ 52 ЯЗЫКОВ с явной поддержкой) ---
+print("\n[канал] Granite-97M-R2 (multilingual)...")
+run_r2_97_100 = dense_run("ibm-granite/granite-embedding-97m-multilingual-r2",
+                          top_k=100, cache_tag="granite_r2_97")
+m_r2_97 = show("Granite-97M-R2", {q: r[:10] for q, r in run_r2_97_100.items()})
+
+print("\n[канал] Granite-311M-R2 (multilingual)...")
+run_r2_311_100 = dense_run("ibm-granite/granite-embedding-311m-multilingual-r2",
+                           top_k=100, cache_tag="granite_r2_311")
+m_r2_311 = show("Granite-311M-R2", {q: r[:10] for q, r in run_r2_311_100.items()})
+
+# %% [8] Гибриды (RRF, k=60) = BM25+стеммер ⊕ Granite (R1 и лучший R2)
+print("\n[8] Hybrid (RRF, k=60)...")
+run_hybrid = reciprocal_rank_fusion(
+    {"bm25_stemmer": run_stem_100, "granite": run_granite_100}, k=60, top_k=10)
+m_hybrid = show("Hybrid ⊕ Granite-R1", run_hybrid)
+
+run_hybrid_r2 = reciprocal_rank_fusion(
+    {"bm25_stemmer": run_stem_100, "granite_r2": run_r2_311_100}, k=60, top_k=10)
+m_hybrid_r2 = show("Hybrid ⊕ Granite-311M-R2", run_hybrid_r2)
 
 # %% [9] Итоговая таблица + сохранение
 systems = {
-    "BM25 + Kazakh stemmer": m_stem,
-    "BM25 + synonym exp.":    m_syn,
-    "Granite-278M":           m_granite,
-    "Hybrid (RRF, k=60)":     m_hybrid,
+    "BM25 + Kazakh stemmer":       m_stem,
+    "BM25 + synonym exp.":         m_syn,
+    "Granite-278M (R1)":           m_granite,
+    "Granite-97M-R2":              m_r2_97,
+    "Granite-311M-R2":             m_r2_311,
+    "Hybrid ⊕ Granite-R1":         m_hybrid,
+    "Hybrid ⊕ Granite-311M-R2":    m_hybrid_r2,
 }
 print("\n" + "=" * 78)
 print(f"SPRINT 3 (доп.) — недостающие системы на synonym-бенчмарке (n={len(queries)})")
@@ -192,14 +211,17 @@ print("=" * 78)
 out = {
     "sprint": 3,
     "benchmark": "synonym_vocabulary_gap",
-    "note": "extra systems: real Kazakh stemmer, synonym expansion, hybrid RRF",
+    "note": "extra systems: real Kazakh stemmer, synonym expansion, Granite R1+R2, hybrids",
     "n_queries": len(queries),
     "avg_overlap": round(sum(overlaps.values()) / len(overlaps), 4),
     "systems": {
         "BM25_Kazakh_stemmer": m_stem,
         "BM25_synonym_expansion": m_syn,
-        "Granite_278M": m_granite,
-        "Hybrid_RRF_k60": m_hybrid,
+        "Granite_278M_R1": m_granite,
+        "Granite_97M_R2": m_r2_97,
+        "Granite_311M_R2": m_r2_311,
+        "Hybrid_RRF_k60_R1": m_hybrid,
+        "Hybrid_RRF_k60_R2_311M": m_hybrid_r2,
     },
 }
 OUT = "/kaggle/working/sprint3_synonym_extra_results.json"
