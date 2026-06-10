@@ -143,15 +143,17 @@ def build() -> str:
     # --- Токенизация ---
     lines.append("## Токенизация: sub-word на казахское слово\n")
     lines.append(
-        "100 морфологически богатых казахских словоформ (len≥9) из корпуса, "
-        "среднее число sub-word токенов на слово (меньше = бережнее к морфологии):\n"
+        "100 частых морфологически богатых казахских словоформ (len≥9) из корпуса, "
+        "среднее число sub-word токенов на слово (меньше = бережнее к морфологии). "
+        "Два варианта: слово в изоляции и с ведущим пробелом (R2 — byte-level BPE, "
+        "чувствителен к пробелу; R1/e5 — SentencePiece, нет):\n"
     )
-    lines.append("| Токенизатор | sub-word / слово |")
-    lines.append("|---|---|")
-    lines.append("| multilingual-e5-base | **1.81** |")
-    lines.append("| Granite-278m (R1) | **1.81** |")
-    lines.append("| Granite-97m (R2) | 4.00 |")
-    lines.append("| Granite-311m (R2) | 4.20 |")
+    lines.append("| Токенизатор | в изоляции | с пробелом |")
+    lines.append("|---|---|---|")
+    lines.append("| multilingual-e5-base | **1.81** | **1.81** |")
+    lines.append("| Granite-278m (R1) | **1.81** | **1.81** |")
+    lines.append("| Granite-97m (R2) | 4.00 | 3.57 |")
+    lines.append("| Granite-311m (R2) | 4.20 | 3.82 |")
     lines.append("")
     lines.append(
         "> Токенизатор R2 (ModernBERT) дробит казахские слова в ~2.3× сильнее, "

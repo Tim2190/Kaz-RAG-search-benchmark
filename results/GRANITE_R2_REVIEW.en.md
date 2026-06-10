@@ -9,9 +9,10 @@ categorized benchmark and a separate 127-query native-speaker-validated
 semantic set. Across both, R2 does not improve over R1: the 311M-R2 matches R1
 on morphological and natural queries but is lower on semantically-distant
 queries, and the 97M-R2 regresses on every category. A tokenization analysis
-shows the ModernBERT tokenizer fragments Kazakh words ~2.3× more than the R1/e5
-tokenizer, which is consistent with the observed retrieval gap. We report
-methodology, confidence intervals, and limitations in full.
+shows the ModernBERT tokenizer fragments Kazakh words 2.1–2.3× more than the
+R1/e5 tokenizer (robust to the leading-space convention), which is consistent
+with the observed retrieval gap. We report methodology, confidence intervals,
+and limitations in full.
 
 ---
 
@@ -60,20 +61,30 @@ the token, whereas R1/e5 (SentencePiece) are nearly insensitive to it.
 
 | Tokenizer | sub-words / word (isolated) | sub-words / word (leading space) |
 |-----------|---------------------------:|---------------------------------:|
-| multilingual-e5-base | 1.81 | *pending re-run* |
-| Granite R1-278M | 1.81 | *pending re-run* |
-| Granite R2-97M | 4.00 | *pending re-run* |
-| Granite R2-311M | 4.20 | *pending re-run* |
+| multilingual-e5-base | 1.81 | 1.81 |
+| Granite R1-278M | 1.81 | 1.81 |
+| Granite R2-97M | 4.00 | 3.57 |
+| Granite R2-311M | 4.20 | 3.82 |
 
-*(Isolated-word column from the original run; the leading-space column and
-per-word split examples are produced by `src/eval/tokenization_test.py` and will
-be filled from a fresh run.)*
+A leading space reduces the R2 counts slightly (byte-level BPE absorbs it) and
+leaves the SentencePiece R1/e5 counts unchanged, as expected. Under either
+condition R2 fragments Kazakh substantially more: ≈2.3× in isolation and ≈2.1×
+with a leading space (R2-311M 3.82 vs 1.81). The gap is robust to the space
+convention. Example splits (isolated; ▁ marks a SentencePiece word boundary):
 
-In the isolated condition the ModernBERT tokenizer used by R2 splits Kazakh words
-about 2.3× more finely than the R1/e5 tokenizer. We treat this as **one factor**
-contributing to R2's overall regression on Kazakh, not as the sole cause and not
-as an explanation of any single query category — see Limitations §6, where we
-note that the larger R2-311M does *not* regress on the morphological category.
+| word | e5 / R1-278M | R2-311M | R2-97M |
+|------|-------------|---------|-------:|
+| халықаралық | `▁халықаралық` (1) | `ха·лы·қа·ра·лық` (5) | 4 |
+| мүмкіндіктерін | `▁мүмкіндіктері·н` (2) | `м·үм·кі·нді·кте·рін` (6) | 6 |
+| ұйымдастырушылық | `▁ұйымдастыру·шылық` (2) | `ұ·йы·м·да·сты·ру·шы·лық` (8) | 8 |
+
+(R2-97M uses byte-level tokens that do not render as readable Cyrillic, so only
+the count is shown; reproduce with `python -m src.eval.tokenization_test`.)
+
+We treat this fragmentation as **one factor** contributing to R2's overall
+regression on Kazakh, not as the sole cause and not as an explanation of any
+single query category — see Limitations §6, where we note that the larger
+R2-311M does *not* regress on the morphological category.
 
 ## 4. Validated semantic set (n=127), independent replication
 
