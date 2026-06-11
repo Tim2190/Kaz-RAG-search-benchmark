@@ -65,7 +65,8 @@ python -m src.eval.tokenization_test
 
 Both R2 (ModernBERT) and TilQazyna use **byte-level BPE** — the same underlying algorithm.
 The outputs look superficially similar: both produce unreadable byte-level token strings for
-Cyrillic. Yet their fragmentation rates are opposite extremes:
+Cyrillic. The vocabulary sizes are also in the same ballpark (179K–262K). Yet their
+fragmentation rates are opposite extremes — which makes the contrast sharper, not weaker:
 
 | Tokenizer | Architecture | Vocab size | Isolated | +Space |
 |-----------|-------------|----------:|--------:|------:|
@@ -77,19 +78,17 @@ Cyrillic. Yet their fragmentation rates are opposite extremes:
 > Vocab sizes printed from `tokenizer.vocab_size` on the loaded tokenizers (reproduce with
 > `python -m src.eval.tokenization_test`).
 
-**Vocabulary *size* does not explain the gap — allocation does.** R2-311M has the **largest**
-vocabulary of all five tokenizers (262,144 — bigger than TilQazyna's 256K and e5/R1's 250K)
-yet fragments Kazakh the **most** (4.20). So the cause is not a small vocabulary budget; it is
-*what the budget is spent on*. R2's tokenizer is a ModernBERT/OLMo-derived BPE trained
-primarily on English text and code, so almost none of its large vocabulary covers Kazakh
-sub-strings — Kazakh words fall back to short byte sequences. IBM describes the R2 tokenizer
-change as motivated by better low-resource coverage; on Kazakh specifically the measured
-fragmentation goes the other way. e5/R1 use a 250K multilingual SentencePiece vocabulary
-(XLM-R lineage) whose broad multilingual training incidentally covers many Kazakh surface
-forms. TilQazyna's 256K vocabulary is purpose-built for Kazakh, encoding whole words and long
-surface forms as single tokens. The three tokenizers sit within a comparable size range
-(180K–262K); the decisive variable is training-data composition / Kazakh coverage, not raw
-vocabulary size.
+The cause is what the vocabulary is trained on, not its size. R2's vocabulary is actually
+large (granite-311m-r2 = 262,144 — larger than e5/R1's 250,002 and TilQazyna's 256,000),
+yet it fragments Kazakh far more. The R2 vocabulary is OLMo/ModernBERT-derived, built
+primarily on English and code, so very few of its entries correspond to Kazakh morpheme
+sequences — Kazakh words fall back to short byte-level pieces. e5/R1 use a similarly sized
+but multilingually-trained SentencePiece vocabulary (XLM-R lineage) in which Cyrillic and
+many Kazakh surface forms are well represented. TilQazyna's 256K vocabulary is purpose-built
+entirely for Kazakh. The lesson: for a low-resource language, tokenizer fragmentation is
+driven by vocabulary *allocation across languages*, not by raw vocabulary size. IBM describes
+the R2 tokenizer change as motivated by better low-resource coverage; on Kazakh specifically
+the measured fragmentation goes the other way.
 
 ### The fragmentation gap
 
