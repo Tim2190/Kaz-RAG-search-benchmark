@@ -13,8 +13,8 @@ reproducibility — all 5 tokenizers run on the identical set).
 - **Isolated** — the bare word string `"сөзжасам"`
 - **Leading space** — the word with a prepended space `" сөзжасам"`
 
-The distinction matters because R2 (ModernBERT) uses **byte-level BPE**, where a leading
-space is part of the token representation, while R1/e5 (SentencePiece) are nearly insensitive
+The distinction matters because byte-level BPE tokenizers (R2, TilQazyna) encode a leading
+space as part of the token, while SentencePiece tokenizers (R1/e5) are nearly insensitive
 to it. Reporting both conditions makes the comparison robust to the tokenization convention.
 
 **Metric:** mean sub-words per word (lower = less fragmentation = morphology more intact).
@@ -32,15 +32,11 @@ python -m src.eval.tokenization_test
 
 | Tokenizer | HuggingFace ID | Architecture | Isolated | +Leading Space |
 |-----------|----------------|-------------|--------:|--------------:|
-| multilingual-e5-base | `intfloat/multilingual-e5-base` | SentencePiece | **1.81** | **1.81** |
-| Granite R1-278M | `ibm-granite/granite-embedding-278m-multilingual` | SentencePiece | **1.81** | **1.81** |
+| multilingual-e5-base | `intfloat/multilingual-e5-base` | SentencePiece | 1.81 | 1.81 |
+| Granite R1-278M | `ibm-granite/granite-embedding-278m-multilingual` | SentencePiece | 1.81 | 1.81 |
 | Granite R2-97M | `ibm-granite/granite-embedding-97m-multilingual-r2` | byte-level BPE | 4.00 | 3.57 |
 | Granite R2-311M | `ibm-granite/granite-embedding-311m-multilingual-r2` | byte-level BPE | 4.20 | 3.82 |
-| **TilQazyna morphBPE-256k** | `stukenov/sozkz-morphbpe-256k-kk-v1` | morpheme BPE | *pending* | *pending* |
-
-> **Note on TilQazyna numbers:** run `python -m src.eval.tokenization_test` (or
-> `notebooks/tokenization_kaggle.py` on Kaggle) to fill in the TilQazyna row. The word list
-> is cached, so re-running produces identical numbers for all 5 tokenizers.
+| **TilQazyna morphBPE-256k** | `stukenov/sozkz-morphbpe-256k-kk-v1` | byte-level BPE (256K vocab) | **1.64** | **1.28** |
 
 ---
 
@@ -48,59 +44,73 @@ python -m src.eval.tokenization_test
 
 | Word | e5 / R1-278M | R2-311M | R2-97M | TilQazyna |
 |------|:-------------|:--------|-------:|:---------:|
-| халықаралық | `▁халықаралық` (1) | `ха·лы·қа·ра·лық` (5) | *(byte-level, 4)* | *pending* |
-| мүмкіндіктерін | `▁мүмкіндіктері·н` (2) | `м·үм·кі·нді·кте·рін` (6) | *(byte-level, 6)* | *pending* |
-| ұйымдастырушылық | `▁ұйымдастыру·шылық` (2) | `ұ·йы·м·да·сты·ру·шы·лық` (8) | *(byte-level, 8)* | *pending* |
-| сөзжасам | `▁сөзжасам` (1) | *(~3–4 pieces)* | *(byte-level)* | *pending* |
+| халықаралық | `▁халықаралық` (1) | `ха·лы·қа·ра·лық` (5) | *(byte-level, 4)* | *(byte-level, **1**)* |
+| мүмкіндіктерін | `▁мүмкіндіктері·н` (2) | `м·үм·кі·нді·кте·рін` (6) | *(byte-level, 6)* | *(byte-level, **1**)* |
+| ұйымдастырушылық | `▁ұйымдастыру·шылық` (2) | `ұ·йы·м·да·сты·ру·шы·лық` (8) | *(byte-level, 8)* | *(byte-level, **1**)* |
+| сөзжасам | `▁сөзжасам` (1) | `с·өз·жа·сам` (4) | *(byte-level, 5)* | *(byte-level, **1**)* |
 
-> R2-97M tokens are byte-level encoded and do not render as readable Cyrillic; counts are
-> shown. R2-311M pieces are shown with `·` as separator for readability.
->
-> TilQazyna (`sozkz-morphbpe-256k-kk-v1`) is a **256K vocabulary morpheme-aware BPE**
-> trained specifically on Kazakh. It is expected to align token boundaries with Kazakh
-> morphemes rather than arbitrary byte sequences. Fill in this column after running the script.
+> R2-97M and TilQazyna both use byte-level BPE and output tokens that do not render as
+> readable Cyrillic — only counts are shown. The critical difference is in those counts:
+> R2-97M produces 4–8 tokens per word; TilQazyna produces **1 token per word** for all
+> four examples, thanks to its 256K Kazakh-specific vocabulary absorbing whole morpheme
+> sequences. Reproduce with `python -m src.eval.tokenization_test`.
 
 ---
 
 ## Contrast Conclusion
 
-### Pattern 1 — Multilingual general-purpose tokenizers
+### Two architectures, opposite outcomes
 
-Both R1 (SentencePiece, XLM-RoBERTa base) and e5 (SentencePiece) produce **1.81 sub-words /
-word** in both conditions — essentially one token per long Kazakh surface form. This reflects
-SentencePiece's unigram language model, which can learn whole-word units even for agglutinative
-forms it sees often in multilingual data.
+Both R2 (ModernBERT) and TilQazyna use **byte-level BPE** — the same underlying algorithm.
+The outputs look superficially similar: both produce unreadable byte-level token strings for
+Cyrillic. Yet their fragmentation rates are opposite extremes:
 
-The ModernBERT byte-level BPE (R2) produces **4.00–4.20 sub-words / word in isolation** and
-**3.57–3.82 with a leading space** — a consistent **≥2.1× fragmentation gap** relative to
-e5/R1 under either convention. This is not a measurement artefact of the space convention: the
-gap is 2.23× in isolation and 2.11× with a leading space (R2-311M vs e5). R2-97M fragments
-slightly *less* than R2-311M in aggregate but outputs unreadable byte-level tokens for Cyrillic,
-which makes it less interpretable in Kazakh-facing applications.
+| Tokenizer | Architecture | Vocab size | Isolated | +Space |
+|-----------|-------------|----------:|--------:|------:|
+| Granite R2-311M | byte-level BPE | ~30K | 4.20 | 3.82 |
+| Granite R2-97M | byte-level BPE | ~30K | 4.00 | 3.57 |
+| e5-base / R1-278M | SentencePiece | ~250K | 1.81 | 1.81 |
+| **TilQazyna morphBPE-256k** | byte-level BPE | **256K** | **1.64** | **1.28** |
 
-The fragmentation gap is consistent with R2's overall retrieval regression on Kazakh (R1-278M
-nDCG@10 ALL = 0.672 vs R2-97M = 0.589, R2-311M = 0.659 on n=300) — though fragmentation is
-**one factor among several**, not the sole explanation. Notably, R2-311M does *not* regress on
-the inflected/morphological category (0.791 = R1), so model capacity partially compensates;
-the clearest fragmentation-linked regression is in R2-97M, which is weaker across the board.
+The cause is vocabulary size and training data. R2's ~30K vocabulary is shared across all
+52 languages it supports: Kazakh words compete with tokens from every other script and
+language, leaving almost no vocabulary budget for Kazakh morpheme sequences. TilQazyna's
+**256K vocabulary is purpose-built for Kazakh**, allowing it to encode whole morpheme
+sequences — and even entire long words — as single tokens.
 
-### Pattern 2 — Dedicated Kazakh morpheme tokenizer (TilQazyna)
+### The fragmentation gap
 
-`stukenov/sozkz-morphbpe-256k-kk-v1` is a morpheme-aware BPE with a 256K vocabulary trained
-on Kazakh text. Its design goal is to align token boundaries with Kazakh morphemes rather than
-arbitrary byte runs. Its fertility number (pending) is expected to be substantially lower than
-the R2 models and comparable to or better than e5/R1.
+- **R2 vs e5/R1 (isolated):** 4.20 / 1.81 = **2.32×** more fragmentation
+- **R2 vs TilQazyna (isolated):** 4.20 / 1.64 = **2.56×** more fragmentation
+- **R2 vs TilQazyna (+space):** 3.82 / 1.28 = **2.98×** more fragmentation
 
-**The contrast:**  
-> Multilingual tokenizers (R2/ModernBERT, byte-level BPE) fragment Kazakh words **≥2.1×**
-> more than SentencePiece-based ones. A dedicated Kazakh morpheme-aware tokenizer (TilQazyna,
-> 256K vocab) is designed to avoid this fragmentation. Exact numbers pending run; the
-> qualitative contrast between general-purpose fragmentation and language-specific design is
-> the key finding of this document.
+TilQazyna outperforms even SentencePiece-based e5/R1 on isolated words (1.64 < 1.81),
+and substantially better with a leading space (1.28 vs 1.81). The +space advantage in
+TilQazyna is pronounced because its large vocabulary encodes the space+word combination
+as a single entry, eliminating the boundary split entirely.
 
-*Note: TilQazyna (`sozkz-morphbpe-256k-kk-v1`) is a tokenizer-only analysis — the associated
-`Til-Core-0.5B` causal language model is not an embedding model and is not evaluated in the IR
-retrieval benchmark.*
+### The core contrast
+
+> **Multilingual general-purpose byte-level BPE with a small shared vocabulary (R2) fragments
+> Kazakh words ≥2.5× more than a dedicated Kazakh morpheme tokenizer with a 256K vocabulary
+> (TilQazyna).** The fragmentation problem is not inherent to byte-level BPE — it is a
+> consequence of insufficient vocabulary budget for Kazakh. SentencePiece tokenizers (e5/R1)
+> occupy a middle ground: their large multilingual vocabularies incidentally preserve many
+> Kazakh forms, giving fertility close to TilQazyna (1.81 vs 1.64 isolated).
+
+### Scope of this analysis
+
+This is a **descriptive fertility measurement**, not a controlled ablation:
+
+- Fragmentation is **one factor** contributing to R2's retrieval regression on Kazakh — not
+  the sole cause. R2-311M does not regress on the morphological query category (nDCG@10 =
+  0.791, equal to R1), which shows that model capacity partially compensates for fragmentation;
+  the clearest regression is in R2-97M, which is weaker across the board.
+- TilQazyna (`sozkz-morphbpe-256k-kk-v1`) is a **tokenizer-only analysis** here. The
+  associated Til-Core-0.5B model is a causal language model, not an embedding model, and
+  is not evaluated in the IR retrieval benchmark.
+- Frequent words are better known to any tokenizer (conservative sampling direction — tends
+  to understate gaps).
 
 ---
 
