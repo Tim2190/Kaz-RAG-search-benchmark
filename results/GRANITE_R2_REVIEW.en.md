@@ -172,4 +172,6 @@ base multilingual-e5 and lexical–dense RRF hybrids remain the stronger choices
 
 *Companion documents: `results/SPRINT2_NEW_MODELS.md` (n=300 + tokenization),
 `results/SPRINT3_SYNONYM.md` (validated set, all systems), `results/sprint3_final.json`
-(scored runs with CI). Russian version: `results/GRANITE_R2_REVIEW.md`.*
+(scored runs with CI). Russian version: `results/GRANITE_R2_REVIEW.md`.
+For a broader tokenization comparison including a dedicated Kazakh morpheme tokenizer, see
+`results/TOKENIZATION.md`.*

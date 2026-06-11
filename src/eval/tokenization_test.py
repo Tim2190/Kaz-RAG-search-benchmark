@@ -7,6 +7,8 @@
   * Слова берём из корпуса бенчмарка (частые длинные словоформы, len≥9) —
     не синтетика. Частотный отбор СКОРЕЕ ЗАНИЖАЕТ разрыв (частые слова
     токенизатор знает лучше), то есть это безопасная, консервативная сторона.
+    Список слов кэшируется в data/words_tokenization_100.json, чтобы все
+    5 токенизаторов прогонялись на ОДНОМ и том же наборе слов.
 
   * Считаем ДВА варианта на каждое слово:
       (1) слово в изоляции:         "сөзжасам"
@@ -41,10 +43,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 
 TOKENIZERS = {
-    "granite-97m-r2":  "ibm-granite/granite-embedding-97m-multilingual-r2",
-    "granite-311m-r2": "ibm-granite/granite-embedding-311m-multilingual-r2",
-    "e5-base":         "intfloat/multilingual-e5-base",
-    "granite-278m-r1": "ibm-granite/granite-embedding-278m-multilingual",
+    "granite-97m-r2":    "ibm-granite/granite-embedding-97m-multilingual-r2",
+    "granite-311m-r2":   "ibm-granite/granite-embedding-311m-multilingual-r2",
+    "e5-base":           "intfloat/multilingual-e5-base",
+    "granite-278m-r1":   "ibm-granite/granite-embedding-278m-multilingual",
+    "tilcore_morph256k": "stukenov/sozkz-morphbpe-256k-kk-v1",
 }
 
 # несколько репрезентативных слов для наглядных примеров (морфологически богатые)
@@ -53,9 +56,16 @@ EXAMPLE_WORDS = ["сөзжасам", "мүмкіндіктерін", "ұйымд
 # Кириллица казахского (вкл. спецбуквы ә і ң ғ ү ұ қ ө һ)
 _WORD = re.compile(r"[А-Яа-яЁёӘәІіҢңҒғҮүҰұҚқӨөҺһ]+")
 
+# Кэш списка слов — гарантирует одинаковые 100 слов при любом числе прогонов
+_WORDS_CACHE = os.path.join(ROOT, "data", "words_tokenization_100.json")
+
 
 def _harvest_words(n: int = 100, min_len: int = 9) -> List[str]:
-    """Собрать длинные (морфологически богатые) казахские словоформы из корпуса."""
+    """Собрать длинные (морфологически богатые) казахские словоформы из корпуса.
+    При первом вызове сохраняет список в data/words_tokenization_100.json."""
+    if os.path.exists(_WORDS_CACHE):
+        with open(_WORDS_CACHE, encoding="utf-8") as f:
+            return json.load(f)
     corpus = os.path.join(ROOT, "data/corpus/corpus.jsonl")
     counter: Counter = Counter()
     with open(corpus, encoding="utf-8") as f:
@@ -67,7 +77,11 @@ def _harvest_words(n: int = 100, min_len: int = 9) -> List[str]:
             for w in _WORD.findall(text.lower()):
                 if len(w) >= min_len:
                     counter[w] += 1
-    return [w for w, _ in counter.most_common(n)]
+    words = [w for w, _ in counter.most_common(n)]
+    os.makedirs(os.path.dirname(_WORDS_CACHE), exist_ok=True)
+    with open(_WORDS_CACHE, "w", encoding="utf-8") as f:
+        json.dump(words, f, ensure_ascii=False, indent=2)
+    return words
 
 
 def _avg_subwords(tok, words: List[str], lead_space: bool) -> float:
@@ -89,8 +103,11 @@ def main() -> None:
     for alias, hf_id in TOKENIZERS.items():
         try:
             loaded[alias] = AutoTokenizer.from_pretrained(hf_id)
-        except Exception as e:
-            print(f"[skip] {alias}: {e}")
+        except Exception:
+            try:
+                loaded[alias] = AutoTokenizer.from_pretrained(hf_id, trust_remote_code=True)
+            except Exception as e:
+                print(f"[skip] {alias}: {e}")
 
     # --- средние: два варианта (без пробела / с ведущим пробелом) ---
     print(f"{'токенизатор':18s} {'без пробела':>12s} {'с пробелом':>12s}")
