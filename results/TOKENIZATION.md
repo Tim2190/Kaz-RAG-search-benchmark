@@ -69,27 +69,27 @@ Cyrillic. Yet their fragmentation rates are opposite extremes:
 
 | Tokenizer | Architecture | Vocab size | Isolated | +Space |
 |-----------|-------------|----------:|--------:|------:|
-| Granite R2-311M | byte-level BPE | 50,368† | 4.20 | 3.82 |
-| Granite R2-97M | byte-level BPE | 50,368† | 4.00 | 3.57 |
-| e5-base / R1-278M | SentencePiece | 250,002† | 1.81 | 1.81 |
+| Granite R2-311M | byte-level BPE | 262,144 | 4.20 | 3.82 |
+| Granite R2-97M | byte-level BPE | 179,934 | 4.00 | 3.57 |
+| e5-base / R1-278M | SentencePiece | 250,002 | 1.81 | 1.81 |
 | **TilQazyna morphBPE-256k** | byte-level BPE | **256,000** | **1.64** | **1.28** |
 
-> †Vocab sizes are the known design values (ModernBERT 50,368; XLM-R 250,002; TilQazyna
-> 256K). The script now prints `tokenizer.vocab_size` for each loaded tokenizer — confirm
-> the printed R2 figure (IBM could in principle have extended the ModernBERT vocab for
-> multilingual r2) before citing the exact number externally. The fertility numbers below
-> are measured directly and are not affected by the vocab figure. Reproduce both with
-> `python -m src.eval.tokenization_test`.
+> Vocab sizes printed from `tokenizer.vocab_size` on the loaded tokenizers (reproduce with
+> `python -m src.eval.tokenization_test`).
 
-The cause is vocabulary budget, not the BPE algorithm itself. R2's tokenizer is a
-ModernBERT/OLMo-derived BPE (vocab = 50,368) trained primarily on English text and
-code — little of that budget is allocated to Kazakh, so Kazakh words fall back to
-short sub-morphemic byte sequences. IBM describes the R2 tokenizer change as motivated
-by better low-resource coverage; on Kazakh specifically the measured fragmentation goes
-the other way. e5/R1 use a ~250K multilingual SentencePiece vocabulary (XLM-R lineage)
-that incidentally covers many Kazakh surface forms despite not being Kazakh-specific.
-TilQazyna's **256K vocabulary is purpose-built for Kazakh**, encoding whole morpheme
-sequences — and many entire long words — as single tokens.
+**Vocabulary *size* does not explain the gap — allocation does.** R2-311M has the **largest**
+vocabulary of all five tokenizers (262,144 — bigger than TilQazyna's 256K and e5/R1's 250K)
+yet fragments Kazakh the **most** (4.20). So the cause is not a small vocabulary budget; it is
+*what the budget is spent on*. R2's tokenizer is a ModernBERT/OLMo-derived BPE trained
+primarily on English text and code, so almost none of its large vocabulary covers Kazakh
+sub-strings — Kazakh words fall back to short byte sequences. IBM describes the R2 tokenizer
+change as motivated by better low-resource coverage; on Kazakh specifically the measured
+fragmentation goes the other way. e5/R1 use a 250K multilingual SentencePiece vocabulary
+(XLM-R lineage) whose broad multilingual training incidentally covers many Kazakh surface
+forms. TilQazyna's 256K vocabulary is purpose-built for Kazakh, encoding whole words and long
+surface forms as single tokens. The three tokenizers sit within a comparable size range
+(180K–262K); the decisive variable is training-data composition / Kazakh coverage, not raw
+vocabulary size.
 
 ### The fragmentation gap
 
@@ -104,11 +104,12 @@ as a single entry, eliminating the boundary split entirely.
 
 ### The core contrast
 
-> **Multilingual general-purpose byte-level BPE with a small English/code-centric vocabulary
-> (R2) fragments Kazakh words ≥2.5× more than a dedicated Kazakh tokenizer with a 256K
-> vocabulary (TilQazyna).** The fragmentation problem is not inherent to byte-level BPE — it is
-> a consequence of insufficient vocabulary budget for Kazakh. SentencePiece tokenizers (e5/R1)
-> occupy a middle ground: their large multilingual vocabularies incidentally preserve many
+> **A multilingual general-purpose byte-level BPE whose vocabulary is English/code-centric
+> (R2) fragments Kazakh words ≥2.5× more than a dedicated Kazakh tokenizer (TilQazyna) —
+> despite R2-311M having the larger vocabulary (262K vs 256K).** The fragmentation problem is
+> not inherent to byte-level BPE, and it is not a matter of raw vocabulary size: it is a
+> consequence of how little of the vocabulary covers Kazakh. SentencePiece tokenizers (e5/R1)
+> occupy a middle ground: their broad multilingual vocabularies incidentally preserve many
 > Kazakh forms, giving fertility close to TilQazyna (1.81 vs 1.64 isolated).
 
 ### Scope of this analysis
