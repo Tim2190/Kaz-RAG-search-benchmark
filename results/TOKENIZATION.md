@@ -30,13 +30,17 @@ python -m src.eval.tokenization_test
 
 ## Fertility Table (mean sub-words / word, n=100)
 
-| Tokenizer | HuggingFace ID | Architecture | Isolated | +Leading Space |
+| Tokenizer | HuggingFace ID | Architecture† | Isolated | +Leading Space |
 |-----------|----------------|-------------|--------:|--------------:|
 | multilingual-e5-base | `intfloat/multilingual-e5-base` | SentencePiece | 1.81 | 1.81 |
 | Granite R1-278M | `ibm-granite/granite-embedding-278m-multilingual` | SentencePiece | 1.81 | 1.81 |
 | Granite R2-97M | `ibm-granite/granite-embedding-97m-multilingual-r2` | byte-level BPE | 4.00 | 3.57 |
 | Granite R2-311M | `ibm-granite/granite-embedding-311m-multilingual-r2` | byte-level BPE | 4.20 | 3.82 |
 | **TilQazyna morphBPE-256k** | `stukenov/sozkz-morphbpe-256k-kk-v1` | byte-level BPE (256K vocab) | **1.64** | **1.28** |
+
+> †Architecture type taken from model cards and official documentation, not verified by
+> this script. The script measures token counts only; tokenizer algorithm is not inspected
+> programmatically.
 
 ---
 
