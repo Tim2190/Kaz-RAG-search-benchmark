@@ -109,15 +109,21 @@ def main() -> None:
             except Exception as e:
                 print(f"[skip] {alias}: {e}")
 
+    # --- словари ---
+    print(f"{'токенизатор':22s} {'vocab_size':>12s}")
+    print("-" * 36)
+    for alias, tok in loaded.items():
+        print(f"{alias:22s} {tok.vocab_size:12d}")
+
     # --- средние: два варианта (без пробела / с ведущим пробелом) ---
-    print(f"{'токенизатор':18s} {'без пробела':>12s} {'с пробелом':>12s}")
-    print("-" * 44)
+    print(f"\n{'токенизатор':22s} {'без пробела':>12s} {'с пробелом':>12s}")
+    print("-" * 48)
     results = {}
     for alias, tok in loaded.items():
         a_bare = _avg_subwords(tok, words, lead_space=False)
         a_lead = _avg_subwords(tok, words, lead_space=True)
         results[alias] = (a_bare, a_lead)
-        print(f"{alias:18s} {a_bare:12.2f} {a_lead:12.2f}")
+        print(f"{alias:22s} {a_bare:12.2f} {a_lead:12.2f}")
 
     # --- наглядные примеры разбиения ---
     print("\n--- Примеры разбиения (слово → куски; ▁/Ġ = ведущий пробел) ---")

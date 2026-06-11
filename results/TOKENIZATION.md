@@ -67,16 +67,23 @@ Cyrillic. Yet their fragmentation rates are opposite extremes:
 
 | Tokenizer | Architecture | Vocab size | Isolated | +Space |
 |-----------|-------------|----------:|--------:|------:|
-| Granite R2-311M | byte-level BPE | ~30K | 4.20 | 3.82 |
-| Granite R2-97M | byte-level BPE | ~30K | 4.00 | 3.57 |
-| e5-base / R1-278M | SentencePiece | ~250K | 1.81 | 1.81 |
-| **TilQazyna morphBPE-256k** | byte-level BPE | **256K** | **1.64** | **1.28** |
+| Granite R2-311M | byte-level BPE | 50,368 | 4.20 | 3.82 |
+| Granite R2-97M | byte-level BPE | 50,368 | 4.00 | 3.57 |
+| e5-base / R1-278M | SentencePiece | 250,002 | 1.81 | 1.81 |
+| **TilQazyna morphBPE-256k** | byte-level BPE | **256,000** | **1.64** | **1.28** |
 
-The cause is vocabulary size and training data. R2's ~30K vocabulary is shared across all
-52 languages it supports: Kazakh words compete with tokens from every other script and
-language, leaving almost no vocabulary budget for Kazakh morpheme sequences. TilQazyna's
-**256K vocabulary is purpose-built for Kazakh**, allowing it to encode whole morpheme
-sequences — and even entire long words — as single tokens.
+> Vocab sizes printed from the loaded tokenizer (`tokenizer.vocab_size`).
+> Run `python -m src.eval.tokenization_test` to reproduce.
+
+The cause is vocabulary budget, not the BPE algorithm itself. R2's tokenizer is a
+ModernBERT/OLMo-derived BPE (vocab = 50,368) trained primarily on English text and
+code — little of that budget is allocated to Kazakh, so Kazakh words fall back to
+short sub-morphemic byte sequences. IBM describes the R2 tokenizer change as motivated
+by better low-resource coverage; on Kazakh specifically the measured fragmentation goes
+the other way. e5/R1 use a ~250K multilingual SentencePiece vocabulary (XLM-R lineage)
+that incidentally covers many Kazakh surface forms despite not being Kazakh-specific.
+TilQazyna's **256K vocabulary is purpose-built for Kazakh**, encoding whole morpheme
+sequences — and many entire long words — as single tokens.
 
 ### The fragmentation gap
 
