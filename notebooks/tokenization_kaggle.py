@@ -47,11 +47,32 @@ TOKENIZERS = {
 
 EXAMPLE_WORDS = ["сөзжасам", "мүмкіндіктерін", "ұйымдастырушылық", "халықаралық"]
 
-# Paste the 100 words from data/words_tokenization_100.json here,
-# OR harvest them from corpus.jsonl (see _harvest_words below).
-# If running standalone without corpus, replace WORDS with this list
-# (generated from the benchmark corpus, fixed for reproducibility):
-WORDS: List[str] | None = None   # set to a list[str] of 100 words to skip harvest
+# The fixed 100-word list (100 most-frequent Kazakh surface forms, len>=9,
+# from the benchmark corpus). Embedded so the script runs standalone on
+# Kaggle/Colab WITHOUT cloning the repo or any corpus file. All 5 tokenizers
+# run on this identical set.
+WORDS: List[str] = [
+    "қазақстан", "мемлекеттік", "орналасқан", "солтүстік", "республикасы",
+    "байланысты", "республикасының", "экономикалық", "қазақстанның", "халықаралық",
+    "негізінен", "жергілікті", "арасындағы", "нәтижесінде", "облысының",
+    "шаруашылығы", "әлеуметтік", "кездеседі", "әкімшілік", "президенті",
+    "түркістан", "қаласында", "президент", "сондықтан", "дүниежүзілік",
+    "республика", "жөніндегі", "этникалық", "аумағында", "қамтамасыз",
+    "негізінде", "аралығында", "шығысында", "құрамында", "өнеркәсіп",
+    "мемлекеті", "қаласының", "орынбасары", "иегерлері", "шаруашылық",
+    "университеті", "оңтүстігінде", "қарағанды", "өнеркәсібі", "батысында",
+    "қарағанда", "бөлігінде", "солтүстігінде", "ұлыбритания", "ғасырларда",
+    "республикалық", "қазақтардың", "еуропалық", "қалыптасқан", "парламент",
+    "қазақстанда", "мүмкіндік", "кеңесінің", "көпшілігі", "тәуелсіздік",
+    "хандығының", "білдіреді", "экономика", "тайпалары", "көрсетеді",
+    "әскерлері", "ортасында", "азаматтық", "демократиялық", "мемлекетінің",
+    "музыкалық", "температурасы", "қызылорда", "жариялады", "мәдениеті",
+    "температура", "империясының", "жарияланды", "географиялық", "бойындағы",
+    "мәліметтер", "республиканың", "империясы", "қарамастан", "мекендеген",
+    "комитетінің", "жартысында", "социалистік", "президентінің", "қабылданды",
+    "аумағының", "өнімдерін", "техникалық", "мемлекеттің", "сақталған",
+    "мақсатында", "парламенті", "жағалауында", "қалыптасты", "қазақстандағы",
+]
 
 
 def _harvest_words(corpus_path: str, n: int = 100, min_len: int = 9) -> List[str]:
@@ -76,21 +97,8 @@ def _avg_subwords(tok, words: List[str], lead_space: bool) -> float:
     return total / max(len(words), 1)
 
 
-def run(corpus_path: str = "data/corpus/corpus.jsonl") -> None:
+def run(words: List[str] = WORDS) -> None:
     from transformers import AutoTokenizer
-
-    words = WORDS
-    if words is None:
-        # Try cached file first
-        cache = "data/words_tokenization_100.json"
-        if os.path.exists(cache):
-            with open(cache, encoding="utf-8") as f:
-                words = json.load(f)
-        else:
-            words = _harvest_words(corpus_path)
-            with open(cache, "w", encoding="utf-8") as f:
-                json.dump(words, f, ensure_ascii=False, indent=2)
-            print(f"Word list saved → {cache}")
 
     print(f"Words: {len(words)}, examples: {', '.join(words[:5])} …\n")
 
