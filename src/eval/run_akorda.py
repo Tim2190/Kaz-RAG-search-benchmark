@@ -197,13 +197,15 @@ def run_dense(model_key: str, top_k: int = 100) -> Dict:
     corpus = _load_corpus()
     queries = _load_queries()
     qrels = _load_qrels()
-    qmap = {q["query_id"]: q_prefix + q["text"] for q in queries}
-    corpus_prefixed = [(doc_id, p_prefix + text) for doc_id, text in corpus]
+    qmap = {q["query_id"]: q["text"] for q in queries}
 
-    cache_path = os.path.join(DATA_DIR, f".cache_emb_{model_key}.npy")
     print(f"Dense encode ({hf_id})…")
-    index = DenseIndex(hf_id, cache_path=cache_path)
-    index.fit(corpus_prefixed)
+    index = DenseIndex(
+        model_name=hf_id,
+        query_prefix=q_prefix,
+        doc_prefix=p_prefix,
+    )
+    index.index(corpus, show_progress=True)
     run_result = index.run(qmap, top_k=top_k)
 
     overall, by_cat = _metrics_block(run_result, qrels, queries)
