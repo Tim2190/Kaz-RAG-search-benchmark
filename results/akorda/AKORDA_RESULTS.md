@@ -12,7 +12,7 @@
 |----------|--:|-----------------------:|-------------|
 | factoid | 81 | ≈ 0.79 | Direct factoid questions, high BM25-friendly overlap |
 | paraphrase | 81 | ≈ 0.36 | Paraphrased questions |
-| low_overlap | 82 | ≈ 0.32 | Low lexical overlap, vocabulary-gap / synonym-like |
+| low_overlap | 82 | ≈ 0.32 | Low lexical overlap (corrected semantic category; distinct from the Wiki vocab-gap category, which had unintentionally high overlap by construction) |
 
 ---
 
@@ -81,33 +81,35 @@ BM25 nDCG@10 = **0.905** on factoid queries (lexical overlap ≈ 0.79). This is 
 
 e5 is the only system that is simultaneously: best at paraphrase (0.441), best at low_overlap (0.413), and best overall (0.509). Its overall edge over BM25+stemmer (Δ=+0.011) is not significant (p=0.353) because factoid pulls BM25 up. Among all dense systems, e5 is significantly better than every other model (p<0.001).
 
-### 3. Stemmer effect not significant on Akorda
+### 3. Stemmer effect not significant on Akorda (preliminary)
 
-bm25-identity → bm25+stemmer: Δ=+0.014, p=0.196. Two possible reasons: (a) BM25 was run with a 78%-cache stemmer (identity fallback for uncached tokens); (b) formal political Kazakh in Akorda may have less morphological variation than Wikipedia. The effect was significant on Wiki (Δ=+0.064, p<0.01).
+bm25-identity → bm25+stemmer: Δ=+0.014, p=0.196. **This result is preliminary**: BM25+stemmer was run with a 78%-cache stemmer (identity fallback for uncached tokens), meaning 22% of tokens were not stemmed. The non-significance could therefore be an artifact of incomplete stemming rather than a property of the language or domain. A clean run with full cache coverage is needed to confirm. For reference, the effect was significant on Wiki (Δ=+0.064, p<0.01), where full cache was available.
 
 ### 4. BM25+stemmer outperforms granite-r1 and shyngys-e5
 
 Both dense systems fail to match BM25+stemmer on Akorda overall (p=0.011 and p=0.013 respectively). The factoid category accounts for most of this: BM25 nDCG@10 = 0.905 vs granite-r1 = 0.548 on factoid.
 
-### 5. Rankings generalize from Wiki to Akorda
+### 5. Dense model ranking is OOD-stable; BM25 vs dense balance is domain-dependent
 
-Cross-dataset Spearman rank correlation on nDCG@10 (n=7 systems): ρ=1.00 (identical rank order). Despite a ≈30% absolute score drop (formal political text is harder), no system swaps position. This is an OOD confirmation: the Wiki ranking is not an artifact of that corpus.
+Cross-dataset Spearman rank correlation on nDCG@10 (n=7 systems): **ρ=0.89** (Σd²=6). The ranking is substantially preserved — e5 is #1 on both domains, granite-r2-97m is last on both — but not perfectly identical. The one systematic shift is shyngys-e5, which moves from rank 3 on Wiki to rank 5 on Akorda:
 
-| System | Wiki rank | Akorda rank |
-|--------|:---------:|:-----------:|
-| e5 | 1 | 1 |
-| bm25+stemmer | 2 | 2 |
-| bm25+identity | 3 | 3 |
-| granite-r1 | 4† | 4 |
-| shyngys-e5 | 3† | 5 |
-| granite-r2-311m | 5 | 6 |
-| granite-r2-97m | 6 | 7 |
+| System | Wiki nDCG@10 | Wiki rank | Akorda nDCG@10 | Akorda rank | Shift |
+|--------|-------------:|:---------:|---------------:|:-----------:|:-----:|
+| e5 | 0.785 | 1 | 0.509 | 1 | — |
+| bm25+stemmer | 0.754 | 2 | 0.498 | 2 | — |
+| shyngys-e5 | 0.747 | **3** | 0.426 | **5** | ↓ 2 |
+| bm25+identity | 0.690 | 4 | 0.484 | 3 | ↑ 1 |
+| granite-r1 | 0.672 | 5 | 0.431 | 4 | ↑ 1 |
+| granite-r2-311m | 0.659 | 6 | 0.399 | 6 | — |
+| granite-r2-97m | 0.589 | 7 | 0.259 | 7 | — |
 
-†On Wiki, shyngys-e5 (0.747) was above granite-r1 (0.672). On Akorda, shyngys-e5 (0.426) drops to within noise of granite-r1 (0.431). The difference between them on Akorda is not significant (p > 0.05 from bootstraps above).
+**shyngys-e5** drops disproportionately on formal political text (−0.321 absolute, the second largest drop after r2-97m), falling below granite-r1 on Akorda — a relationship reversed on Wiki. On Akorda the shyngys-e5 vs granite-r1 difference is not significant (p>0.05), so the practical gap is small, but the direction reversal is real.
 
-### 6. R2-97M remains the weakest system
+**BM25 vs dense** is the other domain-sensitive relationship. On Wiki, BM25+stemmer was clearly behind e5 and shyngys-e5 in absolute terms. On Akorda, BM25+stemmer ranks #2 overall, above all dense models except e5 — but this is driven entirely by the factoid category (lexical overlap ≈0.79): when factoid is excluded, e5 leads on paraphrase and low_overlap (both p<0.05). The core finding is that **the ranking of dense models among themselves is OOD-stable, while the BM25-vs-dense balance depends on the domain's lexical overlap distribution**.
 
-Granite R2-97M nDCG@10 = 0.259 — more than 2× below e5, and significantly worse than all other systems. R2-311M (0.399) is significantly better than R2-97M (p<0.001) but still significantly below e5 (p<0.001). The R2 vs R1 gap (R1=0.431 vs R2-311M=0.399) does not reach significance on Akorda (p=0.076) — possible due to smaller sample (n=244 vs 300).
+### 6. R2 does not outperform R1 on any domain
+
+Granite R2-97M nDCG@10 = 0.259 — more than 2× below e5, and significantly worse than all other systems. R2-311M (0.399) is significantly better than R2-97M (p<0.001) but still significantly below e5 (p<0.001). On neither domain does R2 outperform R1: on Wiki R2-311M scores lower (0.659 vs R1 0.672); on Akorda the gap is similar in direction (0.399 vs 0.431) but does not reach significance (p=0.076, n=244). The pattern is consistent — R2 is not an improvement over R1 for Kazakh — but the Akorda result should be read as "within noise" rather than a confirmed gap, pending a larger sample or a full-cache BM25+stemmer run for cleaner context.
 
 ---
 
@@ -123,7 +125,7 @@ Granite R2-97M nDCG@10 = 0.259 — more than 2× below e5, and significantly wor
 | granite-r2-311m | 0.659 | 0.399 | −0.260 |
 | granite-r2-97m | 0.589 | 0.259 | −0.330 |
 
-All systems drop substantially on Akorda. The largest drops are granite-r2-97m (−0.330) and shyngys-e5 (−0.321), smallest is bm25+identity (−0.206). The relative ordering is preserved (ρ=1.00), confirming that score differences on Wiki are not corpus-specific artifacts.
+All systems drop substantially on Akorda. The largest drops are granite-r2-97m (−0.330) and shyngys-e5 (−0.321), smallest is bm25+identity (−0.206). The relative ordering is largely preserved (Spearman ρ=0.89, n=7), with one systematic shift: shyngys-e5 moves from rank 3 on Wiki to rank 5 on Akorda (see Finding 5).
 
 ---
 
