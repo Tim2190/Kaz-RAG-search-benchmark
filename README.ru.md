@@ -273,6 +273,11 @@ inflected, p≤0.0017, n=300). Прогнаны пять систем поиск
 - **Валидированный бенчмарк семантического разрыва** — 127 запросов, проверенных
   носителем, метрики passage- и article-level с bootstrap-CI:
   [`results/SPRINT3_SYNONYM.md`](results/SPRINT3_SYNONYM.md).
+- **Контрольное исследование Akorda OOD** — те же 7 систем прогнаны на
+  принципиально другом корпусе (официальные выступления Президента, akorda.kz,
+  n=244 запроса). Ранжирование в целом сохраняется (ρ=0.89); порядок dense-моделей
+  OOD-устойчив, баланс BM25 vs dense зависит от лексического overlap домена:
+  [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
 
 ---
 
