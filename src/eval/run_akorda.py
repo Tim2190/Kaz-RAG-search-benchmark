@@ -221,9 +221,38 @@ def run_dense(model_key: str, top_k: int = 100) -> Dict:
 
 
 # ── Hybrid RRF ────────────────────────────────────────────────────────────────
+#
+# Зеркалит протокол Wiki-гибрида (src/eval/run_hybrid.py): сливает BM25+стеммер ⊕
+# dense через каноническую reciprocal_rank_fusion, считает метрики обоих каналов +
+# гибрида, значимость (paired bootstrap), sensitivity по k и pre-registered
+# критерии успеха. Единственная адаптация под Akorda — семантический срез
+# называется low_overlap (на Wiki это была vocabulary-gap).
+
+_SEMANTIC_CAT = "low_overlap"  # аналог vocabulary-gap на Wiki
+
+
+def _metrics_block_full(run_result, qrels, cats) -> Dict:
+    from ..eval import metrics
+    overall = metrics.evaluate_run(run_result, qrels,
+                                   metrics=("recall", "mrr", "ndcg"), ks=(1, 5, 10))
+    by_cat = {}
+    for cat in sorted(set(cats.values())):
+        qids = {q for q, c in cats.items() if c == cat}
+        by_cat[cat] = metrics.evaluate_run(run_result, _subset_qrels(qrels, qids),
+                                           metrics=("recall", "mrr", "ndcg"), ks=(1, 5, 10))
+    return {"overall": overall, "by_category": by_cat}
+
+
+def _ndcg10(block: Dict, group: str) -> float:
+    if group == "ALL":
+        return block["overall"]["ndcg@10"]
+    return block["by_category"].get(group, {}).get("ndcg@10", 0.0)
+
 
 def run_hybrid(bm25_runs_path: str, dense_runs_path: str,
-               k: int = RRF_K) -> Dict:
+               dense_label: str = "dense",
+               k: int = RRF_K, resamples: int = 10000) -> Dict:
+    from ..retrieval.hybrid import reciprocal_rank_fusion
     from ..eval import metrics
 
     with open(bm25_runs_path) as f:
@@ -231,27 +260,80 @@ def run_hybrid(bm25_runs_path: str, dense_runs_path: str,
     with open(dense_runs_path) as f:
         dense_run = json.load(f)["run"]
 
-    qids = set(bm25_run) | set(dense_run)
-    run_result: Dict[str, List[str]] = {}
-    for qid in qids:
-        scores: Dict[str, float] = {}
-        for rank, doc_id in enumerate(bm25_run.get(qid, []), 1):
-            scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
-        for rank, doc_id in enumerate(dense_run.get(qid, []), 1):
-            scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
-        run_result[qid] = sorted(scores, key=scores.get, reverse=True)[:100]
-
     queries = _load_queries()
     qrels = _load_qrels()
-    overall, by_cat = _metrics_block(run_result, qrels, queries)
+    cats = {q["query_id"]: q["category"] for q in queries}
+
+    # PRE-FLIGHT: оба канала на одном наборе запросов
+    qb, qd = set(bm25_run), set(dense_run)
+    if qb != qd:
+        only_b, only_d = qb - qd, qd - qb
+        raise SystemExit(
+            "PRE-FLIGHT FAILED: наборы запросов в каналах не совпадают.\n"
+            f"  BM25: {len(qb)}, dense: {len(qd)}.\n"
+            f"  только в BM25: {sorted(only_b)[:5]}\n"
+            f"  только в dense: {sorted(only_d)[:5]}")
+
+    # оцениваем только по запросам, реально присутствующим в каналах
+    qrels = {q: rel for q, rel in qrels.items() if q in qb}
+    cats = {q: c for q, c in cats.items() if q in qb}
+
+    channels = {"bm25_stemmer": bm25_run, dense_label: dense_run}
+    hybrid_run = reciprocal_rank_fusion(channels, k=k)
+
+    blocks = {
+        "bm25_stemmer": _metrics_block_full(bm25_run, qrels, cats),
+        dense_label:    _metrics_block_full(dense_run, qrels, cats),
+        "hybrid":       _metrics_block_full(hybrid_run, qrels, cats),
+    }
+
+    # значимость: Hybrid vs каждый канал, по срезам, ndcg@10
+    groups = {"ALL": set(qrels)}
+    for c in sorted(set(cats.values())):
+        groups[c] = {q for q, cc in cats.items() if cc == c}
+    sig = {"hybrid_vs_bm25": {}, "hybrid_vs_dense": {}}
+    for gname, qids in groups.items():
+        sub = _subset_qrels(qrels, qids)
+        d_b, p_b, _ = metrics.paired_bootstrap(
+            bm25_run, hybrid_run, sub, metric="ndcg", k=10, n_resamples=resamples)
+        d_d, p_d, _ = metrics.paired_bootstrap(
+            dense_run, hybrid_run, sub, metric="ndcg", k=10, n_resamples=resamples)
+        sig["hybrid_vs_bm25"][gname]  = {"delta": d_b, "p": p_b}
+        sig["hybrid_vs_dense"][gname] = {"delta": d_d, "p": p_d}
+
+    # sensitivity по k (для честности, не для подбора лучшего)
+    sweep_table = {}
+    for kk in (10, 30, 60, 100):
+        run_kk = reciprocal_rank_fusion(channels, k=kk)
+        blk = _metrics_block_full(run_kk, qrels, cats)
+        sweep_table[kk] = {g: _ndcg10(blk, g) for g in groups}
+
+    # pre-registered критерии (vocab-gap → low_overlap)
+    all_hyb = _ndcg10(blocks["hybrid"], "ALL")
+    all_max = max(_ndcg10(blocks["bm25_stemmer"], "ALL"),
+                  _ndcg10(blocks[dense_label], "ALL"))
+    sem_hyb  = _ndcg10(blocks["hybrid"], _SEMANTIC_CAT)
+    sem_bm25 = _ndcg10(blocks["bm25_stemmer"], _SEMANTIC_CAT)
+    criteria = {
+        "all_hybrid_ge_max_channel": all_hyb >= all_max,
+        "low_overlap_hybrid_ge_bm25": sem_hyb >= sem_bm25 - 1e-9,
+        "all_hybrid_ndcg10": all_hyb,
+        "all_max_channel_ndcg10": all_max,
+        "low_overlap_hybrid_ndcg10": sem_hyb,
+        "low_overlap_bm25_ndcg10": sem_bm25,
+    }
+
     return {
-        "system": "hybrid-rrf",
+        "system": "hybrid:rrf",
         "dataset": "akorda",
-        "n_passages": _load_corpus().__len__(),
-        "n_queries": len(queries),
-        "overall": overall,
-        "by_category": by_cat,
-        "run": run_result,
+        "channels": ["bm25_stemmer", dense_label],
+        "rrf_k": k,
+        "n_queries": len(qrels),
+        "metrics": blocks,
+        "significance": sig,
+        "k_sweep": sweep_table,
+        "criteria": criteria,
+        "run": hybrid_run,
     }
 
 
@@ -261,13 +343,15 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--system", required=True,
                     choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS) + ["hybrid-e5",
-                             "hybrid-granite-r1", "hybrid-granite-r2-311m",
-                             "hybrid-shyngys-e5"])
+                             "hybrid-granite-r1", "hybrid-granite-r2-97m",
+                             "hybrid-granite-r2-311m", "hybrid-shyngys-e5"])
     ap.add_argument("--out", required=True)
     ap.add_argument("--top-k", type=int, default=100)
     # hybrid options
     ap.add_argument("--bm25-runs",   default=None)
     ap.add_argument("--dense-runs",  default=None)
+    ap.add_argument("--dense-label", default="dense",
+                    help="имя dense-канала в выводе гибрида (напр. e5, granite-r1)")
     args = ap.parse_args()
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
@@ -281,7 +365,8 @@ def main() -> None:
     elif args.system.startswith("hybrid"):
         if not args.bm25_runs or not args.dense_runs:
             ap.error("--bm25-runs and --dense-runs required for hybrid")
-        result = run_hybrid(args.bm25_runs, args.dense_runs)
+        result = run_hybrid(args.bm25_runs, args.dense_runs,
+                            dense_label=args.dense_label)
     else:
         raise ValueError(args.system)
 
@@ -289,12 +374,32 @@ def main() -> None:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\nSaved → {args.out}")
 
-    overall = result["overall"]
-    print(f"\nnDCG@10 overall: {overall.get('ndcg@10', overall.get('ndcg_10', '?')):.4f}")
-    by_cat = result["by_category"]
-    for cat, m in sorted(by_cat.items()):
-        v = m.get("ndcg@10", m.get("ndcg_10", "?"))
-        print(f"  {cat:20s}: {v:.4f}")
+    if result.get("system") == "hybrid:rrf":
+        # богатый формат: печатаем nDCG@10 по 3 системам + критерии
+        dense_label = result["channels"][1]
+        b = result["metrics"]
+        groups = ["factoid", "paraphrase", _SEMANTIC_CAT, "ALL"]
+        print(f"\nГибрид BM25+стеммер ⊕ {dense_label} (RRF k={result['rrf_k']}), "
+              f"n={result['n_queries']}")
+        print(f"{'система':<16}" + "".join(f"{g[:11]:>13}" for g in groups))
+        for sysname in ("bm25_stemmer", dense_label, "hybrid"):
+            row = f"{sysname:<16}" + "".join(
+                f"{_ndcg10(b[sysname], g):>13.4f}" for g in groups)
+            print(row)
+        c = result["criteria"]
+        print(f"\nКритерии: ALL hybrid {c['all_hybrid_ndcg10']:.4f} ≥ "
+              f"max(каналов) {c['all_max_channel_ndcg10']:.4f} → "
+              f"{'ДА' if c['all_hybrid_ge_max_channel'] else 'НЕТ'}")
+        print(f"          low_overlap hybrid {c['low_overlap_hybrid_ndcg10']:.4f} ≥ "
+              f"BM25 {c['low_overlap_bm25_ndcg10']:.4f} → "
+              f"{'ДА' if c['low_overlap_hybrid_ge_bm25'] else 'НЕТ'}")
+    else:
+        overall = result["overall"]
+        print(f"\nnDCG@10 overall: {overall.get('ndcg@10', overall.get('ndcg_10', '?')):.4f}")
+        by_cat = result["by_category"]
+        for cat, m in sorted(by_cat.items()):
+            v = m.get("ndcg@10", m.get("ndcg_10", "?"))
+            print(f"  {cat:20s}: {v:.4f}")
 
 
 if __name__ == "__main__":
