@@ -2,8 +2,10 @@
 Прогон dense-систем на датасете Akorda — Kaggle/Colab.
 
 # ── Cell 1: install & clone ──────────────────────────────────────────────────
+# Клонируем ветку claude/akorda-hybrid — в ней есть и dense/hybrid, и
+# fertility_compare.py + словник Akorda (для Cell 5). Internet ON обязателен.
 # !pip install -q transformers sentence-transformers torch
-# !git clone -b claude/akorda-benchmark https://github.com/tim2190/kaz-rag-search-benchmark.git
+# !git clone -b claude/akorda-hybrid https://github.com/tim2190/kaz-rag-search-benchmark.git
 # %cd kaz-rag-search-benchmark
 
 # ── Cell 2: прогоны (по одному на cell, чтобы GPU-память освобождалась) ─────
