@@ -18,9 +18,9 @@
 #
 # ── Cell 3: hybrid (после того как готовы оба runs) ─────────────────────────
 #
-# Пример: BM25+stemmer ⊕ e5
+# Пример: BM25+stemmer ⊕ e5 (использует полный кэш из Cell 4)
 # !python -m src.eval.run_akorda --system hybrid-e5 \
-#     --bm25-runs  results/akorda/bm25_kazakh.json \
+#     --bm25-runs  results/akorda/bm25_kazakh_full.json \
 #     --dense-runs results/akorda/dense_e5.json \
 #     --out results/akorda/hybrid_e5.json
 #
