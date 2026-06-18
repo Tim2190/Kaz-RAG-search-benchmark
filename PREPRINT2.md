@@ -21,11 +21,14 @@ from akorda.kz (244 queries) — as an out-of-domain (OOD) validation. We also a
 sub-word tokenizer fertility as a candidate mechanism for observed performance gaps.
 
 Key results: the BM25+stemmer ⊕ kazakh-e5 hybrid is the best system on Wikipedia
-(nDCG@10 = 0.808, vs 0.785 for the best single model). OOD rankings are largely stable
-(Spearman ρ = 0.89), confirming that Paper 1 conclusions generalize beyond Wikipedia.
-Granite R2 underperforms R1 on Kazakh on both domains; sub-word fertility analysis reveals
-that R2's tokenizer fragments Kazakh words 2.3× more than R1/e5 — a plausible tokenizer-
-level mechanism for its domain drop. The hybrid is the safest cross-domain default.
+(nDCG@10 = 0.808, vs 0.785 for the best single model). OOD rankings on Akorda are largely
+stable (Spearman ρ = 0.89), confirming that Paper 1 conclusions generalize beyond
+Wikipedia; absolute scores are lower on Akorda (best hybrid 0.562 vs 0.808 on Wikipedia)
+because formal political text is harder for all systems uniformly — the gap reflects domain
+difficulty, not a failure of the retrieval approach. Granite R2 underperforms R1 on Kazakh
+on both domains; sub-word fertility analysis reveals that R2's tokenizer fragments Kazakh
+words 2.3× more than R1/e5 — a plausible tokenizer-level mechanism for its domain drop.
+The hybrid is the safest cross-domain default.
 
 ---
 
@@ -123,12 +126,15 @@ is fine-tuned on external Kazakh data). Similarity: cosine. Brute-force exact se
 | Granite R2 (311M) | 0.791 | 0.924 | 0.263 | 0.659 |
 | kazakh-e5 (shyngys-e5) | 0.836 | 0.909 | 0.497 | 0.747 |
 | **Hybrid ⊕ kazakh-e5** | **0.862** | 0.869 | **0.694** | **0.808** |
-| Hybrid ⊕ e5 | — | — | — | — |
-| Hybrid ⊕ Granite R1 | — | — | — | — |
+| Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
 | Hybrid ⊕ Granite R2-97M | 0.779 | 0.869 | 0.438 | 0.695 |
 
 **Best system overall: Hybrid BM25+stemmer ⊕ kazakh-e5, nDCG@10 = 0.808.**
+
+*Note: Hybrid ⊕ e5 was not computed on Wikipedia — only summary metrics were retained for
+e5, not per-query rankings. Based on the Akorda results (where ⊕ e5 = 0.562 vs ⊕ kazakh-e5
+= 0.520), the kazakh-e5 hybrid likely remains best on Wikipedia as well.*
 
 ### 4.2 Key observations — Wikipedia
 
@@ -142,10 +148,13 @@ scores 0.175 — well below every other model including BM25 without stemmer.
 vocabulary-gap, the best among dense models, while remaining strong on inflected (0.836).
 This is the expected benefit of Kazakh-specific fine-tuning.
 
-**Hybrid consistently beats its best channel on vocabulary-gap.** The RRF fusion of
-BM25+stemmer ⊕ kazakh-e5 reaches 0.694 on vocab-gap — far above either channel alone
-(stemmer 0.764 already strong; kazakh-e5 0.497). The hybrid is the only system above 0.80
-overall.
+**Hybrid closes the vocabulary-gap on the dense side without losing the lexical ceiling.**
+The RRF fusion of BM25+stemmer ⊕ kazakh-e5 reaches 0.694 on vocab-gap — significantly
+above kazakh-e5 alone (0.497, +0.197) but, as expected from RRF averaging, below the
+BM25+stemmer alone (0.764). This is not a failure: the stemmer is already excellent on
+vocab-gap because these queries were paraphrases with strong lexical signal. The fusion
+gains on the categories where the dense channel contributes most (inflected: 0.862 vs
+stemmer 0.727), resulting in the only system above 0.80 overall (0.808).
 
 ---
 
@@ -471,6 +480,7 @@ Full reproducibility notes, GPU requirements, and Kaggle notebooks:
 
 ## Acknowledgements
 
-Analysis and writing assisted by Claude (Anthropic).
+Benchmark design, data collection, corpus annotation, and evaluation by the author.
+Claude (Anthropic) used for code scaffolding, analysis scripting, and text drafting.
 First paper: https://doi.org/10.5281/zenodo.20605663
 Repository: https://github.com/Tim2190/Kaz-RAG-search-benchmark
