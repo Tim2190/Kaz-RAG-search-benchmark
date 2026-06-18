@@ -143,10 +143,11 @@ improvement, both R2 variants score below R1 (278M) overall: 97M = 0.589 (−0.0
 311M = 0.659 (−0.013 vs R1). The vocabulary-gap category is the weakest point: R2-97M
 scores 0.175 — well below every other model including BM25 without stemmer.
 
-**kazakh-e5 fills the vocabulary-gap hole partially.** Unlike the base e5 (vocab-gap
-0.562) and all Granite models (≤0.303 on vocab-gap), kazakh-e5 reaches 0.497 on
-vocabulary-gap, the best among dense models, while remaining strong on inflected (0.836).
-This is the expected benefit of Kazakh-specific fine-tuning.
+**kazakh-e5 partially closes the vocabulary-gap for new models.** kazakh-e5 reaches 0.497
+on vocabulary-gap — below base e5 (0.562) but substantially above all Granite models
+(≤0.303). Among the three new systems added in this paper it is the best on vocab-gap,
+while remaining strong on inflected (0.836). This is the expected benefit of Kazakh-specific
+fine-tuning, though it does not surpass the base e5 on this metric.
 
 **Hybrid closes the vocabulary-gap on the dense side without losing the lexical ceiling.**
 The RRF fusion of BM25+stemmer ⊕ kazakh-e5 reaches 0.694 on vocab-gap — significantly
@@ -334,12 +335,13 @@ All comparisons: paired bootstrap, 10 000 resamples, two-tailed, threshold p < 0
 | Comparison | Δ nDCG@10 | p | Significant? |
 |-----------|----------:|--:|:---:|
 | BM25 identity → BM25+stemmer | +0.064 | 0.0001 | ✓ |
-| BM25+stemmer → e5 | +0.031 | 0.08 | — |
-| BM25+stemmer → kazakh-e5 | −0.007 | 0.41 | — |
-| e5 → kazakh-e5 | −0.038 | 0.08 | — |
-| Granite R1 → Granite R2-311M | +0.013 | 0.29 | — |
+| BM25+stemmer → kazakh-e5 | −0.007 | 0.40 | — |
+| Granite R1 → Granite R2-311M | −0.013 | 0.29 | — |
 | Granite R2-97M → Granite R2-311M | +0.070 | <0.001 | ✓ |
-| Hybrid ⊕ kazakh-e5 → kazakh-e5 (best single) | +0.061 | 0.003 | ✓ |
+| kazakh-e5 → Hybrid ⊕ kazakh-e5 | +0.061 | <0.001 | ✓ |
+
+*BM25+stemmer vs e5 and e5 vs kazakh-e5 p-values not computed — e5 per-query rankings
+not stored (only summary metrics retained). Δ values: e5−BM25 = +0.031; kazakh-e5−e5 = −0.038.*
 
 ### Akorda (n=244)
 
@@ -352,8 +354,8 @@ All comparisons: paired bootstrap, 10 000 resamples, two-tailed, threshold p < 0
 | e5 → kazakh-e5 | −0.083 | <0.001 | ✓ |
 | Granite R1 → Granite R2-311M | −0.032 | 0.076 | — |
 | Granite R2-97M → Granite R2-311M | +0.140 | <0.001 | ✓ |
-| Hybrid ⊕ e5 → e5 (best single) | +0.053 | 0.009 | ✓ |
-| Hybrid ⊕ e5 → BM25+stemmer | +0.046 | 0.003 | ✓ |
+| e5 → Hybrid ⊕ e5 | +0.053 | 0.009 | ✓ |
+| BM25+stemmer → Hybrid ⊕ e5 | +0.046 | 0.003 | ✓ |
 
 ---
 
@@ -407,9 +409,9 @@ on Akorda).
 Three additions to the Kazakh retrieval benchmark from Paper 1:
 
 1. **New models:** Granite R2 does not improve on R1 for Kazakh (consistent across both
-   domains). Kazakh-fine-tuned E5 (kazakh-e5) improves vocabulary-gap retrieval (0.497
-   vs 0.562 for standard e5, vs 0.303 for Granite R1) but drops disproportionately on
-   formal OOD text.
+   domains). Kazakh-fine-tuned E5 (kazakh-e5) partially closes the vocabulary-gap over
+   Granite models (0.497 vs ≤0.303) but does not surpass base e5 (0.562) on this metric.
+   It drops disproportionately on formal OOD text (Akorda).
 
 2. **Hybrid RRF:** combining BM25+stemmer with a dense model via RRF (k=60) consistently
    beats both channels. The best hybrid (⊕ kazakh-e5) reaches nDCG@10 = 0.808 on
