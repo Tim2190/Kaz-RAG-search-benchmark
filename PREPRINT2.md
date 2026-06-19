@@ -25,10 +25,12 @@ Key results: the BM25+stemmer ⊕ kazakh-e5 hybrid is the best system on Wikiped
 stable (Spearman ρ = 0.89), confirming that Paper 1 conclusions generalize beyond
 Wikipedia; absolute scores are lower on Akorda (best hybrid 0.562 vs 0.808 on Wikipedia)
 because formal political text is harder for all systems uniformly — the gap reflects domain
-difficulty, not a failure of the retrieval approach. Granite R2 underperforms R1 on Kazakh
-on both domains; sub-word fertility analysis reveals that R2's tokenizer fragments Kazakh
-words 2.3× more than R1/e5 — a plausible tokenizer-level mechanism for its domain drop.
-The hybrid is the safest cross-domain default.
+difficulty, not a failure of the retrieval approach. Granite R2 underperforms R1 on Kazakh on both domains; sub-word fertility analysis reveals
+that R2's tokenizer fragments Kazakh words 2.3× more than R1/e5 — a plausible
+tokenizer-level mechanism for its domain drop. kazakh-e5 (Kazakh-specific fine-tune of e5)
+is significantly worse than base e5 overall (Δ=−0.037, p=0.005 on Wikipedia), an honest
+negative result for domain-specific fine-tuning. The hybrid is the safest cross-domain
+default.
 
 ---
 
@@ -132,9 +134,9 @@ is fine-tuned on external Kazakh data). Similarity: cosine. Brute-force exact se
 
 **Best system overall: Hybrid BM25+stemmer ⊕ kazakh-e5, nDCG@10 = 0.808.**
 
-*Note: Hybrid ⊕ e5 was not computed on Wikipedia — only summary metrics were retained for
-e5, not per-query rankings. Based on the Akorda results (where ⊕ e5 = 0.562 vs ⊕ kazakh-e5
-= 0.520), the kazakh-e5 hybrid likely remains best on Wikipedia as well.*
+*Note: Hybrid ⊕ e5 was not computed on Wikipedia; the RRF run was not retained. Based on
+the Akorda results (where ⊕ e5 = 0.562 vs ⊕ kazakh-e5 = 0.520), the kazakh-e5 hybrid
+likely remains best on Wikipedia as well.*
 
 ### 4.2 Key observations — Wikipedia
 
@@ -143,11 +145,13 @@ improvement, both R2 variants score below R1 (278M) overall: 97M = 0.589 (−0.0
 311M = 0.659 (−0.013 vs R1). The vocabulary-gap category is the weakest point: R2-97M
 scores 0.175 — well below every other model including BM25 without stemmer.
 
-**kazakh-e5 partially closes the vocabulary-gap for new models.** kazakh-e5 reaches 0.497
-on vocabulary-gap — below base e5 (0.562) but substantially above all Granite models
-(≤0.303). Among the three new systems added in this paper it is the best on vocab-gap,
-while remaining strong on inflected (0.836). This is the expected benefit of Kazakh-specific
-fine-tuning, though it does not surpass the base e5 on this metric.
+**kazakh-e5 Kazakh fine-tuning does not improve over base e5 — the difference is
+statistically significant.** kazakh-e5 scores 0.747 overall vs base e5 0.785: Δ=−0.037,
+p=0.005 (paired bootstrap, n=300). It is lower on all three categories — inflected (0.836
+vs 0.845), natural (0.909 vs 0.947), and vocabulary-gap (0.497 vs 0.562). Among the three
+new models added in this paper it is the strongest on vocabulary-gap, substantially above
+all Granite models (≤0.303), but Kazakh-specific fine-tuning does not close — and in fact
+widens — the gap to base e5.
 
 **Hybrid closes the vocabulary-gap on the dense side without losing the lexical ceiling.**
 The RRF fusion of BM25+stemmer ⊕ kazakh-e5 reaches 0.694 on vocab-gap — significantly
@@ -335,13 +339,12 @@ All comparisons: paired bootstrap, 10 000 resamples, two-tailed, threshold p < 0
 | Comparison | Δ nDCG@10 | p | Significant? |
 |-----------|----------:|--:|:---:|
 | BM25 identity → BM25+stemmer | +0.064 | 0.0001 | ✓ |
+| BM25+stemmer → e5 | +0.030 | 0.112 | — |
 | BM25+stemmer → kazakh-e5 | −0.007 | 0.40 | — |
+| e5 → kazakh-e5 | −0.037 | 0.005 | ✓ |
 | Granite R1 → Granite R2-311M | −0.013 | 0.29 | — |
 | Granite R2-97M → Granite R2-311M | +0.070 | <0.001 | ✓ |
 | kazakh-e5 → Hybrid ⊕ kazakh-e5 | +0.061 | <0.001 | ✓ |
-
-*BM25+stemmer vs e5 and e5 vs kazakh-e5 p-values not computed — e5 per-query rankings
-not stored (only summary metrics retained). Δ values: e5−BM25 = +0.031; kazakh-e5−e5 = −0.038.*
 
 ### Akorda (n=244)
 
@@ -409,9 +412,9 @@ on Akorda).
 Three additions to the Kazakh retrieval benchmark from Paper 1:
 
 1. **New models:** Granite R2 does not improve on R1 for Kazakh (consistent across both
-   domains). Kazakh-fine-tuned E5 (kazakh-e5) partially closes the vocabulary-gap over
-   Granite models (0.497 vs ≤0.303) but does not surpass base e5 (0.562) on this metric.
-   It drops disproportionately on formal OOD text (Akorda).
+   domains). Kazakh-fine-tuned E5 (kazakh-e5) is significantly worse than base e5 overall
+   (Δ=−0.037, p=0.005 on Wikipedia); it outperforms Granite models on vocabulary-gap
+   (0.497 vs ≤0.303) but drops disproportionately on formal OOD text (Akorda).
 
 2. **Hybrid RRF:** combining BM25+stemmer with a dense model via RRF (k=60) consistently
    beats both channels. The best hybrid (⊕ kazakh-e5) reaches nDCG@10 = 0.808 on
