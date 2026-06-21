@@ -41,6 +41,13 @@ MODELS = {
     # Nomic v1.5: СТРОКОВЫЕ префиксы (как e5), но требует trust_remote_code.
     "nomic-v1.5": ("nomic-ai/nomic-embed-text-v1.5",
                    "search_query: ", "search_document: "),
+    # --- Спринт 4: BGE-M3 + Qwen3 ---
+    # BGE-M3: instruction optional; работает без префиксов (документировано BAAI).
+    "bge-m3": ("BAAI/bge-m3", "", ""),
+    # Qwen3-Embedding-0.6B: LLM-based embeds, instruction prefix для запросов.
+    "qwen3-0.6b": ("Qwen/Qwen3-Embedding-0.6B",
+                   "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: ",
+                   ""),
 }
 
 # Дополнительные параметры для моделей с нестандартным энкодингом.

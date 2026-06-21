@@ -67,6 +67,12 @@ DENSE_MODELS: Dict[str, Tuple[str, str, str]] = {
     # Nomic v1.5: string prefixes (e5-style) + trust_remote_code
     "nomic-v1.5":     ("nomic-ai/nomic-embed-text-v1.5",
                        "search_query: ", "search_document: "),
+    # BGE-M3: no instruction prefix required (BAAI documentation)
+    "bge-m3":         ("BAAI/bge-m3", "", ""),
+    # Qwen3-Embedding-0.6B: LLM-based embedder, instruction prefix for queries
+    "qwen3-0.6b":     ("Qwen/Qwen3-Embedding-0.6B",
+                       "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: ",
+                       ""),
 }
 
 # Extra encode params: query_task/doc_task → task= in encode() (Jina);
@@ -367,7 +373,8 @@ def main() -> None:
                     choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS) + ["hybrid-e5",
                              "hybrid-granite-r1", "hybrid-granite-r2-97m",
                              "hybrid-granite-r2-311m", "hybrid-shyngys-e5",
-                             "hybrid-jina-v3", "hybrid-nomic-v1.5"])
+                             "hybrid-jina-v3", "hybrid-nomic-v1.5",
+                             "hybrid-bge-m3", "hybrid-qwen3-0.6b"])
     ap.add_argument("--out", required=True)
     ap.add_argument("--top-k", type=int, default=100)
     # hybrid options
