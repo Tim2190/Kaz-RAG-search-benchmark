@@ -72,15 +72,4 @@ python -m src.eval.fertility_compare
 Kaggle notebook: [`../notebooks/jina_kaggle.py`](../notebooks/jina_kaggle.py).
 Per-query runs committed: `results/runs_dense_jina.json`, `results/akorda/dense_jina.json`.
 
-## 5. Draft ping
-
-> Hi — I maintain an independent Kazakh retrieval benchmark (Wikipedia + out-of-domain
-> presidential speeches, BEIR-format, bootstrap significance). I ran `jina-embeddings-v3`
-> zero-shot: it's the strongest dense model I've tested, significantly beating
-> `multilingual-e5` on both domains and the first to beat a Kazakh morphological BM25
-> baseline out-of-domain. Where it still trails lexical search is high-surface-overlap
-> queries — consistent with sub-word under-adaptation to Kazakh morphology. Full numbers +
-> per-query runs public: [https://github.com/Tim2190/Kaz-RAG-search-benchmark]. Happy to
-> share the breakdown.
-
 *Reference: preprint DOI [10.5281/zenodo.20781386](https://doi.org/10.5281/zenodo.20781386).*
