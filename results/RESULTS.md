@@ -16,7 +16,7 @@
 
 ## Main Result: nDCG@10 (n=300)
 
-| System | inflected | natural | vocab-gap | **ALL** |
+| System | inflected | natural | vocab-gap † | **ALL** |
 |--------|----------:|--------:|----------:|--------:|
 | BM25 | 0.627 | 0.703 | 0.741 | 0.690 |
 | BM25 + Stemmer | 0.727 | 0.772 | **0.764** | 0.754 |
@@ -31,6 +31,15 @@
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
 | Hybrid ⊕ Granite R2-97M | 0.779 | 0.869 | 0.438 | 0.695 |
+
+> † **Caveat on the `vocab-gap` column.** Despite its name, this Wikipedia category was
+> found to have the *highest* query↔gold lexical overlap of the three (≈0.56, vs 0.51
+> natural / 0.47 inflected) — the Claude-generated "encyclopedic riddle" queries
+> unintentionally reused key terms from the gold passage. So BM25+stemmer leading this
+> column (0.764) reflects **strong lexical signal, not closing a semantic gap**. The genuine
+> low-overlap test is the Akorda `low_overlap` category (≈0.32 overlap), where Jina v3
+> (0.546) and e5 (0.413) beat BM25+stemmer (0.332) as expected — see
+> [`akorda/AKORDA_RESULTS.md`](akorda/AKORDA_RESULTS.md). This was first documented there.
 
 **Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821),
 **significantly above e5** (Δ=+0.036, p=0.009) and BM25+stemmer (Δ=+0.067, p=0.004),
