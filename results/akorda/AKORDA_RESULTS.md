@@ -42,9 +42,9 @@ in the Hybrid section below.
 
 | System | nDCG@10 | MRR@10 | Recall@5 | Recall@10 |
 |--------|--------:|-------:|---------:|----------:|
-| hybrid: bm25+stemmer ⊕ jina-v3 | 0.6145 | — | — | — |
+| hybrid: bm25+stemmer ⊕ jina-v3 | 0.6145 | 0.5491 | 0.7336 | 0.8197 |
+| jina-v3 | 0.6130 | 0.5309 | 0.7787 | 0.8689 |
 | hybrid: bm25+stemmer ⊕ e5 | 0.5623 | 0.4981 | 0.6475 | 0.7664 |
-| jina-v3 | 0.6130 | — | — | — |
 | bm25+stemmer | 0.5166 | 0.4754 | 0.5492 | 0.6516 |
 | e5 | 0.5090 | 0.4388 | 0.6025 | 0.7336 |
 | bm25+identity | 0.4844 | 0.4421 | 0.5246 | 0.6230 |
@@ -52,8 +52,6 @@ in the Hybrid section below.
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
 | granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
-
-*Jina MRR/Recall pending full JSON commit.*
 
 ---
 
@@ -71,8 +69,16 @@ in the Hybrid section below.
 | e5 → shyngys-e5 | −0.0826 | <0.001 | ✓ |
 | granite-r1 → granite-r2-311m | −0.0316 | 0.076 | — |
 | granite-r2-97m → granite-r2-311m | +0.1404 | <0.001 | ✓ |
+| e5 → jina-v3 | +0.1041 | <0.001 | ✓ |
+| bm25+stemmer → jina-v3 | +0.0964 | <0.001 | ✓ |
+| jina-v3 → hybrid ⊕ jina-v3 | +0.0015 | 0.475 | — |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
+**Jina v3 is significantly the best single model on Akorda** (beats both e5 and
+BM25+stemmer, p<0.001). The Jina hybrid passes the pre-registered criterion but is
+**statistically indistinguishable from Jina alone** (Δ=+0.0015, p=0.475) — Jina is
+already strong enough that RRF fusion adds no measurable lift, unlike the e5 hybrid
+which significantly beat both its channels.
 
 ### By-category significance (nDCG@10)
 
@@ -107,10 +113,28 @@ The Jina hybrid is the new best on Akorda (0.6145). The r2-311m hybrid (0.5158) 
 misses the "ALL ≥ max(channel)" bar because BM25 itself got stronger after full-cache
 stemming. The r2-97m failure is structural (dense channel too weak at 0.259).
 
-### Headline hybrid: BM25+stemmer ⊕ e5
+### Best overall: Jina v3 (and its hybrid)
 
-This is the best system on Akorda (nDCG@10 = 0.5623). It significantly beats **both** of
-its own channels — not just the weaker one:
+Jina v3 is the new best system on Akorda — both as a single dense model (0.6130) and
+in fusion (hybrid 0.6145). Per-category breakdown of the Jina hybrid vs its channels:
+
+| Slice | hybrid | Δ vs bm25 | p | Δ vs jina | p |
+|-------|-------:|----------:|--:|----------:|--:|
+| factoid (n=81) | 0.8655 | −0.0408 | **0.037** | +0.1619 | **<0.001** |
+| paraphrase (n=81) | 0.5158 | +0.2014 | **<0.001** | −0.0740 | **0.024** |
+| low_overlap (n=82) | 0.4641 | +0.1325 | **<0.001** | −0.0825 | **0.029** |
+| **ALL (n=244)** | **0.6145** | **+0.0979** | **<0.001** | +0.0015 | 0.475 n.s. |
+
+Unlike the e5 hybrid, the Jina hybrid does **not** significantly improve over its dense
+channel overall (Δ=+0.0015, p=0.475). The fusion trades a large factoid gain (+0.162)
+for paraphrase/low_overlap losses (−0.074, −0.083), netting to a statistical tie with
+Jina alone. **Practical implication:** when the dense model is this strong, Jina v3 alone
+is sufficient on Akorda — fusion adds robustness on factoid queries but no aggregate lift.
+
+### e5 hybrid (previous headline): BM25+stemmer ⊕ e5
+
+The e5 hybrid (nDCG@10 = 0.5623) significantly beats **both** of its own channels — not
+just the weaker one:
 
 | Slice | hybrid | Δ vs bm25 | p | Δ vs e5 | p |
 |-------|-------:|----------:|--:|--------:|--:|

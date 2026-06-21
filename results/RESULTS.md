@@ -32,10 +32,11 @@
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
 | Hybrid ⊕ Granite R2-97M | 0.779 | 0.869 | 0.438 | 0.695 |
 
-**Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821).
-BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without* Jina hybrid data
-(Jina hybrid not yet evaluated on Wikipedia). Full metrics and significance in
-[PREPRINT2.md](../PREPRINT2.md).
+**Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821),
+**significantly above e5** (Δ=+0.036, p=0.009) and BM25+stemmer (Δ=+0.067, p=0.004),
+paired bootstrap n=300. BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without*
+Jina hybrid data (Jina hybrid not yet evaluated on Wikipedia). Full metrics and
+significance in [PREPRINT2.md](../PREPRINT2.md).
 
 ## Full Metrics Tables (n=300)
 
