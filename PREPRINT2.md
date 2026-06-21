@@ -1,7 +1,7 @@
 # Hybrid Retrieval and Out-of-Domain Robustness for Kazakh Search:
 # Extended Benchmark with New Models, RRF Fusion, and Tokenizer Analysis
 
-> **Preprint — DOI will be added after Zenodo deposit.**
+> **DOI: https://doi.org/10.5281/zenodo.20781386**
 >
 > This is the follow-up to:
 > Seidalin, T. (2026). *Morphology Beats Multilingual Embeddings for Kazakh Retrieval:

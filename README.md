@@ -308,7 +308,7 @@ Work extending the original 300-query study (the conclusions above are unchanged
   [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
 - **[Preprint 2](PREPRINT2.md)** — full write-up combining new models (Granite R2,
   kazakh-e5), hybrid RRF results, OOD validation, and tokenizer fertility analysis.
-  DOI to be added after Zenodo deposit.
+  [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20781386-blue)](https://doi.org/10.5281/zenodo.20781386)
 
 ---
 
