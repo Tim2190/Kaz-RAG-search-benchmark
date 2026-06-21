@@ -28,6 +28,11 @@ class DenseIndex:
         query_prefix: str = "",
         doc_prefix: str = "",
         max_seq_len: Optional[int] = 512,
+        # Task-based encoding (e.g. Jina v3): passes task= to encode() instead
+        # of concatenating a string prefix. When set, prefix params are ignored.
+        query_task: Optional[str] = None,
+        doc_task: Optional[str] = None,
+        trust_remote_code: bool = False,
     ) -> None:
         self.model_name = model_name
         self._encoder = encoder
@@ -36,6 +41,9 @@ class DenseIndex:
         self.query_prefix = query_prefix
         self.doc_prefix = doc_prefix
         self.max_seq_len = max_seq_len
+        self.query_task = query_task
+        self.doc_task = doc_task
+        self.trust_remote_code = trust_remote_code
         self.doc_ids: List[str] = []
         self.matrix: Optional[np.ndarray] = None
 
@@ -44,7 +52,10 @@ class DenseIndex:
     def _get_encoder(self):
         if self._encoder is None:
             from sentence_transformers import SentenceTransformer
-            self._encoder = SentenceTransformer(self.model_name, device=self.device)
+            self._encoder = SentenceTransformer(
+                self.model_name, device=self.device,
+                trust_remote_code=self.trust_remote_code,
+            )
             # Ограничиваем длину контекста: ModernBERT-модели (Granite R2)
             # поддерживают 8192 токена и без лимита строят attention O(n²) на
             # 55+ ГБ -> OOM на 14 ГБ GPU. 512 совпадает с e5 (сравнимость).
@@ -52,10 +63,13 @@ class DenseIndex:
                 self._encoder.max_seq_length = self.max_seq_len
         return self._encoder
 
-    def _encode(self, texts: Sequence[str], show_progress: bool = False) -> np.ndarray:
+    def _encode(self, texts: Sequence[str], show_progress: bool = False,
+                task: Optional[str] = None) -> np.ndarray:
         enc = self._get_encoder()
-        emb = enc.encode(list(texts), batch_size=self.batch_size,
-                         show_progress_bar=show_progress)
+        kwargs: dict = dict(batch_size=self.batch_size, show_progress_bar=show_progress)
+        if task is not None:
+            kwargs["task"] = task
+        emb = enc.encode(list(texts), **kwargs)
         emb = np.asarray(emb, dtype=np.float32)
         # L2-нормировка строк -> косинус = скалярное произведение
         norms = np.linalg.norm(emb, axis=1, keepdims=True)
@@ -66,8 +80,12 @@ class DenseIndex:
 
     def index(self, documents: Sequence[Tuple[str, str]], show_progress: bool = True) -> "DenseIndex":
         self.doc_ids = [doc_id for doc_id, _ in documents]
-        texts = [self.doc_prefix + text for _, text in documents]
-        self.matrix = self._encode(texts, show_progress=show_progress)
+        if self.doc_task is not None:
+            texts = [text for _, text in documents]
+            self.matrix = self._encode(texts, show_progress=show_progress, task=self.doc_task)
+        else:
+            texts = [self.doc_prefix + text for _, text in documents]
+            self.matrix = self._encode(texts, show_progress=show_progress)
         return self
 
     def set_embeddings(self, doc_ids: List[str], matrix: np.ndarray) -> "DenseIndex":
@@ -79,7 +97,10 @@ class DenseIndex:
     def search(self, query: str, top_k: int = 10) -> List[Tuple[str, float]]:
         if self.matrix is None:
             raise RuntimeError("Индекс пуст: вызовите index() или set_embeddings().")
-        q = self._encode([self.query_prefix + query])[0]
+        if self.query_task is not None:
+            q = self._encode([query], task=self.query_task)[0]
+        else:
+            q = self._encode([self.query_prefix + query])[0]
         scores = self.matrix @ q
         k = min(top_k, len(self.doc_ids))
         top = np.argpartition(-scores, range(k))[:k]

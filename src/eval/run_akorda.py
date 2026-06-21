@@ -62,6 +62,17 @@ DENSE_MODELS: Dict[str, Tuple[str, str, str]] = {
                        "", ""),
     "shyngys-e5":     ("shyngys879/kazakh-e5-rag-embedding",
                        "query: ", "passage: "),
+    # Jina v3: task-based encoding, no string prefixes
+    "jina-v3":        ("jinaai/jina-embeddings-v3", "", ""),
+}
+
+# Extra encode params for task-based models (query_task/doc_task → task= in encode())
+DENSE_MODEL_EXTRA: dict = {
+    "jina-v3": {
+        "query_task":        "retrieval.query",
+        "doc_task":          "retrieval.passage",
+        "trust_remote_code": True,
+    },
 }
 
 RRF_K = 60  # совпадает с основным бенчмарком
@@ -199,11 +210,15 @@ def run_dense(model_key: str, top_k: int = 100) -> Dict:
     qrels = _load_qrels()
     qmap = {q["query_id"]: q["text"] for q in queries}
 
+    extra = DENSE_MODEL_EXTRA.get(model_key, {})
     print(f"Dense encode ({hf_id})…")
     index = DenseIndex(
         model_name=hf_id,
         query_prefix=q_prefix,
         doc_prefix=p_prefix,
+        query_task=extra.get("query_task"),
+        doc_task=extra.get("doc_task"),
+        trust_remote_code=extra.get("trust_remote_code", False),
     )
     index.index(corpus, show_progress=True)
     run_result = index.run(qmap, top_k=top_k)
@@ -344,7 +359,8 @@ def main() -> None:
     ap.add_argument("--system", required=True,
                     choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS) + ["hybrid-e5",
                              "hybrid-granite-r1", "hybrid-granite-r2-97m",
-                             "hybrid-granite-r2-311m", "hybrid-shyngys-e5"])
+                             "hybrid-granite-r2-311m", "hybrid-shyngys-e5",
+                             "hybrid-jina-v3"])
     ap.add_argument("--out", required=True)
     ap.add_argument("--top-k", type=int, default=100)
     # hybrid options
