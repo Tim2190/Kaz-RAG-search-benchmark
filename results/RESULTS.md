@@ -16,18 +16,26 @@
 
 ## Main Result: nDCG@10 (n=300)
 
-![5-system comparison](systems_ndcg.png)
-
 | System | inflected | natural | vocab-gap | **ALL** |
 |--------|----------:|--------:|----------:|--------:|
 | BM25 | 0.627 | 0.703 | 0.741 | 0.690 |
 | BM25 + Stemmer | 0.727 | 0.772 | **0.764** | 0.754 |
 | Dense LaBSE | 0.477 | 0.546 | 0.419 | 0.481 |
-| Dense Granite | 0.791 | 0.923 | 0.303 | 0.672 |
-| Dense E5 | **0.845** | **0.947** | 0.562 | **0.785** |
+| Dense Granite R1 | 0.791 | 0.923 | 0.303 | 0.672 |
+| Dense Granite R2-97M | 0.711 | 0.880 | 0.175 | 0.589 |
+| Dense Granite R2-311M | 0.791 | 0.924 | 0.263 | 0.659 |
+| Dense E5 | 0.845 | 0.947 | 0.562 | 0.785 |
+| Dense kazakh-e5 | 0.836 | 0.909 | 0.497 | 0.747 |
+| Dense Jina v3 | 0.910 | **0.957** | 0.596 | 0.821 |
+| Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
+| Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
+| Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
+| Hybrid ⊕ Granite R2-97M | 0.779 | 0.869 | 0.438 | 0.695 |
 
-> All five systems on the **same 300 queries**. Tables regenerated from committed JSON via
-> `python -m src.eval.gen_results_tables` — no hand-edited numbers.
+**Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821).
+BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without* Jina hybrid data
+(Jina hybrid not yet evaluated on Wikipedia). Full metrics and significance in
+[PREPRINT2.md](../PREPRINT2.md).
 
 ## Full Metrics Tables (n=300)
 

@@ -18,20 +18,23 @@
 
 ## Main Results — nDCG@10
 
-| System | nDCG@10 | CI 95% | factoid | paraphrase | low_overlap |
-|--------|--------:|--------|--------:|-----------:|------------:|
-| **hybrid: bm25+stemmer ⊕ e5** (RRF) | **0.5623** | [0.5125, 0.6110] | 0.8456 | 0.4393 | 0.4039 |
-| bm25+stemmer | 0.5166 | [0.4610, 0.5717] | **0.9063** | 0.3144 | 0.3316 |
-| e5 (multilingual-e5-base) | 0.5090 | [0.4601, 0.5587] | 0.6743 | **0.4408** | **0.4129** |
-| bm25+identity | 0.4844 | [0.4304, 0.5403] | 0.9010 | 0.2777 | 0.2770 |
-| granite-r1 (278M) | 0.4305 | [0.3840, 0.4779] | 0.5481 | 0.4061 | 0.3385 |
-| shyngys-e5 | 0.4263 | [0.3786, 0.4759] | 0.5368 | 0.4103 | 0.3330 |
-| granite-r2-311m | 0.3989 | [0.3517, 0.4484] | 0.5236 | 0.3809 | 0.2936 |
-| granite-r2-97m | 0.2585 | [0.2134, 0.3049] | 0.4387 | 0.1755 | 0.1624 |
+| System | nDCG@10 | factoid | paraphrase | low_overlap |
+|--------|--------:|--------:|-----------:|------------:|
+| **hybrid: bm25+stemmer ⊕ jina-v3** (RRF) | **0.6145** | 0.8655 | 0.5158 | 0.4641 |
+| **hybrid: bm25+stemmer ⊕ e5** (RRF) | 0.5623 | 0.8456 | 0.4393 | 0.4039 |
+| **jina-v3** | 0.6130 | 0.7036 | **0.5898** | **0.5465** |
+| bm25+stemmer | 0.5166 | **0.9063** | 0.3144 | 0.3316 |
+| e5 (multilingual-e5-base) | 0.5090 | 0.6743 | 0.4408 | 0.4129 |
+| bm25+identity | 0.4844 | 0.9010 | 0.2777 | 0.2770 |
+| granite-r1 (278M) | 0.4305 | 0.5481 | 0.4061 | 0.3385 |
+| shyngys-e5 | 0.4263 | 0.5368 | 0.4103 | 0.3330 |
+| granite-r2-311m | 0.3989 | 0.5236 | 0.3809 | 0.2936 |
+| granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
 
-BM25+stemmer numbers reflect the **100%-cache** run (full stemmer coverage). The single best
-system on Akorda is the **hybrid** (BM25+stemmer ⊕ e5). BM25+stemmer and e5 are not
-significantly different overall (Δ=−0.008, p=0.399) — see Findings 2–3.
+BM25+stemmer numbers reflect the **100%-cache** run (full stemmer coverage). Jina v3 is
+the new best single model on Akorda (0.6130); the Jina hybrid (0.6145) meets both
+pre-registered criteria (ALL ≥ max channel, low_overlap ≥ BM25). Full significance
+in the Hybrid section below.
 
 ---
 
@@ -39,7 +42,9 @@ significantly different overall (Δ=−0.008, p=0.399) — see Findings 2–3.
 
 | System | nDCG@10 | MRR@10 | Recall@5 | Recall@10 |
 |--------|--------:|-------:|---------:|----------:|
+| hybrid: bm25+stemmer ⊕ jina-v3 | 0.6145 | — | — | — |
 | hybrid: bm25+stemmer ⊕ e5 | 0.5623 | 0.4981 | 0.6475 | 0.7664 |
+| jina-v3 | 0.6130 | — | — | — |
 | bm25+stemmer | 0.5166 | 0.4754 | 0.5492 | 0.6516 |
 | e5 | 0.5090 | 0.4388 | 0.6025 | 0.7336 |
 | bm25+identity | 0.4844 | 0.4421 | 0.5246 | 0.6230 |
@@ -47,6 +52,8 @@ significantly different overall (Δ=−0.008, p=0.399) — see Findings 2–3.
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
 | granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
+
+*Jina MRR/Recall pending full JSON commit.*
 
 ---
 
@@ -88,17 +95,17 @@ so no score calibration is involved. Pure CPU re-ranking of the already-computed
 
 | dense channel | bm25+stemmer | dense | **hybrid** | hybrid ≥ max(channel)? | low_overlap hybrid ≥ bm25? |
 |---------------|------------:|------:|-----------:|:----------------------:|:--------------------------:|
-| **e5** | 0.5166 | 0.5090 | **0.5623** | ✓ | ✓ |
+| **jina-v3** | 0.5166 | 0.6130 | **0.6145** | ✓ | ✓ |
+| **e5** | 0.5166 | 0.5090 | 0.5623 | ✓ | ✓ |
 | shyngys-e5 | 0.5166 | 0.4263 | 0.5202 | ✓ | ✓ |
 | granite-r1 | 0.5166 | 0.4305 | 0.5175 | ✓ | ✓ |
 | granite-r2-311m | 0.5166 | 0.3989 | 0.5158 | ✗ | ✓ |
 | granite-r2-97m | 0.5166 | 0.2585 | 0.4073 | ✗ | ✗ |
 
-Both pre-registered success criteria are met for **3 of 5** dense channels. The r2-311m
-hybrid (0.5158) narrowly misses the "ALL ≥ max(channel)" bar by 0.0008 — because BM25
-itself is now stronger (0.517) after full-cache stemming — while still meeting the semantic
-criterion. The r2-97m failure is structural: its dense channel (0.259) is so weak it
-drags the fusion below BM25 alone.
+Both pre-registered success criteria are met for **4 of 6** dense channels (adding Jina).
+The Jina hybrid is the new best on Akorda (0.6145). The r2-311m hybrid (0.5158) narrowly
+misses the "ALL ≥ max(channel)" bar because BM25 itself got stronger after full-cache
+stemming. The r2-97m failure is structural (dense channel too weak at 0.259).
 
 ### Headline hybrid: BM25+stemmer ⊕ e5
 
