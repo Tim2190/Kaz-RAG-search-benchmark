@@ -38,14 +38,21 @@ MODELS = {
     # Jina использует task= вместо строковых префиксов (LoRA-адаптеры).
     # Префиксы оставлены пустыми — реальные параметры передаются через MODEL_EXTRA.
     "jina-v3": ("jinaai/jina-embeddings-v3", "", ""),
+    # Nomic v1.5: СТРОКОВЫЕ префиксы (как e5), но требует trust_remote_code.
+    "nomic-v1.5": ("nomic-ai/nomic-embed-text-v1.5",
+                   "search_query: ", "search_document: "),
 }
 
 # Дополнительные параметры для моделей с нестандартным энкодингом.
 # query_task / doc_task → передаются как task= в encode() вместо строк-префиксов.
+# trust_remote_code → пробрасывается в загрузчик (Jina: AutoModel; Nomic: ST).
 MODEL_EXTRA: dict = {
     "jina-v3": {
         "query_task":        "retrieval.query",
         "doc_task":          "retrieval.passage",
+        "trust_remote_code": True,
+    },
+    "nomic-v1.5": {
         "trust_remote_code": True,
     },
 }

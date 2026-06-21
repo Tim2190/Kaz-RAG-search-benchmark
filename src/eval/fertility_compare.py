@@ -46,6 +46,7 @@ TOKENIZERS = {
     "e5-base":           "intfloat/multilingual-e5-base",
     "granite-278m-r1":   "ibm-granite/granite-embedding-278m-multilingual",
     "jina-v3":           "jinaai/jina-embeddings-v3",
+    "nomic-v1.5":        "nomic-ai/nomic-embed-text-v1.5",
     "tilcore_morph256k": "stukenov/sozkz-morphbpe-256k-kk-v1",
 }
 

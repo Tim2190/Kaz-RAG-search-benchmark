@@ -64,13 +64,20 @@ DENSE_MODELS: Dict[str, Tuple[str, str, str]] = {
                        "query: ", "passage: "),
     # Jina v3: task-based encoding, no string prefixes
     "jina-v3":        ("jinaai/jina-embeddings-v3", "", ""),
+    # Nomic v1.5: string prefixes (e5-style) + trust_remote_code
+    "nomic-v1.5":     ("nomic-ai/nomic-embed-text-v1.5",
+                       "search_query: ", "search_document: "),
 }
 
-# Extra encode params for task-based models (query_task/doc_task → task= in encode())
+# Extra encode params: query_task/doc_task → task= in encode() (Jina);
+# trust_remote_code → passed to loader (Jina: AutoModel; Nomic: SentenceTransformer).
 DENSE_MODEL_EXTRA: dict = {
     "jina-v3": {
         "query_task":        "retrieval.query",
         "doc_task":          "retrieval.passage",
+        "trust_remote_code": True,
+    },
+    "nomic-v1.5": {
         "trust_remote_code": True,
     },
 }
@@ -360,7 +367,7 @@ def main() -> None:
                     choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS) + ["hybrid-e5",
                              "hybrid-granite-r1", "hybrid-granite-r2-97m",
                              "hybrid-granite-r2-311m", "hybrid-shyngys-e5",
-                             "hybrid-jina-v3"])
+                             "hybrid-jina-v3", "hybrid-nomic-v1.5"])
     ap.add_argument("--out", required=True)
     ap.add_argument("--top-k", type=int, default=100)
     # hybrid options

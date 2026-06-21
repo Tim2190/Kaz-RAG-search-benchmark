@@ -49,14 +49,18 @@ class DenseIndex:
 
     # ---------- энкодер ----------
 
+    def _uses_task_encoding(self) -> bool:
+        """Jina v3-style: модель отдаёт собственный encode(task=) на кастомном
+        AutoModel и НЕ должна грузиться через SentenceTransformer (ломается на
+        части версий transformers — TypeError в dot_natural_key). Всё остальное —
+        включая trust_remote_code-модели на СТРОКОВЫХ префиксах (напр. Nomic) —
+        грузится обычным путём SentenceTransformer."""
+        return self.query_task is not None or self.doc_task is not None
+
     def _get_encoder(self):
         if self._encoder is None:
-            if self.trust_remote_code:
-                # Models like Jina v3 ship custom modeling code and have their
-                # own .encode(task=) method on AutoModel. Loading via
-                # SentenceTransformer can break on certain transformers versions
-                # (TypeError in dot_natural_key during state_dict sorting).
-                # Use AutoModel directly — it's the path Jina recommends.
+            if self._uses_task_encoding():
+                # AutoModel path (Jina v3): кастомный код модели + encode(task=).
                 import torch
                 from transformers import AutoModel
                 model = AutoModel.from_pretrained(
@@ -68,7 +72,11 @@ class DenseIndex:
                 self._encoder = model
             else:
                 from sentence_transformers import SentenceTransformer
-                self._encoder = SentenceTransformer(self.model_name, device=self.device)
+                # trust_remote_code нужен моделям с кастомным кодом, которые при
+                # этом совместимы с ST API (напр. Nomic v1.5).
+                self._encoder = SentenceTransformer(
+                    self.model_name, device=self.device,
+                    trust_remote_code=self.trust_remote_code)
                 # Ограничиваем длину контекста: ModernBERT-модели (Granite R2)
                 # поддерживают 8192 токена и без лимита строят attention O(n²) на
                 # 55+ ГБ -> OOM на 14 ГБ GPU. 512 совпадает с e5 (сравнимость).
@@ -79,7 +87,7 @@ class DenseIndex:
     def _encode(self, texts: Sequence[str], show_progress: bool = False,
                 task: Optional[str] = None) -> np.ndarray:
         enc = self._get_encoder()
-        if self.trust_remote_code:
+        if self._uses_task_encoding():
             # AutoModel path (Jina v3): encode() accepts task= and max_length=,
             # already returns L2-normalised embeddings.
             kwargs: dict = dict(batch_size=self.batch_size,
