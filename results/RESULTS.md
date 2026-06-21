@@ -27,6 +27,7 @@
 | Dense E5 | 0.845 | 0.947 | 0.562 | 0.785 |
 | Dense kazakh-e5 | 0.836 | 0.909 | 0.497 | 0.747 |
 | Dense Jina v3 | 0.910 | **0.957** | 0.596 | 0.821 |
+| Dense Nomic v1.5 | 0.144 | 0.297 | 0.071 | 0.171 |
 | Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
@@ -44,8 +45,11 @@
 **Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821),
 **significantly above e5** (Δ=+0.036, p=0.009) and BM25+stemmer (Δ=+0.067, p=0.004),
 paired bootstrap n=300. BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without*
-Jina hybrid data (Jina hybrid not yet evaluated on Wikipedia). Full metrics and
-significance in [PREPRINT2.md](../PREPRINT2.md).
+Jina hybrid data (Jina hybrid not yet evaluated on Wikipedia). **Nomic v1.5 (0.171) is the
+weakest dense model tested** — its English BERT WordPiece tokenizer (30 522 tokens) has no
+Kazakh-specific Cyrillic coverage; Kazakh-specific characters map entirely to `[UNK]`
+(see `model-reports/nomic-v1.5.md`). Full metrics and significance in
+[PREPRINT2.md](../PREPRINT2.md).
 
 ## Full Metrics Tables (n=300)
 
@@ -93,6 +97,21 @@ significance in [PREPRINT2.md](../PREPRINT2.md).
 | natural | 0.88 | 1.00 | 1.00 | 0.929 | 0.947 |
 | vocabulary-gap | 0.39 | 0.67 | 0.73 | 0.508 | 0.562 |
 | **ALL** | 0.66 | 0.88 | 0.90 | 0.748 | 0.785 |
+
+### Dense Nomic v1.5 — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.09 | 0.17 | 0.22 | 0.121 | 0.144 |
+| natural | 0.18 | 0.36 | 0.43 | 0.256 | 0.297 |
+| vocabulary-gap | 0.04 | 0.09 | 0.12 | 0.057 | 0.071 |
+| **ALL** | 0.10 | 0.21 | 0.26 | 0.145 | 0.171 |
+
+Nomic v1.5 uses `nomic-bert-2048` with an English BERT WordPiece vocabulary (30 522 tokens).
+Kazakh-specific Cyrillic characters (ә, і, ң, ғ, ү, ұ, қ, ө, һ) are entirely out-of-vocabulary
+and tokenize as `[UNK]`, making query and document representations effectively random.
+Significantly below every other model (vs e5: Δ=−0.614, p<0.001; vs BM25+stemmer: Δ=−0.583,
+p<0.001). See `model-reports/nomic-v1.5.md`.
 
 ---
 

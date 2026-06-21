@@ -30,6 +30,7 @@
 | shyngys-e5 | 0.4263 | 0.5368 | 0.4103 | 0.3330 |
 | granite-r2-311m | 0.3989 | 0.5236 | 0.3809 | 0.2936 |
 | granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
+| nomic-v1.5 | 0.0658 | 0.1268 | 0.0292 | 0.0416 |
 
 BM25+stemmer numbers reflect the **100%-cache** run (full stemmer coverage). Jina v3 is
 the new best single model on Akorda (0.6130); the Jina hybrid (0.6145) meets both
@@ -52,6 +53,7 @@ in the Hybrid section below.
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
 | granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
+| nomic-v1.5 | 0.0658 | 0.0501 | 0.0656 | 0.1189 |
 
 ---
 
@@ -72,6 +74,8 @@ in the Hybrid section below.
 | e5 → jina-v3 | +0.1041 | <0.001 | ✓ |
 | bm25+stemmer → jina-v3 | +0.0964 | <0.001 | ✓ |
 | jina-v3 → hybrid ⊕ jina-v3 | +0.0015 | 0.475 | — |
+| e5 → nomic-v1.5 | −0.4432 | <0.001 | ✓ |
+| bm25+stemmer → nomic-v1.5 | −0.4509 | <0.001 | ✓ |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
 **Jina v3 is significantly the best single model on Akorda** (beats both e5 and
@@ -107,8 +111,9 @@ so no score calibration is involved. Pure CPU re-ranking of the already-computed
 | granite-r1 | 0.5166 | 0.4305 | 0.5175 | ✓ | ✓ |
 | granite-r2-311m | 0.5166 | 0.3989 | 0.5158 | ✗ | ✓ |
 | granite-r2-97m | 0.5166 | 0.2585 | 0.4073 | ✗ | ✗ |
+| nomic-v1.5 | 0.5166 | 0.0658 | 0.2278 | ✗ | ✗ |
 
-Both pre-registered success criteria are met for **4 of 6** dense channels (adding Jina).
+Both pre-registered success criteria are met for **4 of 7** dense channels (adding Jina).
 The Jina hybrid is the new best on Akorda (0.6145). The r2-311m hybrid (0.5158) narrowly
 misses the "ALL ≥ max(channel)" bar because BM25 itself got stronger after full-cache
 stemming. The r2-97m failure is structural (dense channel too weak at 0.259).
@@ -147,6 +152,24 @@ The mechanism is visible in the slices: the hybrid recovers most of BM25's facto
 strength (0.846 vs BM25 0.906, only −0.061) while retaining e5's semantic categories
 (paraphrase/low_overlap differences vs e5 are not significant). Overall the hybrid is
 significantly above both channels: vs BM25 p=0.003, vs e5 p=0.009.
+
+### Nomic v1.5 hybrid: dense channel too weak for RRF to help
+
+The Nomic hybrid (nDCG@10 = 0.2278) is significantly **better** than Nomic alone
+(Δ=+0.162, p<0.001) but significantly **worse** than BM25+stemmer alone (Δ=−0.289, p<0.001).
+RRF fusion with a near-zero dense channel does not rescue performance — it degrades BM25.
+Both pre-registered criteria fail: ALL hybrid (0.228) < max channel BM25 (0.517), and
+low_overlap hybrid (0.134) < BM25 (0.332).
+
+| Slice | hybrid | Δ vs bm25 | p | Δ vs nomic | p |
+|-------|-------:|----------:|--:|-----------:|--:|
+| factoid (n=81) | 0.3896 | −0.5167 | **<0.001** | +0.2628 | **<0.001** |
+| paraphrase (n=81) | 0.1613 | −0.1530 | **<0.001** | +0.1321 | **<0.001** |
+| low_overlap (n=82) | 0.1337 | −0.1979 | **<0.001** | +0.0921 | **<0.001** |
+| **ALL (n=244)** | 0.2278 | **−0.2888** | **<0.001** | **+0.1621** | **<0.001** |
+
+Root cause: Nomic's tokenizer has no Kazakh-specific Cyrillic coverage (all [UNK]).
+See `model-reports/nomic-v1.5.md`.
 
 ### Sensitivity to k (not cherry-picked)
 
@@ -236,6 +259,14 @@ TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from mu
 | granite-311m-r2 | 4.20 | 4.43 | **+0.23** | 3.82 | 4.07 | **+0.25** |
 | e5-base | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
 | granite-278m-r1 | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
+| jina-v3 | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
+| nomic-v1.5 | 3.49 | — | — | 3.49 | — | — |
+
+Note: Nomic v1.5 uses a BERT English WordPiece tokenizer (30 522 tokens); Kazakh-specific
+Cyrillic characters tokenize entirely as `[UNK]`, so the fertility of 3.49 reflects only
+words with standard (non-Kazakh-specific) Cyrillic characters in the 100-word sample. The
+OOV issue is the primary explanation for Nomic's nDCG@10=0.066 on Akorda (not fragmentation).
+Akorda fertility not measured for Nomic (numbers not meaningful when most tokens are [UNK]).
 
 **Interpretation (cautious):**
 
@@ -257,6 +288,7 @@ TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from mu
 | shyngys-e5 | 0.747 | 0.426 | −0.321 |
 | granite-r2-311m | 0.659 | 0.399 | −0.260 |
 | granite-r2-97m | 0.589 | 0.259 | −0.330 |
+| nomic-v1.5 | 0.171 | 0.066 | −0.105 |
 
 All systems drop substantially on Akorda. The largest drops are granite-r2-97m (−0.330) and shyngys-e5 (−0.321), smallest is bm25+identity (−0.206). The relative ordering is largely preserved (Spearman ρ=0.89, n=7), with one systematic shift: shyngys-e5 moves from rank 3 on Wiki to rank 5 on Akorda (see Finding 5).
 
