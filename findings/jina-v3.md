@@ -47,13 +47,25 @@ Full tables: [`../results/RESULTS.md`](../results/RESULTS.md) (Wiki),
 ## 3. The actionable weakness (ping hook)
 
 Jina's remaining gap is **high-surface-overlap queries** where the Kazakh morphological BM25
-baseline still wins: on Wiki BM25+stemmer 0.764 vs Jina 0.596. The mechanism candidate is
-sub-word under-adaptation to Kazakh morphology — on a low-resource Turkic language a simple
-morphological normalizer still out-retrieves a SOTA multilingual embedder when surface lexical
-signal is present, pointing at the tokenizer rather than the semantic model itself.
+baseline still wins: on Wiki BM25+stemmer 0.764 vs Jina 0.596. This is not a tokenizer
+issue: sub-word fertility measurement (mean sub-words/word, 100 long Kazakh wordforms,
+`src/eval/tokenization_test.py`) shows Jina v3 fragments Kazakh **identically to
+`multilingual-e5-base`** — both score 1.81 bare / 1.81 lead-space. Both use the XLM-R
+vocabulary (250 002 tokens).
 
-Sub-word fertility (mean sub-words/word, 100 long Kazakh wordforms) for Jina v3 vs
-`multilingual-e5-base` is measured in `src/eval/tokenization_test.py`.
+The implication is the opposite of the Granite R2 case: Jina's +0.036/+0.104 gain over e5 on
+inflected and OOD queries comes entirely from the **semantic model and task-LoRA**, not from
+any tokenizer advantage. The gap vs BM25 on high-surface-overlap queries is domain-general
+for all dense retrievers at this vocabulary level — morphological exact-matching is what BM25
+does best, and no tokenizer change will close it without explicit morphological normalisation.
+
+| Tokenizer | fertility (bare) | fertility (+space) | vocab |
+|-----------|----------------:|------------------:|------:|
+| granite-311m-r2 | 4.20 | 3.82 | 262 144 |
+| granite-97m-r2  | 4.00 | 3.57 | 179 934 |
+| e5-base         | 1.81 | 1.81 | 250 002 |
+| granite-278m-r1 | 1.81 | 1.81 | 250 002 |
+| **jina-v3**     | **1.81** | **1.81** | **250 002** |
 
 ## 4. Reproduce
 
