@@ -51,25 +51,49 @@ class DenseIndex:
 
     def _get_encoder(self):
         if self._encoder is None:
-            from sentence_transformers import SentenceTransformer
-            self._encoder = SentenceTransformer(
-                self.model_name, device=self.device,
-                trust_remote_code=self.trust_remote_code,
-            )
-            # Ограничиваем длину контекста: ModernBERT-модели (Granite R2)
-            # поддерживают 8192 токена и без лимита строят attention O(n²) на
-            # 55+ ГБ -> OOM на 14 ГБ GPU. 512 совпадает с e5 (сравнимость).
-            if self.max_seq_len is not None:
-                self._encoder.max_seq_length = self.max_seq_len
+            if self.trust_remote_code:
+                # Models like Jina v3 ship custom modeling code and have their
+                # own .encode(task=) method on AutoModel. Loading via
+                # SentenceTransformer can break on certain transformers versions
+                # (TypeError in dot_natural_key during state_dict sorting).
+                # Use AutoModel directly — it's the path Jina recommends.
+                import torch
+                from transformers import AutoModel
+                model = AutoModel.from_pretrained(
+                    self.model_name, trust_remote_code=True)
+                if self.device:
+                    model = model.to(self.device)
+                elif torch.cuda.is_available():
+                    model = model.cuda()
+                self._encoder = model
+            else:
+                from sentence_transformers import SentenceTransformer
+                self._encoder = SentenceTransformer(self.model_name, device=self.device)
+                # Ограничиваем длину контекста: ModernBERT-модели (Granite R2)
+                # поддерживают 8192 токена и без лимита строят attention O(n²) на
+                # 55+ ГБ -> OOM на 14 ГБ GPU. 512 совпадает с e5 (сравнимость).
+                if self.max_seq_len is not None:
+                    self._encoder.max_seq_length = self.max_seq_len
         return self._encoder
 
     def _encode(self, texts: Sequence[str], show_progress: bool = False,
                 task: Optional[str] = None) -> np.ndarray:
         enc = self._get_encoder()
-        kwargs: dict = dict(batch_size=self.batch_size, show_progress_bar=show_progress)
-        if task is not None:
-            kwargs["task"] = task
-        emb = enc.encode(list(texts), **kwargs)
+        if self.trust_remote_code:
+            # AutoModel path (Jina v3): encode() accepts task= and max_length=,
+            # already returns L2-normalised embeddings.
+            kwargs: dict = dict(batch_size=self.batch_size,
+                                show_progress_bar=show_progress)
+            if task is not None:
+                kwargs["task"] = task
+            if self.max_seq_len is not None:
+                kwargs["max_length"] = self.max_seq_len
+            emb = enc.encode(list(texts), **kwargs)
+        else:
+            kwargs = dict(batch_size=self.batch_size, show_progress_bar=show_progress)
+            if task is not None:
+                kwargs["task"] = task
+            emb = enc.encode(list(texts), **kwargs)
         emb = np.asarray(emb, dtype=np.float32)
         # L2-нормировка строк -> косинус = скалярное произведение
         norms = np.linalg.norm(emb, axis=1, keepdims=True)
