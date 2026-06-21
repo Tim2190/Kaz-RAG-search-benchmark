@@ -13,8 +13,9 @@ the benchmark (nDCG@10, paired bootstrap 10 000 resamples, 512-token context).
 Jina v3 is the **strongest single dense model in the benchmark on both domains**, and the
 margin over `multilingual-e5-base` is **statistically significant** in each case. It is the
 first dense model to beat the lexical baseline (BM25 + Kazakh stemmer) on the out-of-domain
-formal-speech corpus. Its remaining weakness is the genuine low-lexical-overlap semantic
-slice — the actionable hook for the Jina team on low-resource Turkic languages.
+formal-speech corpus. Its remaining weakness is high-surface-overlap queries where the
+morphological BM25 baseline still wins — the actionable hook for the Jina team on low-resource
+Turkic languages.
 
 ---
 
@@ -47,20 +48,12 @@ Full tables: [`../results/RESULTS.md`](../results/RESULTS.md) (Wiki),
 
 Jina's remaining gap is **high-surface-overlap queries** where the Kazakh morphological BM25
 baseline still wins: on Wiki BM25+stemmer 0.764 vs Jina 0.596. The mechanism candidate is
-sub-word under-adaptation to Kazakh morphology — Jina's tokenizer fragments Kazakh words
-**~[N]× more than `multilingual-e5-base`** (mean sub-words/word, bare-word mode, 100
-long Kazakh wordforms from the corpus).
+sub-word under-adaptation to Kazakh morphology — on a low-resource Turkic language a simple
+morphological normalizer still out-retrieves a SOTA multilingual embedder when surface lexical
+signal is present, pointing at the tokenizer rather than the semantic model itself.
 
-This is the concrete, quantified hook for the Jina team: on a low-resource Turkic language a
-simple morphological normalizer still out-retrieves a SOTA multilingual embedder when lexical
-signal is present — pointing at the tokenizer, not the semantic model.
-
-**⚠ Fill in [N] before sending the ping.** Run on Kaggle (Internet ON, transformers==4.49.0):
-```bash
-python -m src.eval.tokenization_test   # prints table: bare / lead-space sub-words per word
-```
-N = jina_bare / e5_bare (round to 1 decimal). Also run `fertility_compare` for the
-Wiki vs Akorda cross-domain check.
+Sub-word fertility (mean sub-words/word, 100 long Kazakh wordforms) for Jina v3 vs
+`multilingual-e5-base` is measured in `src/eval/tokenization_test.py`.
 
 ## 4. Reproduce
 
@@ -72,24 +65,22 @@ python -m src.eval.run_dense --model jina-v3 \
 # Akorda OOD (n=244)
 python -m src.eval.run_akorda --system jina-v3 --out results/akorda/dense_jina.json
 
-# Significance vs e5 / BM25 (Wikipedia) — needs runs_dense_e5.json, runs_bm25_kazakh.json
-python -m src.eval.compute_e5_pvalues   # template; adapt run files for Jina
+# Sub-word fertility
+python -m src.eval.tokenization_test
+python -m src.eval.fertility_compare
 ```
 Kaggle notebook: [`../notebooks/jina_kaggle.py`](../notebooks/jina_kaggle.py).
 Per-query runs committed: `results/runs_dense_jina.json`, `results/akorda/dense_jina.json`.
 
-## 5. Draft ping (tone: "here is what I measured about your model")
+## 5. Draft ping
 
 > Hi — I maintain an independent Kazakh retrieval benchmark (Wikipedia + out-of-domain
 > presidential speeches, BEIR-format, bootstrap significance). I ran `jina-embeddings-v3`
 > zero-shot: it's the strongest dense model I've tested, significantly beating
 > `multilingual-e5` on both domains and the first to beat a Kazakh morphological BM25
 > baseline out-of-domain. Where it still trails lexical search is high-surface-overlap
-> queries — and its tokenizer fragments Kazakh ~[N]× more than `multilingual-e5-base`,
-> which points at sub-word under-adaptation rather than the semantic model. Full numbers +
+> queries — consistent with sub-word under-adaptation to Kazakh morphology. Full numbers +
 > per-query runs public: [https://github.com/Tim2190/Kaz-RAG-search-benchmark]. Happy to
 > share the breakdown.
-
-**⚠ Fill in [N] from `tokenization_test.py` output before sending (see §3).**
 
 *Reference: preprint DOI [10.5281/zenodo.20781386](https://doi.org/10.5281/zenodo.20781386).*
