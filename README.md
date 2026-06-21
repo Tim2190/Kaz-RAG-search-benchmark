@@ -127,9 +127,15 @@ there p=0.25. A trend, not a proof.
   (Hugging Face) → cleaning → chunking (~120 words) → language filter → **8 370 passages**.
 - **Queries.** 100 entities (countries, cities, people, concepts) × 3 categories:
   - `inflected` — key word in an oblique grammatical case (morphology stress-test);
-  - `vocabulary-gap` — synonyms/paraphrase (semantic stress-test);
+  - `vocabulary-gap` — synonyms/paraphrase (semantic stress-test); see caveat below;
   - `natural` — standard questions.
   Each query has a known ground-truth passage (qrels).
+  > ⚠️ **Caveat on `vocabulary-gap`.** Despite its name, this category was later found to
+  > have the *highest* query↔gold lexical overlap of the three (≈0.56), because the LLM
+  > generator reused key terms from the gold passage. Strong lexical (BM25/stemmer) scores
+  > here reflect that overlap, not semantic-gap closing. The genuine low-overlap test is the
+  > Akorda `low_overlap` category (≈0.32) — see
+  > [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
 - **Systems.** BM25 Okapi (k₁=1.5, b=0.75) ± Kazakh stemmer. Dense retrieval:
   three models evaluated **zero-shot** (no fine-tuning, no hard-negative training):
   - `sentence-transformers/LaBSE` — no query/passage prefixes (symmetric model);
@@ -301,6 +307,14 @@ Work extending the original 300-query study (the conclusions above are unchanged
 - **Validated semantic-gap benchmark** — 127 native-speaker-validated low-overlap
   queries, passage- and article-level scoring with bootstrap CI:
   [`results/SPRINT3_SYNONYM.md`](results/SPRINT3_SYNONYM.md).
+- **Akorda OOD confirmatory study** — the same 7 systems re-run on an entirely
+  different corpus (official presidential speeches, akorda.kz, n=244 queries).
+  Rankings largely hold (Spearman ρ=0.89); dense model ordering is OOD-stable,
+  BM25 vs dense balance shifts with domain lexical overlap:
+  [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
+- **[Preprint 2](PREPRINT2.md)** — full write-up combining new models (Granite R2,
+  kazakh-e5), hybrid RRF results, OOD validation, and tokenizer fertility analysis.
+  [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20781386-blue)](https://doi.org/10.5281/zenodo.20781386)
 
 ---
 

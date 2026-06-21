@@ -16,18 +16,36 @@
 
 ## Main Result: nDCG@10 (n=300)
 
-![5-system comparison](systems_ndcg.png)
-
-| System | inflected | natural | vocab-gap | **ALL** |
+| System | inflected | natural | vocab-gap † | **ALL** |
 |--------|----------:|--------:|----------:|--------:|
 | BM25 | 0.627 | 0.703 | 0.741 | 0.690 |
 | BM25 + Stemmer | 0.727 | 0.772 | **0.764** | 0.754 |
 | Dense LaBSE | 0.477 | 0.546 | 0.419 | 0.481 |
-| Dense Granite | 0.791 | 0.923 | 0.303 | 0.672 |
-| Dense E5 | **0.845** | **0.947** | 0.562 | **0.785** |
+| Dense Granite R1 | 0.791 | 0.923 | 0.303 | 0.672 |
+| Dense Granite R2-97M | 0.711 | 0.880 | 0.175 | 0.589 |
+| Dense Granite R2-311M | 0.791 | 0.924 | 0.263 | 0.659 |
+| Dense E5 | 0.845 | 0.947 | 0.562 | 0.785 |
+| Dense kazakh-e5 | 0.836 | 0.909 | 0.497 | 0.747 |
+| Dense Jina v3 | 0.910 | **0.957** | 0.596 | 0.821 |
+| Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
+| Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
+| Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
+| Hybrid ⊕ Granite R2-97M | 0.779 | 0.869 | 0.438 | 0.695 |
 
-> All five systems on the **same 300 queries**. Tables regenerated from committed JSON via
-> `python -m src.eval.gen_results_tables` — no hand-edited numbers.
+> † **Caveat on the `vocab-gap` column.** Despite its name, this Wikipedia category was
+> found to have the *highest* query↔gold lexical overlap of the three (≈0.56, vs 0.51
+> natural / 0.47 inflected) — the Claude-generated "encyclopedic riddle" queries
+> unintentionally reused key terms from the gold passage. So BM25+stemmer leading this
+> column (0.764) reflects **strong lexical signal, not closing a semantic gap**. The genuine
+> low-overlap test is the Akorda `low_overlap` category (≈0.32 overlap), where Jina v3
+> (0.546) and e5 (0.413) beat BM25+stemmer (0.332) as expected — see
+> [`akorda/AKORDA_RESULTS.md`](akorda/AKORDA_RESULTS.md). This was first documented there.
+
+**Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821),
+**significantly above e5** (Δ=+0.036, p=0.009) and BM25+stemmer (Δ=+0.067, p=0.004),
+paired bootstrap n=300. BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without*
+Jina hybrid data (Jina hybrid not yet evaluated on Wikipedia). Full metrics and
+significance in [PREPRINT2.md](../PREPRINT2.md).
 
 ## Full Metrics Tables (n=300)
 

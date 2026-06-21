@@ -29,11 +29,25 @@ MODELS = {
     "labse":   ("sentence-transformers/LaBSE", "", ""),
     "e5":      ("intfloat/multilingual-e5-base", "query: ", "passage: "),
     "granite": ("ibm-granite/granite-embedding-278m-multilingual", "", ""),
-    # --- Спринт 2: новые модели на том же бенчмарке ---
+    # --- Спринт 2: новые модели ---
     "granite-r2-97m":  ("ibm-granite/granite-embedding-97m-multilingual-r2", "", ""),
     "granite-r2-311m": ("ibm-granite/granite-embedding-311m-multilingual-r2", "", ""),
     # дообучена от multilingual-e5 -> нужны e5-префиксы query:/passage:
     "shyngys-e5":      ("shyngys879/kazakh-e5-rag-embedding", "query: ", "passage: "),
+    # --- Спринт 3: Jina v3 ---
+    # Jina использует task= вместо строковых префиксов (LoRA-адаптеры).
+    # Префиксы оставлены пустыми — реальные параметры передаются через MODEL_EXTRA.
+    "jina-v3": ("jinaai/jina-embeddings-v3", "", ""),
+}
+
+# Дополнительные параметры для моделей с нестандартным энкодингом.
+# query_task / doc_task → передаются как task= в encode() вместо строк-префиксов.
+MODEL_EXTRA: dict = {
+    "jina-v3": {
+        "query_task":        "retrieval.query",
+        "doc_task":          "retrieval.passage",
+        "trust_remote_code": True,
+    },
 }
 
 
@@ -73,6 +87,7 @@ def run(corpus_path: str, queries_path: str, model_key: str,
         emb_cache: str = None, top_k: int = 10, batch_size: int = 64,
         max_seq_len: int = 512) -> Dict:
     hf_id, qpref, dpref = MODELS.get(model_key, (model_key, "", ""))
+    extra = MODEL_EXTRA.get(model_key, {})
     corpus_pairs = dataset.load_corpus(corpus_path)
     queries = dataset.load_queries(queries_path)
     qmap = dataset.queries_as_map(queries)
@@ -80,7 +95,10 @@ def run(corpus_path: str, queries_path: str, model_key: str,
     cats = dataset.categories_from_queries(queries)
 
     index = DenseIndex(model_name=hf_id, query_prefix=qpref, doc_prefix=dpref,
-                       batch_size=batch_size, max_seq_len=max_seq_len)
+                       batch_size=batch_size, max_seq_len=max_seq_len,
+                       query_task=extra.get("query_task"),
+                       doc_task=extra.get("doc_task"),
+                       trust_remote_code=extra.get("trust_remote_code", False))
     doc_ids = [d for d, _ in corpus_pairs]
     cached = _load_emb_cache(emb_cache, doc_ids)
     if cached is not None:
