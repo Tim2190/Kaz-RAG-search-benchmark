@@ -5,7 +5,14 @@
 Каждый "# %%" — отдельная ячейка.
 
 # %% [1] Установка зависимостей и клонирование
-# !pip install -q sentence-transformers torch einops
+# ВАЖНО: Jina v3 несовместима с новейшим transformers (>=4.56) — там
+# переписан загрузчик весов (core_model_loading.dot_natural_key), и кастомный
+# код Jina падает с TypeError "'<' not supported between str and int".
+# Пиним рабочую версию. После установки ОБЯЗАТЕЛЬНО Restart kernel (Run → Restart),
+# иначе останется уже импортированный новый transformers.
+# !pip install -q "transformers==4.49.0" "sentence-transformers==3.3.1" torch einops
+#
+# --- ПОСЛЕ restart выполнить клонирование заново: ---
 # !git clone https://github.com/Tim2190/Kaz-RAG-search-benchmark.git
 # %cd Kaz-RAG-search-benchmark
 
