@@ -46,8 +46,8 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 
 | System | nDCG@10 | MRR@10 | Recall@5 | Recall@10 |
 |--------|--------:|-------:|---------:|----------:|
-| bge-m3 | 0.6790 | — | — | — |
-| hybrid: bm25+stemmer ⊕ bge-m3 | 0.6326 | — | — | — |
+| bge-m3 | 0.6790 | 0.6124 | 0.8279 | 0.8811 |
+| hybrid: bm25+stemmer ⊕ bge-m3 | 0.6326 | 0.5757 | 0.7254 | 0.8115 |
 | hybrid: bm25+stemmer ⊕ jina-v3 | 0.6145 | 0.5491 | 0.7336 | 0.8197 |
 | jina-v3 | 0.6130 | 0.5309 | 0.7787 | 0.8689 |
 | hybrid: bm25+stemmer ⊕ e5 | 0.5623 | 0.4981 | 0.6475 | 0.7664 |
@@ -81,13 +81,18 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | jina-v3 → hybrid ⊕ jina-v3 | +0.0015 | 0.475 | — |
 | e5 → nomic-v1.5 | −0.4432 | <0.001 | ✓ |
 | bm25+stemmer → nomic-v1.5 | −0.4509 | <0.001 | ✓ |
+| jina-v3 → bge-m3 | +0.0659 | <0.001 | ✓ |
+| e5 → bge-m3 | +0.1700 | <0.001 | ✓ |
+| bm25+stemmer → bge-m3 | +0.1623 | <0.001 | ✓ |
+| bge-m3 → hybrid ⊕ bge-m3 | −0.0464 | 0.014 | ✓ |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
-**Jina v3 is significantly the best single model on Akorda** (beats both e5 and
-BM25+stemmer, p<0.001). The Jina hybrid passes the pre-registered criterion but is
-**statistically indistinguishable from Jina alone** (Δ=+0.0015, p=0.475) — Jina is
-already strong enough that RRF fusion adds no measurable lift, unlike the e5 hybrid
-which significantly beat both its channels.
+**BGE-M3 is significantly the best single model on Akorda** — it beats Jina v3
+(Δ=+0.066, p<0.001), e5 (Δ=+0.170, p<0.001), and BM25+stemmer (Δ=+0.162, p<0.001).
+Uniquely, the BGE-M3 hybrid is **significantly worse** than BGE-M3 alone
+(Δ=−0.046, p=0.014) — the first model where fusion with BM25 measurably hurts.
+By contrast the Jina hybrid is statistically tied with Jina alone (Δ=+0.0015, p=0.475),
+and the e5 hybrid significantly beat both its channels.
 
 ### By-category significance (nDCG@10)
 
@@ -132,23 +137,28 @@ too weak). See the BGE-M3 hybrid section below.
 BGE-M3 is the new best system on Akorda as a single dense model (0.679), surpassing the
 previous best (Jina v3 hybrid, 0.615) by a clear margin.
 
-| Slice | bm25+stemmer | bge-m3 | hybrid | hybrid ≥ max? | low_overlap hybrid ≥ bm25? |
-|-------|------------:|-------:|-------:|:-------------:|:--------------------------:|
-| factoid | 0.9063 | 0.7920 | **0.8925** | — | — |
-| paraphrase | 0.3144 | **0.6359** | 0.5331 | — | — |
-| low_overlap | 0.3316 | **0.6100** | 0.4742 | — | ✓ |
-| **ALL** | 0.5166 | **0.6790** | 0.6326 | ✗ | — |
+| Slice | hybrid | Δ vs bm25 | p | Δ vs bge-m3 | p |
+|-------|-------:|----------:|--:|------------:|--:|
+| factoid (n=81) | 0.8925 | −0.0138 | 0.227 n.s. | +0.1005 | **<0.001** |
+| paraphrase (n=81) | 0.5331 | +0.2187 | **<0.001** | −0.1028 | **0.003** |
+| low_overlap (n=82) | 0.4742 | +0.1426 | **<0.001** | −0.1358 | **<0.001** |
+| **ALL (n=244)** | **0.6326** | **+0.1159** | **<0.001** | **−0.0464** | **0.014** |
 
-The pattern is the inverse of all previous models: **BGE-M3 alone (0.679) is stronger
-than its hybrid (0.633)**. Criterion 1 fails because BM25 (0.517) is weaker than the
-dense model (0.679), so fusion with BM25 dilutes the strong semantic signal — especially
-on paraphrase (0.636 → 0.533) and low_overlap (0.610 → 0.474). The factoid gain from BM25
-(0.792 → 0.893) does not compensate. Significance pending JSON upload.
+The pattern is the inverse of all previous models: **BGE-M3 alone (0.679) is significantly
+stronger than its hybrid (0.633)** (Δ=−0.046, p=0.014). Criterion 1 fails because BM25
+(0.517) is much weaker than the dense model (0.679), so fusion with BM25 dilutes the strong
+semantic signal — significantly on paraphrase (0.636 → 0.533, p=0.003) and low_overlap
+(0.610 → 0.474, p<0.001). The factoid gain from BM25 (0.792 → 0.893, +0.100, p<0.001) does
+not compensate for the semantic losses.
 
 **Practical implication:** BGE-M3 alone is sufficient on Akorda. RRF fusion only helps when
 the two channels are complementary (each strong where the other is weak). Once the dense
 model dominates BM25 across the board, the fusion penalty on semantic categories exceeds
 the lexical gain on factoid queries.
+
+**Sensitivity to k** (pre-registered k=60; sweep for honesty): the hybrid stays below
+BGE-M3 alone at every k — ALL = 0.657 (k=10), 0.639 (k=30), 0.633 (k=60), 0.630 (k=100),
+none reaching BGE-M3's 0.679. The dense-beats-hybrid verdict is robust to the RRF constant.
 
 ### Jina v3 (and its hybrid)
 

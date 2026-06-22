@@ -45,17 +45,28 @@ evaluated to date.
 | **ALL** | **0.679** |
 
 BGE-M3 is also the best single system on Akorda (0.679), surpassing the previous best
-(Jina v3 hybrid, 0.615). Unusually, the BGE-M3 hybrid (0.633) is *weaker* than BGE-M3
-alone — the first model in this benchmark where fusion with BM25 is net-negative overall.
-Mechanism: BGE-M3 dominates BM25 on semantic categories (paraphrase 0.636 vs 0.314;
-low_overlap 0.610 vs 0.332). BM25's factoid gain (+0.100) does not compensate for
-semantic dilution (paraphrase −0.103, low_overlap −0.137).
+(Jina v3, 0.613) as a single dense model.
+
+**Statistical significance (paired bootstrap, 10 000 resamples, nDCG@10, n=244):**
+
+| Comparison | Δ | p-value |
+|------------|--:|--------:|
+| BGE-M3 vs Jina v3 | +0.066 | p<0.001 ✅ |
+| BGE-M3 vs E5 | +0.170 | p<0.001 ✅ |
+| BGE-M3 vs BM25+Stemmer | +0.162 | p<0.001 ✅ |
+| BGE-M3 hybrid vs BGE-M3 alone | −0.046 | p=0.014 ✅ |
+
+Unusually, the BGE-M3 hybrid (0.633) is **significantly weaker** than BGE-M3 alone
+(Δ=−0.046, p=0.014) — the first model in this benchmark where fusion with BM25 measurably
+hurts. Mechanism: BGE-M3 dominates BM25 on semantic categories (paraphrase 0.636 vs 0.314,
+p<0.001; low_overlap 0.610 vs 0.332, p<0.001). BM25's factoid gain in fusion (+0.100,
+p<0.001) does not compensate for the semantic dilution (paraphrase −0.103, p=0.003;
+low_overlap −0.136, p<0.001). The verdict is robust across the RRF k-sweep (hybrid stays
+below 0.679 at every k ∈ {10, 30, 60, 100}).
 
 **Cross-domain drop:** Wiki 0.866 → Akorda 0.679 (−0.187). This is the smallest absolute
 drop among dense models tested, suggesting BGE-M3 generalises better to formal political
 text than smaller or domain-specific models.
-
-Statistical significance vs. other Akorda systems: pending JSON upload.
 
 ---
 
