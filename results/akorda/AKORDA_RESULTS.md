@@ -341,7 +341,7 @@ Cross-dataset Spearman rank correlation on nDCG@10 (n=7 systems): **ρ=0.89** (�
 | granite-r2-311m | 0.659 | 6 | 0.399 | 6 | — |
 | granite-r2-97m | 0.589 | 7 | 0.259 | 7 | — |
 
-**shyngys-e5** drops disproportionately on formal political text (−0.321 absolute, the second largest drop after r2-97m), falling below granite-r1 on Akorda — a relationship reversed on Wiki. On Akorda the shyngys-e5 vs granite-r1 difference is not significant (p>0.05), so the practical gap is small, but the direction reversal is real.
+**shyngys-e5** drops disproportionately on formal political text (−0.321 absolute, the second largest drop after r2-97m *among these original 7 systems*; Cohere and Qwen3, added later, both drop more), falling below granite-r1 on Akorda — a relationship reversed on Wiki. On Akorda the shyngys-e5 vs granite-r1 difference is not significant (p>0.05), so the practical gap is small, but the direction reversal is real.
 
 **BM25 vs dense** is the other domain-sensitive relationship. On Wiki, BM25+stemmer was clearly behind e5 and shyngys-e5 in absolute terms. On Akorda, BM25+stemmer ranks #2 overall, nominally tied with e5 (p=0.399), — but this is driven entirely by the factoid category (lexical overlap ≈0.79): when factoid is excluded, e5 leads on paraphrase and low_overlap. The core finding is that **the ranking of dense models among themselves is OOD-stable, while the BM25-vs-dense balance depends on the domain's lexical overlap distribution**.
 
