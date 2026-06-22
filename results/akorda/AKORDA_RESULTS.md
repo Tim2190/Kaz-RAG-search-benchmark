@@ -27,12 +27,14 @@
 | hybrid: bm25+stemmer ⊕ e5 (RRF) | 0.5623 | 0.8456 | 0.4393 | 0.4039 |
 | bm25+stemmer | 0.5166 | **0.9063** | 0.3144 | 0.3316 |
 | e5 (multilingual-e5-base) | 0.5090 | 0.6743 | 0.4408 | 0.4129 |
+| hybrid: bm25+stemmer ⊕ cohere-v4 (RRF) | 0.5007 | 0.8073 | 0.3860 | 0.3111 |
 | bm25+identity | 0.4844 | 0.9010 | 0.2777 | 0.2770 |
 | granite-r1 (278M) | 0.4305 | 0.5481 | 0.4061 | 0.3385 |
 | shyngys-e5 | 0.4263 | 0.5368 | 0.4103 | 0.3330 |
 | granite-r2-311m | 0.3989 | 0.5236 | 0.3809 | 0.2936 |
-| granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
+| cohere embed-v4.0 | 0.3670 | 0.6266 | 0.2633 | 0.2131 |
 | qwen3-0.6b | 0.3304 | 0.5163 | 0.2560 | 0.2203 |
+| granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
 | nomic-v1.5 | 0.0658 | 0.1268 | 0.0292 | 0.0416 |
 
 BM25+stemmer numbers reflect the **100%-cache** run (full stemmer coverage). **BGE-M3 is
@@ -54,12 +56,14 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | hybrid: bm25+stemmer ⊕ e5 | 0.5623 | 0.4981 | 0.6475 | 0.7664 |
 | bm25+stemmer | 0.5166 | 0.4754 | 0.5492 | 0.6516 |
 | e5 | 0.5090 | 0.4388 | 0.6025 | 0.7336 |
+| hybrid: bm25+stemmer ⊕ cohere-v4 | 0.5007 | — | — | — |
 | bm25+identity | 0.4844 | 0.4421 | 0.5246 | 0.6230 |
 | granite-r1 (278M) | 0.4305 | 0.3536 | 0.5369 | 0.6762 |
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
-| granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
+| cohere embed-v4.0 | 0.3670 | 0.3120 | 0.4631 | 0.5410 |
 | qwen3-0.6b | 0.3304 | 0.2793 | 0.3852 | 0.4959 |
+| granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
 | nomic-v1.5 | 0.0658 | 0.0501 | 0.0656 | 0.1189 |
 
 ---
@@ -91,6 +95,11 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | e5 → qwen3-0.6b | −0.1785 | <0.001 | ✓ |
 | jina-v3 → qwen3-0.6b | −0.2826 | <0.001 | ✓ |
 | bge-m3 → qwen3-0.6b | −0.3486 | <0.001 | ✓ |
+| bm25+stemmer → cohere-v4 | −0.1496 | <0.001 | ✓ |
+| e5 → cohere-v4 | −0.1419 | <0.001 | ✓ |
+| jina-v3 → cohere-v4 | −0.2460 | <0.001 | ✓ |
+| bge-m3 → cohere-v4 | −0.3120 | <0.001 | ✓ |
+| qwen3-0.6b → cohere-v4 | +0.0366 | 0.058 | — |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
 **BGE-M3 is significantly the best single model on Akorda** — it beats Jina v3
@@ -117,7 +126,7 @@ the pre-registered **k=60** (Cormack et al., 2009), fusing the lexical channel
 (BM25+stemmer, 100%-cache) with each dense channel. RRF merges *ranks*, not raw scores,
 so no score calibration is involved. Pure CPU re-ranking of the already-computed runs.
 
-### All five fusions — nDCG@10 overall
+### All fusions — nDCG@10 overall
 
 | dense channel | bm25+stemmer | dense | **hybrid** | hybrid ≥ max(channel)? | low_overlap hybrid ≥ bm25? |
 |---------------|------------:|------:|-----------:|:----------------------:|:--------------------------:|
@@ -129,9 +138,10 @@ so no score calibration is involved. Pure CPU re-ranking of the already-computed
 | granite-r2-311m | 0.5166 | 0.3989 | 0.5158 | ✗ | ✓ |
 | granite-r2-97m | 0.5166 | 0.2585 | 0.4073 | ✗ | ✗ |
 | qwen3-0.6b | 0.5166 | 0.3304 | 0.4637 | ✗ | ✗ |
+| cohere-v4 | 0.5166 | 0.3670 | 0.5007 | ✗ | ✗ |
 | nomic-v1.5 | 0.5166 | 0.0658 | 0.2278 | ✗ | ✗ |
 
-Both pre-registered success criteria are met for **4 of 9** dense channels (bge-m3, jina-v3, e5, shyngys-e5).
+Both pre-registered success criteria are met for **4 of 10** dense channels (bge-m3, jina-v3, e5, shyngys-e5).
 **BGE-M3 alone (0.679) is now the best system overall**, but its hybrid (0.633) *fails*
 criterion 1 — the dense channel is stronger than the fusion. This is the first model in
 this benchmark where the dense model alone beats BM25 cleanly enough that RRF with BM25
@@ -241,8 +251,35 @@ Root cause candidate: Qwen3-0.6B has the highest sub-word fertility of all teste
 (6.20 sub-words per Kazakh word), fragmenting morphologically rich Akorda vocabulary into
 many small pieces. This is plausibly worse on formal political text (Akorda) than on
 encyclopedic text (Wiki), consistent with the severe cross-domain drop (Wiki 0.690 →
-Akorda 0.330, −0.360 — the largest absolute drop among all tested models).
+Akorda 0.330, −0.360 — the second-largest absolute drop, behind only Cohere embed-v4.0).
 See `model-reports/qwen3-embed-0.6b.md`.
+
+### Cohere embed-v4.0 hybrid: both criteria fail
+
+| Slice | hybrid | Δ vs bm25 | p | Δ vs cohere | p |
+|-------|-------:|----------:|--:|------------:|--:|
+| factoid (n=81) | 0.8073 | −0.0990 | **<0.001** | +0.1807 | **<0.001** |
+| paraphrase (n=81) | 0.3860 | +0.0716 | **0.005** | +0.1227 | **<0.001** |
+| low_overlap (n=82) | 0.3111 | −0.0205 | 0.260 | +0.0980 | **<0.001** |
+| **ALL (n=244)** | 0.5007 | −0.0160 | 0.176 | **+0.1337** | **<0.001** |
+
+The Cohere hybrid (0.501) is the same pattern as Qwen3 and granite-r2-97m — both
+pre-registered criteria fail: ALL hybrid (0.501) < BM25 (0.517), and low_overlap hybrid
+(0.311) < BM25 (0.332). Notably, unlike Qwen3, the overall hybrid loss vs BM25 is *not*
+significant (Δ=−0.016, p=0.176), and on paraphrase the hybrid significantly beats both
+channels (0.386, p=0.005 vs BM25). But the dense channel (0.367) is too weak on factoid
+(where BM25 reaches 0.906) for fusion to clear the bar. The hybrid is significantly above
+Cohere dense alone (+0.134, p<0.001) — fusion *rescues* the weak dense channel but cannot
+lift it past the strong lexical baseline.
+
+The striking result is the dense model itself: **Cohere embed-v4.0, marketed specifically
+for cross-lingual retrieval (100+ languages), has the largest absolute cross-domain drop in
+the entire benchmark — Wiki 0.800 → Akorda 0.367, −0.433** — exceeding even Qwen3 (−0.360).
+Its sub-word fertility on Kazakh is 6.20 (Wiki) / 6.27 (Akorda) — *identical* to Qwen3 to
+three significant figures, with token-identical splits on every probe word — indicating the
+same byte-level BPE fallback for Kazakh Cyrillic. The strong Wikipedia score does not
+transfer to formal, morphologically dense political prose.
+See `model-reports/cohere-embed-v4.md`.
 
 ### Sensitivity to k (not cherry-picked)
 
@@ -347,7 +384,15 @@ TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from mu
 | jina-v3 | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
 | bge-m3 | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
 | qwen3-0.6b | 6.20 | 6.27 | +0.07 | 6.50 | 6.63 | +0.13 |
+| cohere embed-v4.0 ‡ | 6.20 | 6.27 | +0.07 | — | — | — |
 | nomic-v1.5 | 3.49 | — | — | 3.49 | — | — |
+
+‡ Cohere `embed-v4.0` is API-only; fertility was measured via the Cohere tokenize API
+(`src/eval/cohere_tokenization.py`) on the same 100 words, bare only (the API does not
+expose a leading-space variant). The result is **identical to Qwen3-0.6B** (6.20 / 6.27),
+with token-identical splits on all four probe words (сөзжасам→6, мүмкіндіктерін→11,
+ұйымдастырушылық→9, халықаралық→8) — strong evidence of the same byte-level BPE fallback
+for Kazakh Cyrillic.
 
 Note: Nomic v1.5 uses a BERT English WordPiece tokenizer (30 522 tokens); Kazakh-specific
 Cyrillic characters tokenize entirely as `[UNK]`, so the fertility of 3.49 reflects only
@@ -377,16 +422,22 @@ Akorda fertility not measured for Nomic (numbers not meaningful when most tokens
 | granite-r1 | 0.672 | 0.431 | −0.241 |
 | granite-r2-311m | 0.659 | 0.399 | −0.260 |
 | granite-r2-97m | 0.589 | 0.259 | −0.330 |
-| qwen3-0.6b | 0.690 | 0.330 | **−0.360** |
+| cohere embed-v4.0 | 0.800 | 0.367 | **−0.433** |
+| qwen3-0.6b | 0.690 | 0.330 | −0.360 |
 | nomic-v1.5 | 0.171 | 0.066 | −0.105 |
 
 All systems drop substantially on Akorda. BGE-M3 shows the **smallest absolute drop among
 dense models (−0.187)**, possibly reflecting stronger generalisation across formal political
-language. **Qwen3-0.6B has the largest absolute drop (−0.360)** — despite a Wiki score (0.690)
-similar to BM25 (0.690), it collapses on Akorda (0.330), below Granite R2-97M (0.259 Wiki →
-0.259 Akorda, similar drop in absolute terms). The cross-domain fragility is consistent with
-Qwen3's highest tokenizer fertility (6.20 sub-words/word), which may be disproportionately
-penalised on the more morphologically complex formal political vocabulary of Akorda.
+language. **Cohere embed-v4.0 has the largest absolute drop in the benchmark (−0.433)**,
+ahead of Qwen3-0.6B (−0.360). This is the most pointed result of the Cohere run: a model
+marketed specifically for cross-lingual retrieval (100+ languages) is the 3rd-strongest
+system on Wikipedia (0.800) yet collapses to 0.367 on formal political Kazakh — below
+BM25+stemmer, e5, and the Granite models. The cross-domain fragility of both Cohere and
+Qwen3 is consistent with their shared byte-level BPE tokenizer (fertility 6.20, identical
+to three significant figures), which fragments morphologically complex formal Kazakh into
+byte-level pieces. Tokenizer fertility is a *candidate mechanism*, not proven causation:
+BGE-M3/Jina/e5 share the XLM-R tokenizer (1.81) and stay domain-robust, while the two
+byte-level-BPE models show the two largest drops — a consistent but correlational pattern.
 
 ---
 
