@@ -49,6 +49,8 @@ TOKENIZERS = {
     "granite-278m-r1":   "ibm-granite/granite-embedding-278m-multilingual",
     "jina-v3":           "jinaai/jina-embeddings-v3",
     "nomic-v1.5":        "nomic-ai/nomic-embed-text-v1.5",
+    "bge-m3":            "BAAI/bge-m3",
+    "qwen3-0.6b":        "Qwen/Qwen3-Embedding-0.6B",
     "tilcore_morph256k": "stukenov/sozkz-morphbpe-256k-kk-v1",
 }
 
