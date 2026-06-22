@@ -29,7 +29,7 @@ Sorted by Wikipedia nDCG@10. Each score links to its full-metrics section.
 | 9 | **Granite R2-97M** | `ibm-granite/granite-embedding-97m-multilingual-r2` | [0.589](RESULTS.md#main-result-ndcg10-n300) | [0.259](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 179 934 | 4.00 | [📄](../model-reports/INDEX.md) | Smaller R2; weakest dense model except Nomic; largest Akorda drop |
 | 10 | **LaBSE** | `sentence-transformers/LaBSE` | [0.481](RESULTS.md#dense-labse--n300) | — | 501 153 | — | — | Naive multilingual; beaten by BM25+stemmer on every Wiki category (Akorda not run) |
 | 11 | **Nomic v1.5** | `nomic-ai/nomic-embed-text-v1.5` | [0.171](RESULTS.md#dense-nomic-v15--n300) | [0.066](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 30 522 | 3.49 ‡ | [📄](../model-reports/nomic-v1.5.md) | Weakest; English BERT WordPiece — Kazakh-specific Cyrillic entirely `[UNK]` |
-| 12 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 | [📄](../model-reports/qwen3-embed-0.6b.md) | Largest cross-domain drop (−0.360); highest tokenizer fragmentation (6.20); below BM25+stemmer on both domains |
+| 12 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 § | [📄](../model-reports/qwen3-embed-0.6b.md) | Largest cross-domain drop (−0.360); highest tokenizer fragmentation (6.20 §); below BM25+stemmer on both domains despite claimed 100+ language support |
 
 ---
 
@@ -72,6 +72,15 @@ gaps are architectural/training, not tokenizer.
 > count to 3.49. This is zero coverage, not low fragmentation — the root cause of Nomic's
 > collapse. See [`../model-reports/nomic-v1.5.md`](../model-reports/nomic-v1.5.md).
 
+> **§ Qwen3 fertility is real, but the mechanism differs from Nomic.** Qwen3-0.6B's 151 643-token
+> BPE vocabulary falls back to byte-level tokenization for Kazakh Cyrillic: each character encodes
+> as 2–3 byte-piece tokens displayed as UTF-8 byte sequences (e.g., `«халықаралық»` →
+> `['Ñħ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ', 'Ð°ÑĢ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ']`, 8 tokens).
+> Unlike Nomic's `[UNK]` collapse (absent characters → 1 token each, *compressing* count),
+> Qwen3 genuinely tokenizes every character — but at byte granularity, producing true
+> over-fragmentation. The fertility count 6.20 correctly reflects sequence-length inflation;
+> it is not an artifact. See [`../model-reports/qwen3-embed-0.6b.md`](../model-reports/qwen3-embed-0.6b.md).
+
 > **† The Wikipedia `vocab-gap` category does not measure what its name suggests.** Despite
 > being designed as the semantic-gap test, it was found to have the *highest* query↔gold
 > lexical overlap of the three Wiki categories (≈0.56, vs 0.51 natural / 0.47 inflected):
@@ -86,9 +95,8 @@ gaps are architectural/training, not tokenizer.
 > `low_overlap` — not Wiki `vocab-gap` — as the semantic-retrieval benchmark.
 
 **Coverage gaps.** LaBSE was not run on Akorda. Wikipedia hybrids exist only for kazakh-e5
-and the three Granite variants (the hybrid study pre-dates BGE-M3/Jina). Qwen3-0.6B
-evaluation is in progress (notebook:
-[`../notebooks/qwen3_embed_kaggle.py`](../notebooks/qwen3_embed_kaggle.py)).
+and the three Granite variants (the hybrid study pre-dates BGE-M3/Jina). All 12 systems in §1
+have complete results on both domains.
 
 **Cross-domain.** Dense-model rank ordering is largely OOD-stable (Wiki↔Akorda Spearman
 ρ=0.89 over the original 7 systems); the BM25-vs-dense balance is what shifts with the
