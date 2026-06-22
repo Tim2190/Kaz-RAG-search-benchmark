@@ -20,16 +20,17 @@ Sorted by Wikipedia nDCG@10. Each score links to its full-metrics section.
 |--:|-------|-------|:------------:|:--------------:|------:|----------:|:------:|-----------------|
 | 1 | **BGE-M3** | `BAAI/bge-m3` | [**0.866**](RESULTS.md#dense-bge-m3--n300) | [**0.679**](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | [📄](../model-reports/bge-m3.md) | Best on both domains; beats Jina (Wiki Δ=+0.045 p=0.0001; Akorda Δ=+0.066 p<0.001); first dense model to beat its own hybrid |
 | 2 | **Jina v3** | `jinaai/jina-embeddings-v3` | [0.821](RESULTS.md#main-result-ndcg10-n300) | [0.613](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | [📄](../model-reports/jina-v3.md) | 2nd best; gain over e5 is purely semantic — identical XLM-R tokenizer |
-| 3 | **E5** | `intfloat/multilingual-e5-base` | [0.785](RESULTS.md#dense-e5--n300) | [0.509](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Strong baseline; same XLM-R vocab as BGE-M3 and Jina |
-| 4 | **BM25 + Stemmer** | *(lexical)* | [0.754](RESULTS.md#bm25--stemmer--n300) | [0.517](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Most balanced; never below 0.727 on any Wiki slice; best on Wiki vocab-gap † |
-| 5 | **kazakh-e5** | `shyngys879/kazakh-e5-rag-embedding` | [0.747](RESULTS.md#main-result-ndcg10-n300) | [0.426](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Fine-tuned from e5; underperforms base e5 on Akorda (rank 3→5, domain shift) |
-| 6 | **BM25** | *(lexical)* | [0.690](RESULTS.md#bm25--n300) | [0.484](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Unstemmed lexical baseline |
-| 7 | **Granite R1 (278M)** | `ibm-granite/granite-embedding-278m-multilingual` | [0.672](RESULTS.md#dense-granite--n300) | [0.431](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | [📄](../model-reports/INDEX.md) | Strong on morphology/natural; collapses on Wiki vocab-gap (0.303) |
-| 8 | **Granite R2-311M** | `ibm-granite/granite-embedding-311m-multilingual-r2` | [0.659](RESULTS.md#main-result-ndcg10-n300) | [0.399](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 262 144 | 4.20 | [📄](../model-reports/INDEX.md) | ModernBERT backbone; fragments Kazakh ~2.3× more than R1; no gain over R1 |
-| 9 | **Granite R2-97M** | `ibm-granite/granite-embedding-97m-multilingual-r2` | [0.589](RESULTS.md#main-result-ndcg10-n300) | [0.259](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 179 934 | 4.00 | [📄](../model-reports/INDEX.md) | Smaller R2; weakest dense model except Nomic; largest Akorda drop |
-| 10 | **LaBSE** | `sentence-transformers/LaBSE` | [0.481](RESULTS.md#dense-labse--n300) | — | 501 153 | — | — | Naive multilingual; beaten by BM25+stemmer on every Wiki category (Akorda not run) |
-| 11 | **Nomic v1.5** | `nomic-ai/nomic-embed-text-v1.5` | [0.171](RESULTS.md#dense-nomic-v15--n300) | [0.066](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 30 522 | 3.49 ‡ | [📄](../model-reports/nomic-v1.5.md) | Weakest; English BERT WordPiece — Kazakh-specific Cyrillic entirely `[UNK]` |
-| 12 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 § | [📄](../model-reports/qwen3-embed-0.6b.md) | Largest cross-domain drop (−0.360); highest tokenizer fragmentation (6.20 §); below BM25+stemmer on both domains despite claimed 100+ language support |
+| 3 | **Cohere embed-v4.0** | `cohere/embed-v4.0` (API) | [0.800](RESULTS.md#dense-cohere-embed-v40--n300) | [0.367](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | ~byte-BPE | 6.20 § | [📄](../model-reports/cohere-embed-v4.md) | Ties Jina/E5 on Wiki, but **largest cross-domain drop in benchmark (−0.433)**; collapses on Akorda despite marketing for cross-lingual retrieval (100+ langs) |
+| 4 | **E5** | `intfloat/multilingual-e5-base` | [0.785](RESULTS.md#dense-e5--n300) | [0.509](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Strong baseline; same XLM-R vocab as BGE-M3 and Jina |
+| 5 | **BM25 + Stemmer** | *(lexical)* | [0.754](RESULTS.md#bm25--stemmer--n300) | [0.517](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Most balanced; never below 0.727 on any Wiki slice; best on Wiki vocab-gap † |
+| 6 | **kazakh-e5** | `shyngys879/kazakh-e5-rag-embedding` | [0.747](RESULTS.md#main-result-ndcg10-n300) | [0.426](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Fine-tuned from e5; underperforms base e5 on Akorda (rank 3→5, domain shift) |
+| 7 | **BM25** | *(lexical)* | [0.690](RESULTS.md#bm25--n300) | [0.484](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Unstemmed lexical baseline |
+| 8 | **Granite R1 (278M)** | `ibm-granite/granite-embedding-278m-multilingual` | [0.672](RESULTS.md#dense-granite--n300) | [0.431](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | [📄](../model-reports/INDEX.md) | Strong on morphology/natural; collapses on Wiki vocab-gap (0.303) |
+| 9 | **Granite R2-311M** | `ibm-granite/granite-embedding-311m-multilingual-r2` | [0.659](RESULTS.md#main-result-ndcg10-n300) | [0.399](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 262 144 | 4.20 | [📄](../model-reports/INDEX.md) | ModernBERT backbone; fragments Kazakh ~2.3× more than R1; no gain over R1 |
+| 10 | **Granite R2-97M** | `ibm-granite/granite-embedding-97m-multilingual-r2` | [0.589](RESULTS.md#main-result-ndcg10-n300) | [0.259](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 179 934 | 4.00 | [📄](../model-reports/INDEX.md) | Smaller R2; weakest dense model except Nomic/Qwen3 |
+| 11 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 § | [📄](../model-reports/qwen3-embed-0.6b.md) | 2nd-largest cross-domain drop (−0.360); byte-level BPE fragmentation (6.20 §); below BM25+stemmer on both domains despite claimed 100+ language support |
+| 12 | **LaBSE** | `sentence-transformers/LaBSE` | [0.481](RESULTS.md#dense-labse--n300) | — | 501 153 | — | — | Naive multilingual; beaten by BM25+stemmer on every Wiki category (Akorda not run) |
+| 13 | **Nomic v1.5** | `nomic-ai/nomic-embed-text-v1.5` | [0.171](RESULTS.md#dense-nomic-v15--n300) | [0.066](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 30 522 | 3.49 ‡ | [📄](../model-reports/nomic-v1.5.md) | Weakest; English BERT WordPiece — Kazakh-specific Cyrillic entirely `[UNK]` |
 
 ---
 
@@ -47,6 +48,7 @@ Sorted by Akorda nDCG@10 (more complete coverage). Scores link to the hybrid sec
 | **granite-r1** | [0.742](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.518](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Wiki: falsified (below BM25 on ALL, vocab-gap leaks Granite's 0.303 collapse) |
 | **granite-r2-311m** | [0.740](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.516](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Narrowly misses ALL ≥ max(channel) on Akorda |
 | **granite-r2-97m** | [0.695](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.407](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense channel too weak |
+| **cohere-v4** | — | [0.501](akorda/AKORDA_RESULTS.md#cohere-embed-v40-hybrid-both-criteria-fail) | Both criteria fail — dense (0.367) too weak; but overall loss vs BM25 not significant (p=0.176), and fusion beats dense alone (+0.134) |
 | **qwen3-0.6b** | — | [0.464](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense (0.330) too weak; hybrid worse than BM25+stemmer alone (p=0.003) |
 | **nomic-v1.5** | — | [0.228](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — near-zero dense channel drags BM25 down |
 
@@ -72,14 +74,18 @@ gaps are architectural/training, not tokenizer.
 > count to 3.49. This is zero coverage, not low fragmentation — the root cause of Nomic's
 > collapse. See [`../model-reports/nomic-v1.5.md`](../model-reports/nomic-v1.5.md).
 
-> **§ Qwen3 fertility is real, but the mechanism differs from Nomic.** Qwen3-0.6B's 151 643-token
-> BPE vocabulary falls back to byte-level tokenization for Kazakh Cyrillic: each character encodes
-> as 2–3 byte-piece tokens displayed as UTF-8 byte sequences (e.g., `«халықаралық»` →
-> `['Ñħ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ', 'Ð°ÑĢ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ']`, 8 tokens).
+> **§ Byte-level BPE over-fragmentation (Qwen3 **and** Cohere embed-v4.0).** Qwen3-0.6B's
+> 151 643-token BPE vocabulary falls back to byte-level tokenization for Kazakh Cyrillic: each
+> character encodes as 2–3 byte-piece tokens displayed as UTF-8 byte sequences (e.g.,
+> `«халықаралық»` → `['Ñħ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ', 'Ð°ÑĢ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ']`, 8 tokens).
 > Unlike Nomic's `[UNK]` collapse (absent characters → 1 token each, *compressing* count),
-> Qwen3 genuinely tokenizes every character — but at byte granularity, producing true
-> over-fragmentation. The fertility count 6.20 correctly reflects sequence-length inflation;
-> it is not an artifact. See [`../model-reports/qwen3-embed-0.6b.md`](../model-reports/qwen3-embed-0.6b.md).
+> these models genuinely tokenize every character — but at byte granularity, producing true
+> over-fragmentation; the fertility count 6.20 correctly reflects sequence-length inflation,
+> not an artifact. **Cohere embed-v4.0 is empirically identical to Qwen3** here: fertility
+> 6.20 / 6.27 (measured via the Cohere tokenize API on the same 100 words) with token-identical
+> splits on every probe word — strong evidence of the same byte-level BPE mechanism for Kazakh.
+> See [`../model-reports/qwen3-embed-0.6b.md`](../model-reports/qwen3-embed-0.6b.md) and
+> [`../model-reports/cohere-embed-v4.md`](../model-reports/cohere-embed-v4.md).
 
 > **† The Wikipedia `vocab-gap` category does not measure what its name suggests.** Despite
 > being designed as the semantic-gap test, it was found to have the *highest* query↔gold
@@ -95,10 +101,14 @@ gaps are architectural/training, not tokenizer.
 > `low_overlap` — not Wiki `vocab-gap` — as the semantic-retrieval benchmark.
 
 **Coverage gaps.** LaBSE was not run on Akorda. Wikipedia hybrids exist only for kazakh-e5
-and the three Granite variants (the hybrid study pre-dates BGE-M3/Jina). All 12 systems in §1
-have complete results on both domains.
+and the three Granite variants (the hybrid study pre-dates BGE-M3/Jina/Cohere). All other
+systems in §1 have complete results on both domains.
 
 **Cross-domain.** Dense-model rank ordering is largely OOD-stable (Wiki↔Akorda Spearman
 ρ=0.89 over the original 7 systems); the BM25-vs-dense balance is what shifts with the
 domain's lexical-overlap distribution. BGE-M3 shows the smallest absolute drop
-(Wiki→Akorda −0.187) among dense models.
+(Wiki→Akorda −0.187) among dense models, while the two byte-level-BPE models show the two
+largest: **Cohere embed-v4.0 (−0.433)** and Qwen3 (−0.360). The sharpest single finding of
+the Cohere run is that a model explicitly marketed for cross-lingual retrieval (100+ languages)
+ranks #3 on Wikipedia (0.800) yet collapses to 8th on Akorda (0.367) — strong Wikipedia
+performance does not guarantee robustness on formal, morphologically dense Kazakh.

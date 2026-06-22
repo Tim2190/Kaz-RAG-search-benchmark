@@ -75,6 +75,12 @@ DENSE_MODELS: Dict[str, Tuple[str, str, str]] = {
                        ""),
 }
 
+# API-based models handled outside DENSE_MODELS (different loader)
+# key → Cohere model name
+COHERE_MODELS: Dict[str, str] = {
+    "cohere-v4": "embed-v4.0",
+}
+
 # Extra encode params: query_task/doc_task → task= in encode() (Jina);
 # trust_remote_code → passed to loader (Jina: AutoModel; Nomic: SentenceTransformer).
 DENSE_MODEL_EXTRA: dict = {
@@ -248,6 +254,48 @@ def run_dense(model_key: str, top_k: int = 100) -> Dict:
     }
 
 
+# ── Cohere API dense ──────────────────────────────────────────────────────────
+
+def run_cohere_system(model_key: str, top_k: int = 100) -> Dict:
+    import numpy as np, json as _json, os as _os
+    from ..retrieval.cohere_index import CohereIndex
+
+    cohere_model = COHERE_MODELS[model_key]
+    corpus  = _load_corpus()
+    queries = _load_queries()
+    qrels   = _load_qrels()
+    qmap    = {q["query_id"]: q["text"] for q in queries}
+
+    cache_prefix = _os.path.join(ROOT, f"results/akorda/emb_{model_key}")
+    cache_npy  = cache_prefix + ".npy"
+    cache_ids  = cache_prefix + ".ids.json"
+
+    index = CohereIndex(model_name=cohere_model)
+    if _os.path.exists(cache_npy) and _os.path.exists(cache_ids):
+        ids = _json.load(open(cache_ids, encoding="utf-8"))
+        if ids == [d for d, _ in corpus]:
+            print(f"Эмбеддинги из кэша: {cache_npy}")
+            index.set_embeddings(ids, np.load(cache_npy))
+    if index.matrix is None:
+        index.index(corpus)
+        _os.makedirs(_os.path.dirname(cache_prefix) or ".", exist_ok=True)
+        np.save(cache_npy, index.matrix)
+        _json.dump(index.doc_ids, open(cache_ids, "w", encoding="utf-8"))
+
+    run_result = index.run(qmap, top_k=top_k)
+    overall, by_cat = _metrics_block(run_result, qrels, queries)
+    return {
+        "system": model_key,
+        "dataset": "akorda",
+        "model": f"cohere/{cohere_model}",
+        "n_passages": len(corpus),
+        "n_queries": len(queries),
+        "overall": overall,
+        "by_category": by_cat,
+        "run": run_result,
+    }
+
+
 # ── Hybrid RRF ────────────────────────────────────────────────────────────────
 #
 # Зеркалит протокол Wiki-гибрида (src/eval/run_hybrid.py): сливает BM25+стеммер ⊕
@@ -370,11 +418,13 @@ def run_hybrid(bm25_runs_path: str, dense_runs_path: str,
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--system", required=True,
-                    choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS) + ["hybrid-e5",
+                    choices=["bm25", "bm25-stemmer"] + list(DENSE_MODELS)
+                            + list(COHERE_MODELS) + ["hybrid-e5",
                              "hybrid-granite-r1", "hybrid-granite-r2-97m",
                              "hybrid-granite-r2-311m", "hybrid-shyngys-e5",
                              "hybrid-jina-v3", "hybrid-nomic-v1.5",
-                             "hybrid-bge-m3", "hybrid-qwen3-0.6b"])
+                             "hybrid-bge-m3", "hybrid-qwen3-0.6b",
+                             "hybrid-cohere-v4"])
     ap.add_argument("--out", required=True)
     ap.add_argument("--top-k", type=int, default=100)
     # hybrid options
@@ -392,6 +442,8 @@ def main() -> None:
         result = run_bm25("kazakh", top_k=args.top_k)
     elif args.system in DENSE_MODELS:
         result = run_dense(args.system, top_k=args.top_k)
+    elif args.system in COHERE_MODELS:
+        result = run_cohere_system(args.system, top_k=args.top_k)
     elif args.system.startswith("hybrid"):
         if not args.bm25_runs or not args.dense_runs:
             ap.error("--bm25-runs and --dense-runs required for hybrid")

@@ -57,10 +57,11 @@ surprising in most contexts, but the tokenizer analysis below offers a clear exp
 | E5 vs Qwen3-0.6B | −0.179 | p<0.001 ✅ |
 | BM25+Stemmer vs Qwen3-0.6B | −0.186 | p<0.001 ✅ |
 
-**Cross-domain drop:** Wiki 0.690 → Akorda 0.330 (−0.360) — the **largest absolute
-cross-domain drop** among all tested models, including models that perform worse overall.
-The collapse is steepest on semantic categories (paraphrase 0.927 → 0.256; low_overlap not
-directly comparable across domains but Akorda 0.220 is very low).
+**Cross-domain drop:** Wiki 0.690 → Akorda 0.330 (−0.360) — the **second-largest absolute
+cross-domain drop** among all tested models, behind only Cohere embed-v4.0 (−0.433), which
+shares Qwen3's byte-level BPE tokenizer (identical fertility 6.20). The collapse is steepest
+on semantic categories (paraphrase 0.927 → 0.256; low_overlap not directly comparable across
+domains but Akorda 0.220 is very low).
 
 **Akorda hybrid (RRF k=60):** both pre-registered criteria fail.
 - hybrid ALL = 0.464 < max channel (BM25 0.517) → criterion 1 FAILS
@@ -104,8 +105,9 @@ measurement artifact.
 
 The Akorda domain shift for Qwen3 (Δ=+0.07) is small in absolute fertility terms, but the
 baseline fragmentation (6.20) is so high that even small additional fragmentation compounds
-meaningfully. This is the plausible candidate mechanism for the largest cross-domain drop
-(−0.360) in the benchmark, though this is correlation, not proven causation.
+meaningfully. This is the plausible candidate mechanism for Qwen3's −0.360 cross-domain drop
+(the second-largest in the benchmark, after Cohere embed-v4.0 at −0.433 — which uses the same
+byte-level BPE tokenizer), though this is correlation, not proven causation.
 
 **Conclusion:** Qwen3-0.6B's Qwen3 BPE vocabulary did not develop stable sub-word units
 for agglutinative Kazakh morphology. The model compensates with byte-level fallback

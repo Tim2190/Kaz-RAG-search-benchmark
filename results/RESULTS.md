@@ -30,6 +30,7 @@
 | **Dense BGE-M3** | **0.948** | **0.977** | **0.672** | **0.866** |
 | Dense Nomic v1.5 | 0.144 | 0.297 | 0.071 | 0.171 |
 | Dense Qwen3-0.6B | 0.792 | 0.927 | 0.352 | 0.690 |
+| Dense Cohere embed-v4.0 | 0.864 | 0.965 | 0.570 | 0.800 |
 | Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
@@ -148,6 +149,24 @@ vs BGE-M3: Δ=−0.175, p<0.001). Its vocabulary-gap score (0.352) is the third 
 dense result after Nomic (0.071) and Granite R2-97M (0.175), consistent with the
 highest sub-word fertility of all tested models (6.20 sub-words/word on Kazakh).
 See `model-reports/qwen3-embed-0.6b.md`.
+
+### Dense Cohere embed-v4.0 — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.76 | 0.93 | 0.96 | 0.833 | 0.864 |
+| natural | 0.93 | 0.99 | 0.99 | 0.956 | 0.965 |
+| vocabulary-gap | 0.38 | 0.66 | 0.78 | 0.504 | 0.570 |
+| **ALL** | 0.69 | 0.86 | 0.91 | 0.764 | 0.800 |
+
+Cohere `embed-v4.0` is an API-only multilingual embedder (Cohere, 2025) marketed for
+cross-lingual retrieval (100+ languages). On Wikipedia it is the 3rd-strongest single
+system (0.800): statistically tied with Jina v3 (Δ=+0.021, p=0.104) and E5 (Δ=−0.015,
+p=0.179), significantly beating BM25+stemmer (Δ=+0.046, p=0.028) and Qwen3 (Δ=+0.110,
+p<0.001), but significantly below BGE-M3 (Δ=−0.066, p<0.001). Note: its Wikipedia
+strength does **not** carry to Akorda, where it collapses to 0.367 (the largest
+cross-domain drop in the benchmark, −0.433) — its tokenizer fragments Kazakh at the byte
+level identically to Qwen3 (fertility 6.20). See `model-reports/cohere-embed-v4.md`.
 
 ---
 
