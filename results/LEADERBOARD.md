@@ -15,7 +15,7 @@
 
 | Model | HF id | Wiki nDCG@10 | Akorda nDCG@10 | Vocab size | Fertility (Wiki) | Headline finding |
 |-------|-------|-------------:|---------------:|-----------:|-----------------:|-----------------|
-| **Dense BGE-M3** | `BAAI/bge-m3` | **0.866** | TBD | 250 002 | 1.81 | New best single model; beats Jina v3 (Δ=+0.045, p=0.0001); same XLM-R tokenizer — gain is architectural |
+| **Dense BGE-M3** | `BAAI/bge-m3` | **0.866** | **0.679** | 250 002 | 1.81 | Best model on both domains; beats Jina v3 (Δ=+0.045, p=0.0001); first dense model to beat its own hybrid |
 | **Hybrid ⊕ Jina v3** | *(RRF k=60)* | — | **0.615** | — | — | Only Akorda evaluated; meets both pre-registered success criteria |
 | **Dense Jina v3** | `jinaai/jina-embeddings-v3` | 0.821 | 0.613 | 250 002 | 1.81 | Previously best single model; gain over e5 is purely semantic |
 | **Hybrid ⊕ kazakh-e5** | *(RRF k=60)* | 0.808 | 0.562 | — | — | Best fusion on Wikipedia (no BGE-M3 hybrid yet); BM25 saves vocab-gap |

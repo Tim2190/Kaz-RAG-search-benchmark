@@ -37,7 +37,25 @@ evaluated to date.
 
 ## §2 Akorda Results (n=244)
 
-*Pending — to be added after Kaggle run.*
+| Category | nDCG@10 |
+|----------|--------:|
+| factoid | 0.792 |
+| paraphrase | 0.636 |
+| low_overlap | 0.610 |
+| **ALL** | **0.679** |
+
+BGE-M3 is also the best single system on Akorda (0.679), surpassing the previous best
+(Jina v3 hybrid, 0.615). Unusually, the BGE-M3 hybrid (0.633) is *weaker* than BGE-M3
+alone — the first model in this benchmark where fusion with BM25 is net-negative overall.
+Mechanism: BGE-M3 dominates BM25 on semantic categories (paraphrase 0.636 vs 0.314;
+low_overlap 0.610 vs 0.332). BM25's factoid gain (+0.100) does not compensate for
+semantic dilution (paraphrase −0.103, low_overlap −0.137).
+
+**Cross-domain drop:** Wiki 0.866 → Akorda 0.679 (−0.187). This is the smallest absolute
+drop among dense models tested, suggesting BGE-M3 generalises better to formal political
+text than smaller or domain-specific models.
+
+Statistical significance vs. other Akorda systems: pending JSON upload.
 
 ---
 
