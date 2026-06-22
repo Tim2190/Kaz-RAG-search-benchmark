@@ -79,11 +79,15 @@ fertility of all models tested (6.20 sub-words per word on 100 frequent Kazakh w
 chars). The fragmentation is ~3.4× higher than the XLM-R cluster (BGE-M3, E5, Jina at
 1.81) and higher than even the fragmented Granite R2 models (4.00–4.20).
 
-The example outputs are particularly revealing: `«халықаралық»` (international) is split
-into 8 pieces, `«мүмкіндіктерін»` (of possibilities, acc.) into 11 pieces — each Kazakh
-morpheme is further fragmented at the byte level (the displayed tokens are UTF-8 byte
-sequences, not readable Cyrillic). This is not just oversegmentation; it is tokenization
-at the byte level for Cyrillic characters the vocabulary did not internalize as units.
+The example outputs are particularly revealing: `«халықаралық»` (international) splits into
+8 pieces (`['Ñħ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ', 'Ð°ÑĢ', 'Ð°Ð»', 'Ñĭ', 'ÒĽ']`),
+`«мүмкіндіктерін»` (of possibilities, acc.) into 11 pieces — each Cyrillic character
+encodes as 2–3 byte-piece tokens displayed as UTF-8 byte sequences, not readable Cyrillic.
+This is **not** an artifact analogous to Nomic's `[UNK]` collapse: Nomic's English BERT
+WordPiece maps any absent character to a single `[UNK]`, artificially *compressing* fertility
+to 3.49. Qwen3 genuinely tokenizes every character — just at byte granularity. The count
+6.20 correctly reflects sequence-length inflation; it is true over-fragmentation, not a
+measurement artifact.
 
 | Tokenizer | Vocab size | Fertility (Wiki) | Fertility (Akorda) | Δ |
 |-----------|----------:|----------------:|------------------:|--:|
