@@ -27,6 +27,7 @@
 | Dense E5 | 0.845 | 0.947 | 0.562 | 0.785 |
 | Dense kazakh-e5 | 0.836 | 0.909 | 0.497 | 0.747 |
 | Dense Jina v3 | 0.910 | **0.957** | 0.596 | 0.821 |
+| **Dense BGE-M3** | **0.948** | **0.977** | **0.672** | **0.866** |
 | Dense Nomic v1.5 | 0.144 | 0.297 | 0.071 | 0.171 |
 | Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
@@ -42,14 +43,16 @@
 > (0.546) and e5 (0.413) beat BM25+stemmer (0.332) as expected — see
 > [`akorda/AKORDA_RESULTS.md`](akorda/AKORDA_RESULTS.md). This was first documented there.
 
-**Bold** = best in column. Jina v3 is the strongest single dense model (ALL=0.821),
-**significantly above e5** (Δ=+0.036, p=0.009) and BM25+stemmer (Δ=+0.067, p=0.004),
-paired bootstrap n=300. BM25+Stemmer ⊕ kazakh-e5 hybrid (0.808) is best overall *without*
-Jina hybrid data (Jina hybrid not yet evaluated on Wikipedia). **Nomic v1.5 (0.171) is the
-weakest dense model tested** — its English BERT WordPiece tokenizer (30 522 tokens) has no
-Kazakh-specific Cyrillic coverage; Kazakh-specific characters map entirely to `[UNK]`
-(see `model-reports/nomic-v1.5.md`). Full metrics and significance in
-[PREPRINT2.md](../PREPRINT2.md).
+**Bold** = best in column. **BGE-M3 is the strongest single system overall (ALL=0.866)**,
+significantly above Jina v3 (Δ=+0.045, p=0.0001), E5 (Δ=+0.081, p<0.0001), and
+BM25+stemmer (Δ=+0.111, p<0.0001), paired bootstrap n=300. BGE-M3 also leads on
+every individual category and is the only dense model to top the Hybrid ⊕ kazakh-e5
+(0.808) without requiring fusion. BGE-M3 shares the same XLM-R tokenizer (250 002 tokens,
+fertility=1.81) as E5 and Jina v3 — its gain is purely semantic/training, not tokenizer.
+**Nomic v1.5 (0.171) is the weakest dense model tested** — its English BERT WordPiece
+tokenizer (30 522 tokens) has no Kazakh-specific Cyrillic coverage; Kazakh-specific
+characters map entirely to `[UNK]` (see `model-reports/nomic-v1.5.md`). Full metrics
+and significance in [PREPRINT2.md](../PREPRINT2.md).
 
 ## Full Metrics Tables (n=300)
 
@@ -97,6 +100,21 @@ Kazakh-specific Cyrillic coverage; Kazakh-specific characters map entirely to `[
 | natural | 0.88 | 1.00 | 1.00 | 0.929 | 0.947 |
 | vocabulary-gap | 0.39 | 0.67 | 0.73 | 0.508 | 0.562 |
 | **ALL** | 0.66 | 0.88 | 0.90 | 0.748 | 0.785 |
+
+### Dense BGE-M3 — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.88 | 0.99 | 1.00 | 0.931 | 0.948 |
+| natural | 0.94 | 1.00 | 1.00 | 0.968 | 0.977 |
+| vocabulary-gap | 0.50 | 0.78 | 0.84 | 0.618 | 0.672 |
+| **ALL** | 0.77 | 0.92 | 0.95 | 0.839 | 0.866 |
+
+BGE-M3 (`BAAI/bge-m3`) is the strongest single model on Wikipedia nDCG@10 (0.866), significantly
+above Jina v3 (Δ=+0.045, p=0.0001), E5 (Δ=+0.081, p<0.0001), and BM25+stemmer
+(Δ=+0.111, p<0.0001), paired bootstrap 10 000 resamples. Uses the same XLM-R vocabulary
+(250 002 tokens, fertility 1.81) as E5 and Jina v3 — gain is architectural/training, not
+tokenizer. See `model-reports/bge-m3.md`.
 
 ### Dense Nomic v1.5 — n=300
 

@@ -14,3 +14,5 @@ Numbers are not duplicated here; each report links to the canonical result table
 | IBM Granite (R1/R2) | *(in preprints)* | R2 underperforms R1 on Kazakh; tokenizer fragments 2.3× more than R1 |
 | Jina v3 | [`jina-v3.md`](jina-v3.md) | Strongest dense model on both domains; gain over e5 is purely semantic — identical tokenizer fertility (1.81) |
 | Nomic v1.5 | [`nomic-v1.5.md`](nomic-v1.5.md) | Weakest model tested (Wiki 0.171, Akorda 0.066); English BERT tokenizer — Kazakh-specific Cyrillic entirely [UNK] |
+| BGE-M3 | [`bge-m3.md`](bge-m3.md) | New best single model (Wiki 0.866); beats Jina v3 (Δ=+0.045, p=0.0001); same XLM-R tokenizer — gain is architectural |
+| Qwen3-Embedding-0.6B | *(pending)* | Highest tokenizer fragmentation (6.20 sub-words/word) — evaluation in progress |
