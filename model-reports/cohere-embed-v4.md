@@ -97,8 +97,9 @@ every other model (`fertility_compare.py`), guaranteeing comparability.
 
 > † Nomic fertility is misleading ([UNK] artifact); see `nomic-v1.5.md`.
 
-The result is **identical to Qwen3-0.6B to three significant figures** (6.20 / 6.27), with
-token-identical splits on all four probe words:
+The result is **identical to Qwen3-0.6B to three significant figures** (6.20 / 6.27); token
+counts are identical on all four probe words (the Cohere tokenize API returns IDs only, not
+string pieces, so splits are inferred from counts):
 
 | Word | tokens |
 |------|-------:|

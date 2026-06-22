@@ -276,8 +276,8 @@ The striking result is the dense model itself: **Cohere embed-v4.0, marketed spe
 for cross-lingual retrieval (100+ languages), has the largest absolute cross-domain drop in
 the entire benchmark — Wiki 0.800 → Akorda 0.367, −0.433** — exceeding even Qwen3 (−0.360).
 Its sub-word fertility on Kazakh is 6.20 (Wiki) / 6.27 (Akorda) — *identical* to Qwen3 to
-three significant figures, with token-identical splits on every probe word — indicating the
-same byte-level BPE fallback for Kazakh Cyrillic. The strong Wikipedia score does not
+three significant figures, with identical token counts on every probe word (string pieces not
+available via API) — consistent with the same byte-level BPE fallback for Kazakh Cyrillic. The strong Wikipedia score does not
 transfer to formal, morphologically dense political prose.
 See `model-reports/cohere-embed-v4.md`.
 
@@ -390,9 +390,9 @@ TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from mu
 ‡ Cohere `embed-v4.0` is API-only; fertility was measured via the Cohere tokenize API
 (`src/eval/cohere_tokenization.py`) on the same 100 words, bare only (the API does not
 expose a leading-space variant). The result is **identical to Qwen3-0.6B** (6.20 / 6.27),
-with token-identical splits on all four probe words (сөзжасам→6, мүмкіндіктерін→11,
-ұйымдастырушылық→9, халықаралық→8) — strong evidence of the same byte-level BPE fallback
-for Kazakh Cyrillic.
+with identical token counts on all four probe words (сөзжасам→6, мүмкіндіктерін→11,
+ұйымдастырушылық→9, халықаралық→8; API returns IDs only, not string pieces) — consistent
+with the same byte-level BPE fallback for Kazakh Cyrillic.
 
 Note: Nomic v1.5 uses a BERT English WordPiece tokenizer (30 522 tokens); Kazakh-specific
 Cyrillic characters tokenize entirely as `[UNK]`, so the fertility of 3.49 reflects only

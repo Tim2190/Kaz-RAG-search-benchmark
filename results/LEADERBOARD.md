@@ -82,8 +82,9 @@ gaps are architectural/training, not tokenizer.
 > these models genuinely tokenize every character — but at byte granularity, producing true
 > over-fragmentation; the fertility count 6.20 correctly reflects sequence-length inflation,
 > not an artifact. **Cohere embed-v4.0 is empirically identical to Qwen3** here: fertility
-> 6.20 / 6.27 (measured via the Cohere tokenize API on the same 100 words) with token-identical
-> splits on every probe word — strong evidence of the same byte-level BPE mechanism for Kazakh.
+> 6.20 / 6.27 (measured via the Cohere tokenize API on the same 100 words); token counts are
+> identical on all four probe words (the API returns IDs only, not string pieces, so splits are
+> inferred from counts) — consistent with the same byte-level BPE mechanism for Kazakh.
 > See [`../model-reports/qwen3-embed-0.6b.md`](../model-reports/qwen3-embed-0.6b.md) and
 > [`../model-reports/cohere-embed-v4.md`](../model-reports/cohere-embed-v4.md).
 
