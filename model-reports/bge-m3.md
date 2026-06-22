@@ -6,8 +6,8 @@
 **Vocabulary:** 250 002 tokens (XLM-R SentencePiece), fertility = 1.81
 
 Numbers in this file are a summary; canonical tables are in
-[`../../results/RESULTS.md`](../../results/RESULTS.md) (Wikipedia) and
-[`../../results/akorda/AKORDA_RESULTS.md`](../../results/akorda/AKORDA_RESULTS.md) (Akorda).
+[`../results/RESULTS.md`](../results/RESULTS.md) (Wikipedia) and
+[`../results/akorda/AKORDA_RESULTS.md`](../results/akorda/AKORDA_RESULTS.md) (Akorda).
 
 ---
 

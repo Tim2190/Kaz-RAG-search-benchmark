@@ -7,8 +7,8 @@
 **Vocabulary:** 151 643 tokens (Qwen3 BPE), fertility = 6.20
 
 Numbers in this file are a summary; canonical tables are in
-[`../../results/RESULTS.md`](../../results/RESULTS.md) (Wikipedia) and
-[`../../results/akorda/AKORDA_RESULTS.md`](../../results/akorda/AKORDA_RESULTS.md) (Akorda).
+[`../results/RESULTS.md`](../results/RESULTS.md) (Wikipedia) and
+[`../results/akorda/AKORDA_RESULTS.md`](../results/akorda/AKORDA_RESULTS.md) (Akorda).
 
 ---
 
