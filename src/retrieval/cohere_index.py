@@ -23,6 +23,8 @@ import numpy as np
 
 _COHERE_BATCH = 96   # max texts per embed call (Cohere limit)
 _INTER_BATCH_SLEEP = 0.3  # секунды между батчами (rate-limit buffer)
+_RETRY_SLEEP_BASE  = 60   # базовое ожидание при rate-limit (секунды)
+_MAX_RETRIES       = 5    # максимум попыток на один батч
 
 
 class CohereIndex:
@@ -47,6 +49,43 @@ class CohereIndex:
 
     # ── encode ───────────────────────────────────────────────────────────────
 
+    def _embed_with_retry(
+        self, batch: List[str], input_type: str
+    ) -> List[List[float]]:
+        """Один API-вызов с экспоненциальным backoff при HTTP 429.
+
+        Базовое ожидание 60 с, удваивается каждую попытку:
+        60 → 120 → 240 → 480 → 960 с (итого ≤5 попыток).
+        Все другие ошибки пробрасываются немедленно.
+        """
+        for attempt in range(_MAX_RETRIES + 1):
+            try:
+                resp = self.co.embed(
+                    texts=batch,
+                    model=self.model_name,
+                    input_type=input_type,
+                    embedding_types=["float"],
+                )
+                # ClientV2: resp.embeddings.float_ ; fallback to resp.embeddings
+                raw = getattr(resp.embeddings, "float_", None) or resp.embeddings
+                return list(raw)
+            except Exception as exc:
+                is_rate_limit = (
+                    getattr(exc, "status_code", None) == 429
+                    or "429" in str(exc)
+                    or "rate" in str(exc).lower()
+                    or "too many" in str(exc).lower()
+                )
+                if not is_rate_limit or attempt == _MAX_RETRIES:
+                    raise
+                wait = _RETRY_SLEEP_BASE * (2 ** attempt)
+                print(
+                    f"  [rate-limit] батч {len(batch)} текстов заблокирован; "
+                    f"ожидание {wait} с (попытка {attempt + 1}/{_MAX_RETRIES})…"
+                )
+                time.sleep(wait)
+        raise RuntimeError("unreachable")
+
     def _encode(self, texts: Sequence[str], input_type: str) -> np.ndarray:
         all_emb: List[List[float]] = []
         batches = [
@@ -56,15 +95,7 @@ class CohereIndex:
         for idx, batch in enumerate(batches):
             if idx > 0:
                 time.sleep(_INTER_BATCH_SLEEP)
-            resp = self.co.embed(
-                texts=batch,
-                model=self.model_name,
-                input_type=input_type,
-                embedding_types=["float"],
-            )
-            # ClientV2: resp.embeddings.float_ ; fallback to resp.embeddings
-            raw = getattr(resp.embeddings, "float_", None) or resp.embeddings
-            all_emb.extend(raw)
+            all_emb.extend(self._embed_with_retry(batch, input_type))
         mat = np.asarray(all_emb, dtype=np.float32)
         norms = np.linalg.norm(mat, axis=1, keepdims=True)
         norms[norms == 0] = 1.0
