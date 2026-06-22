@@ -29,6 +29,7 @@
 | Dense Jina v3 | 0.910 | **0.957** | 0.596 | 0.821 |
 | **Dense BGE-M3** | **0.948** | **0.977** | **0.672** | **0.866** |
 | Dense Nomic v1.5 | 0.144 | 0.297 | 0.071 | 0.171 |
+| Dense Qwen3-0.6B | 0.792 | 0.927 | 0.352 | 0.690 |
 | Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
@@ -130,6 +131,23 @@ Kazakh-specific Cyrillic characters (ә, і, ң, ғ, ү, ұ, қ, ө, һ) are ent
 and tokenize as `[UNK]`, making query and document representations effectively random.
 Significantly below every other model (vs e5: Δ=−0.614, p<0.001; vs BM25+stemmer: Δ=−0.583,
 p<0.001). See `model-reports/nomic-v1.5.md`.
+
+### Dense Qwen3-0.6B — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.65 | 0.89 | 0.92 | 0.751 | 0.792 |
+| natural | 0.87 | 0.97 | 0.98 | 0.910 | 0.927 |
+| vocabulary-gap | 0.23 | 0.43 | 0.47 | 0.313 | 0.352 |
+| **ALL** | 0.58 | 0.76 | 0.79 | 0.658 | 0.690 |
+
+Qwen3-Embedding-0.6B is a LLM-based dense model (Alibaba). On Wikipedia it matches BM25
+(0.690 ≈ 0.690) but is significantly below BM25+stemmer (Δ=−0.064, p=0.010) and every
+stronger dense model (vs E5: Δ=−0.094, p<0.001; vs Jina v3: Δ=−0.131, p<0.001;
+vs BGE-M3: Δ=−0.175, p<0.001). Its vocabulary-gap score (0.352) is the third weakest
+dense result after Nomic (0.071) and Granite R2-97M (0.175), consistent with the
+highest sub-word fertility of all tested models (6.20 sub-words/word on Kazakh).
+See `model-reports/qwen3-embed-0.6b.md`.
 
 ---
 

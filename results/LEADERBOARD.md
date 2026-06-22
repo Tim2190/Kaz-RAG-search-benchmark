@@ -29,7 +29,7 @@ Sorted by Wikipedia nDCG@10. Each score links to its full-metrics section.
 | 9 | **Granite R2-97M** | `ibm-granite/granite-embedding-97m-multilingual-r2` | [0.589](RESULTS.md#main-result-ndcg10-n300) | [0.259](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 179 934 | 4.00 | [📄](../model-reports/INDEX.md) | Smaller R2; weakest dense model except Nomic; largest Akorda drop |
 | 10 | **LaBSE** | `sentence-transformers/LaBSE` | [0.481](RESULTS.md#dense-labse--n300) | — | 501 153 | — | — | Naive multilingual; beaten by BM25+stemmer on every Wiki category (Akorda not run) |
 | 11 | **Nomic v1.5** | `nomic-ai/nomic-embed-text-v1.5` | [0.171](RESULTS.md#dense-nomic-v15--n300) | [0.066](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 30 522 | 3.49 ‡ | [📄](../model-reports/nomic-v1.5.md) | Weakest; English BERT WordPiece — Kazakh-specific Cyrillic entirely `[UNK]` |
-| 12 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | *TBD* | *TBD* | 151 643 | 6.20 | *(pending)* | Highest tokenizer fragmentation (6.20 sub-words/word) — evaluation in progress |
+| 12 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 | [📄](../model-reports/qwen3-embed-0.6b.md) | Largest cross-domain drop (−0.360); highest tokenizer fragmentation (6.20); below BM25+stemmer on both domains |
 
 ---
 
@@ -47,6 +47,7 @@ Sorted by Akorda nDCG@10 (more complete coverage). Scores link to the hybrid sec
 | **granite-r1** | [0.742](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.518](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Wiki: falsified (below BM25 on ALL, vocab-gap leaks Granite's 0.303 collapse) |
 | **granite-r2-311m** | [0.740](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.516](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Narrowly misses ALL ≥ max(channel) on Akorda |
 | **granite-r2-97m** | [0.695](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.407](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense channel too weak |
+| **qwen3-0.6b** | — | [0.464](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense (0.330) too weak; hybrid worse than BM25+stemmer alone (p=0.003) |
 | **nomic-v1.5** | — | [0.228](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — near-zero dense channel drags BM25 down |
 
 > **BGE-M3 and Jina v3 hybrids were not evaluated on Wikipedia** (only Akorda); the Wiki

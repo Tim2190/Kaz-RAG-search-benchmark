@@ -32,6 +32,7 @@
 | shyngys-e5 | 0.4263 | 0.5368 | 0.4103 | 0.3330 |
 | granite-r2-311m | 0.3989 | 0.5236 | 0.3809 | 0.2936 |
 | granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
+| qwen3-0.6b | 0.3304 | 0.5163 | 0.2560 | 0.2203 |
 | nomic-v1.5 | 0.0658 | 0.1268 | 0.0292 | 0.0416 |
 
 BM25+stemmer numbers reflect the **100%-cache** run (full stemmer coverage). **BGE-M3 is
@@ -58,6 +59,7 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
 | granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
+| qwen3-0.6b | 0.3304 | 0.2793 | 0.3852 | 0.4959 |
 | nomic-v1.5 | 0.0658 | 0.0501 | 0.0656 | 0.1189 |
 
 ---
@@ -85,6 +87,10 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | e5 → bge-m3 | +0.1700 | <0.001 | ✓ |
 | bm25+stemmer → bge-m3 | +0.1623 | <0.001 | ✓ |
 | bge-m3 → hybrid ⊕ bge-m3 | −0.0464 | 0.014 | ✓ |
+| bm25+stemmer → qwen3-0.6b | −0.1862 | <0.001 | ✓ |
+| e5 → qwen3-0.6b | −0.1785 | <0.001 | ✓ |
+| jina-v3 → qwen3-0.6b | −0.2826 | <0.001 | ✓ |
+| bge-m3 → qwen3-0.6b | −0.3486 | <0.001 | ✓ |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
 **BGE-M3 is significantly the best single model on Akorda** — it beats Jina v3
@@ -122,9 +128,10 @@ so no score calibration is involved. Pure CPU re-ranking of the already-computed
 | granite-r1 | 0.5166 | 0.4305 | 0.5175 | ✓ | ✓ |
 | granite-r2-311m | 0.5166 | 0.3989 | 0.5158 | ✗ | ✓ |
 | granite-r2-97m | 0.5166 | 0.2585 | 0.4073 | ✗ | ✗ |
+| qwen3-0.6b | 0.5166 | 0.3304 | 0.4637 | ✗ | ✗ |
 | nomic-v1.5 | 0.5166 | 0.0658 | 0.2278 | ✗ | ✗ |
 
-Both pre-registered success criteria are met for **4 of 8** dense channels (including Jina).
+Both pre-registered success criteria are met for **4 of 9** dense channels (bge-m3, jina-v3, e5, shyngys-e5).
 **BGE-M3 alone (0.679) is now the best system overall**, but its hybrid (0.633) *fails*
 criterion 1 — the dense channel is stronger than the fusion. This is the first model in
 this benchmark where the dense model alone beats BM25 cleanly enough that RRF with BM25
@@ -212,6 +219,30 @@ low_overlap hybrid (0.134) < BM25 (0.332).
 
 Root cause: Nomic's tokenizer has no Kazakh-specific Cyrillic coverage (all [UNK]).
 See `model-reports/nomic-v1.5.md`.
+
+### Qwen3-Embedding-0.6B hybrid: both criteria fail
+
+| Slice | hybrid | Δ vs bm25 | p | Δ vs qwen3 | p |
+|-------|-------:|----------:|--:|-----------:|--:|
+| factoid (n=81) | 0.7312 | −0.1751 | **<0.001** | +0.2149 | **<0.001** |
+| paraphrase (n=81) | 0.3855 | +0.0712 | **0.007** | +0.1295 | **<0.001** |
+| low_overlap (n=82) | 0.2766 | −0.0550 | **0.047** | +0.0563 | **0.047** |
+| **ALL (n=244)** | 0.4637 | **−0.0530** | **0.003** | **+0.1332** | **<0.001** |
+
+The hybrid is significantly better than Qwen3 dense alone (+0.133, p<0.001) but
+significantly **worse** than BM25+stemmer alone (−0.053, p=0.003). Both pre-registered
+criteria fail: ALL hybrid (0.464) < BM25 (0.517), and low_overlap hybrid (0.277) <
+BM25 (0.332). Pattern is similar to granite-r2-97m: the dense channel (0.330) is too
+weak relative to BM25 to contribute positively on factoid queries, and its semantic
+advantage on paraphrase/low_overlap is insufficient to compensate. k-sweep: hybrid stays
+below BM25 at all k ∈ {10, 30, 60, 100} (best at k=10: 0.491, still below 0.517).
+
+Root cause candidate: Qwen3-0.6B has the highest sub-word fertility of all tested models
+(6.20 sub-words per Kazakh word), fragmenting morphologically rich Akorda vocabulary into
+many small pieces. This is plausibly worse on formal political text (Akorda) than on
+encyclopedic text (Wiki), consistent with the severe cross-domain drop (Wiki 0.690 →
+Akorda 0.330, −0.360 — the largest absolute drop among all tested models).
+See `model-reports/qwen3-embed-0.6b.md`.
 
 ### Sensitivity to k (not cherry-picked)
 
@@ -346,13 +377,16 @@ Akorda fertility not measured for Nomic (numbers not meaningful when most tokens
 | granite-r1 | 0.672 | 0.431 | −0.241 |
 | granite-r2-311m | 0.659 | 0.399 | −0.260 |
 | granite-r2-97m | 0.589 | 0.259 | −0.330 |
+| qwen3-0.6b | 0.690 | 0.330 | **−0.360** |
 | nomic-v1.5 | 0.171 | 0.066 | −0.105 |
 
 All systems drop substantially on Akorda. BGE-M3 shows the **smallest absolute drop among
 dense models (−0.187)**, possibly reflecting stronger generalisation across formal political
-language. The largest drops remain granite-r2-97m (−0.330) and shyngys-e5 (−0.321). The
-relative ordering is largely preserved; BGE-M3 and Jina v3 are the new entrants and both
-lead comfortably.
+language. **Qwen3-0.6B has the largest absolute drop (−0.360)** — despite a Wiki score (0.690)
+similar to BM25 (0.690), it collapses on Akorda (0.330), below Granite R2-97M (0.259 Wiki →
+0.259 Akorda, similar drop in absolute terms). The cross-domain fragility is consistent with
+Qwen3's highest tokenizer fertility (6.20 sub-words/word), which may be disproportionately
+penalised on the more morphologically complex formal political vocabulary of Akorda.
 
 ---
 
