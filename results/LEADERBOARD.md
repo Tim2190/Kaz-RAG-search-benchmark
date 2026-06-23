@@ -23,7 +23,7 @@ Sorted by Wikipedia nDCG@10. Each score links to its full-metrics section.
 | 3 | **Cohere embed-v4.0** | `cohere/embed-v4.0` (API) | [0.800](RESULTS.md#dense-cohere-embed-v40--n300) | [0.367](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | ~byte-BPE | 6.20 § | [📄](../model-reports/cohere-embed-v4.md) | Ties Jina/E5 on Wiki, but **largest cross-domain drop in benchmark (−0.433)**; collapses on Akorda despite marketing for cross-lingual retrieval (100+ langs) |
 | 4 | **E5** | `intfloat/multilingual-e5-base` | [0.785](RESULTS.md#dense-e5--n300) | [0.509](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Strong baseline; same XLM-R vocab as BGE-M3 and Jina |
 | 5 | **BM25 + Stemmer** | *(lexical)* | [0.754](RESULTS.md#bm25--stemmer--n300) | [0.517](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Most balanced; never below 0.727 on any Wiki slice; best on Wiki vocab-gap † |
-| 6 | **kazakh-e5** | `shyngys879/kazakh-e5-rag-embedding` | [0.747](RESULTS.md#main-result-ndcg10-n300) | [0.426](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Fine-tuned from e5; **below base e5 on both domains** (Wiki 0.747 vs 0.785; Akorda 0.426 vs 0.509) — larger Akorda drop (rank 3→7) than Wiki alone suggests |
+| 6 | **kazakh-e5** | `shyngys879/kazakh-e5-rag-embedding` | [0.747](RESULTS.md#main-result-ndcg10-n300) | [0.426](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | — | Fine-tuned from e5; **below base e5 on both domains** (Wiki 0.747 vs 0.785; Akorda 0.426 vs 0.509) — Akorda drop is disproportionately larger than Wiki gap |
 | 7 | **BM25** | *(lexical)* | [0.690](RESULTS.md#bm25--n300) | [0.484](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | — | — | — | Unstemmed lexical baseline |
 | 8 | **Qwen3-0.6B** | `Qwen/Qwen3-Embedding-0.6B` | [0.690](RESULTS.md#dense-qwen3-06b--n300) | [0.330](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 151 643 | 6.20 § | [📄](../model-reports/qwen3-embed-0.6b.md) | 2nd-largest cross-domain drop (−0.360); byte-level BPE fragmentation (6.20 §); below BM25+stemmer on both domains despite claimed 100+ language support |
 | 9 | **Granite R1 (278M)** | `ibm-granite/granite-embedding-278m-multilingual` | [0.672](RESULTS.md#dense-granite--n300) | [0.431](akorda/AKORDA_RESULTS.md#main-results--ndcg10) | 250 002 | 1.81 | [📄](../model-reports/INDEX.md) | Strong on morphology/natural; collapses on Wiki vocab-gap (0.303) |
@@ -48,10 +48,10 @@ Sorted by Akorda nDCG@10 (more complete coverage). Scores link to the hybrid sec
 | **kazakh-e5** | [0.808](RESULTS.md#main-result-ndcg10-n300) | [0.520](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Best Wiki hybrid; only Wiki fusion to beat its best single channel |
 | **granite-r1** | [0.742](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.518](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Wiki: falsified (below BM25 on ALL, vocab-gap leaks Granite's 0.303 collapse) |
 | **granite-r2-311m** | [0.740](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.516](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Narrowly misses ALL ≥ max(channel) on Akorda |
-| **granite-r2-97m** | [0.695](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.407](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense channel too weak |
 | **cohere-v4** | — | [0.501](akorda/AKORDA_RESULTS.md#cohere-embed-v40-hybrid-both-criteria-fail) | Both criteria fail — dense (0.367) too weak; but overall loss vs BM25 not significant (p=0.176), and fusion beats dense alone (+0.134) |
 | **kazembed-v5** | — | [0.493](akorda/AKORDA_RESULTS.md#kazembed-v5-hybrid-criterion-1-fails-criterion-2-passes) | Criterion 1 fails, criterion 2 passes — low_overlap hybrid (0.352) > BM25 (0.332); overall loss vs BM25 not significant (p=0.123); hybrid beats dense alone (+0.104, p<0.001) |
 | **qwen3-0.6b** | — | [0.464](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense (0.330) too weak; hybrid worse than BM25+stemmer alone (p=0.003) |
+| **granite-r2-97m** | [0.695](RESULTS.md#hybrid-retrieval-rrf-can-bm25stemmer-and-granite-be-combined-n300) | [0.407](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense channel too weak |
 | **nomic-v1.5** | — | [0.228](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — near-zero dense channel drags BM25 down |
 
 > **BGE-M3, Jina v3, E5, Cohere embed-v4, Qwen3, Nomic, and KazEmbed-V5 hybrids were not evaluated on Wikipedia** (only Akorda); the Wiki
@@ -67,7 +67,7 @@ Reciprocal Rank Fusion at the pre-registered k=60.
 
 **Fertility** = mean sub-words per Kazakh word over 100 frequent long words (len≥9) from the
 Wikipedia corpus, tokenized without a leading space. Lower = less fragmentation. Models
-sharing the XLM-R SentencePiece vocabulary (BGE-M3, Jina, E5, kazakh-e5, Granite R1) all
+sharing the XLM-R SentencePiece vocabulary (BGE-M3, Jina, E5, kazakh-e5, KazEmbed-V5, Granite R1) all
 sit at 1.81 — so for those models fertility **cannot** explain ranking differences; the
 gaps are architectural/training, not tokenizer.
 
