@@ -54,7 +54,7 @@ Sorted by Akorda nDCG@10 (more complete coverage). Scores link to the hybrid sec
 | **qwen3-0.6b** | — | [0.464](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — dense (0.330) too weak; hybrid worse than BM25+stemmer alone (p=0.003) |
 | **nomic-v1.5** | — | [0.228](akorda/AKORDA_RESULTS.md#hybrid-rrf-bm25stemmer--dense) | Both criteria fail — near-zero dense channel drags BM25 down |
 
-> **BGE-M3, Jina v3, E5, Cohere embed-v4, Qwen3, and Nomic hybrids were not evaluated on Wikipedia** (only Akorda); the Wiki
+> **BGE-M3, Jina v3, E5, Cohere embed-v4, Qwen3, Nomic, and KazEmbed-V5 hybrids were not evaluated on Wikipedia** (only Akorda); the Wiki
 > hybrid study (`RESULTS.md`) pre-dates them and used kazakh-e5 + the three Granite variants.
 
 ---
