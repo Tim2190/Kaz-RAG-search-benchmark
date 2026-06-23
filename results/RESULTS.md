@@ -181,7 +181,7 @@ level identically to Qwen3 (fertility 6.20). See `model-reports/cohere-embed-v4.
 `Nurlykhan/kazembed-v5` is fine-tuned from `intfloat/multilingual-e5-base` on Kazakh
 retrieval data (KazQAD + Powerful-Kazakh-Dialogue, 61 255 pairs). Despite a claimed +2.1%
 MRR improvement over e5-base on KazQAD, it is **significantly below the base e5 model on
-this benchmark** (Δ=+0.142, p<0.001) and below every stronger system: BGE-M3
+this benchmark** (Δ=+0.143, p<0.001) and below every stronger system: BGE-M3
 (Δ=+0.223, p<0.001), Jina v3 (Δ=+0.179, p<0.001), Cohere (Δ=+0.158, p<0.001),
 BM25+Stemmer (Δ=+0.112, p<0.001), and kazakh-e5 (Δ=+0.105, p<0.001 — a different
 Kazakh e5 fine-tune that also outperforms kazembed-v5 significantly). kazembed-v5 is

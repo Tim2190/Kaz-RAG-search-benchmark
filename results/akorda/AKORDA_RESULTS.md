@@ -307,7 +307,7 @@ paraphrase but cannot overcome BM25's factoid advantage.
 
 The **key finding for KazEmbed-V5** is the Wikipedia comparison: despite being fine-tuned
 specifically for Kazakh retrieval, kazembed-v5 (0.642) is significantly below both the base
-model e5 (0.785, Δ=+0.142, p<0.001) and the other Kazakh e5 fine-tune shyngys-e5 (0.747,
+model e5 (0.785, Δ=+0.143, p<0.001) and the other Kazakh e5 fine-tune shyngys-e5 (0.747,
 Δ=+0.105, p<0.001). On Akorda, shyngys-e5 (0.426) also significantly outperforms
 kazembed-v5 (0.389, Δ=+0.037, p<0.001). The in-domain KazQAD gain (+2.1% MRR) does not
 transfer to this benchmark on either domain.
