@@ -34,6 +34,9 @@ MODELS = {
     "granite-r2-311m": ("ibm-granite/granite-embedding-311m-multilingual-r2", "", ""),
     # дообучена от multilingual-e5 -> нужны e5-префиксы query:/passage:
     "shyngys-e5":      ("shyngys879/kazakh-e5-rag-embedding", "query: ", "passage: "),
+    # KazEmbed-V5: тоже дообучен от multilingual-e5-base (KazQAD + диалоги),
+    # e5-префиксы query:/passage: (карточка: "requires query: and passage:").
+    "kazembed-v5":     ("Nurlykhan/kazembed-v5", "query: ", "passage: "),
     # --- Спринт 3: Jina v3 ---
     # Jina использует task= вместо строковых префиксов (LoRA-адаптеры).
     # Префиксы оставлены пустыми — реальные параметры передаются через MODEL_EXTRA.
