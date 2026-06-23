@@ -416,7 +416,7 @@ evaluation.
 
 Sample: 100 most frequent long words (≥9 chars) from each corpus.  
 Method: average sub-words per word (bare = no leading space; +sp = with leading space).  
-TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from multilingual-e5 and shares e5's tokenizer; their fertility values are identical by construction.
+Note: shyngys-e5 and kazembed-v5 are both fine-tuned from multilingual-e5 and share e5's tokenizer; their fertility values are identical to e5 by construction (1.81 / 1.82).
 
 | Tokenizer | wiki (bare) | akorda (bare) | Δbare | wiki (+sp) | akorda (+sp) | Δ+sp |
 |-----------|------------:|--------------:|------:|-----------:|-------------:|-----:|
@@ -428,6 +428,7 @@ TilQazyna tokenizer skipped (gated, 401). Note: shyngys-e5 is fine-tuned from mu
 | bge-m3 | 1.81 | 1.82 | +0.01 | 1.81 | 1.82 | +0.01 |
 | qwen3-0.6b | 6.20 | 6.27 | +0.07 | 6.50 | 6.63 | +0.13 |
 | cohere embed-v4.0 ‡ | 6.20 | 6.27 | +0.07 | — | — | — |
+| tilcore_morph256k § | 1.64 | 1.64 | +0.00 | 1.28 | 1.40 | +0.12 |
 | nomic-v1.5 | 3.49 | — | — | 3.49 | — | — |
 
 ‡ Cohere `embed-v4.0` is API-only; fertility was measured via the Cohere tokenize API
@@ -436,6 +437,14 @@ expose a leading-space variant). The result is **identical to Qwen3-0.6B** (6.20
 with identical token counts on all four probe words (сөзжасам→6, мүмкіндіктерін→11,
 ұйымдастырушылық→9, халықаралық→8; API returns IDs only, not string pieces) — consistent
 with the same byte-level BPE fallback for Kazakh Cyrillic.
+
+§ `tilcore_morph256k` (`stukenov/sozkz-morphbpe-256k-kk-v1`, TilQazyna morphBPE) is a
+**tokenizer-only reference**, not a retrieval model in this benchmark — there is no Akorda
+nDCG@10 for it. It is the **least-fragmenting tokenizer measured** (1.64 bare / 1.28 +sp),
+below even the XLM-R cluster (1.81), because its 256K vocabulary is dedicated entirely to
+Kazakh. Like Qwen3/Cohere it is byte-level BPE (tokens render as mojibake), which shows that
+byte-level BPE per se does **not** cause over-fragmentation — Kazakh vocabulary coverage does.
+Full analysis in [`../TOKENIZATION.md`](../TOKENIZATION.md).
 
 Note: Nomic v1.5 uses a BERT English WordPiece tokenizer (30 522 tokens); Kazakh-specific
 Cyrillic characters tokenize entirely as `[UNK]`, so the fertility of 3.49 reflects only
