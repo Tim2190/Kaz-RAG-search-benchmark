@@ -28,7 +28,7 @@ Numbers in this file are a summary; canonical tables are in
 | BGE-M3 vs KazEmbed-V5 | +0.223 | p<0.001 ✅ |
 | Jina v3 vs KazEmbed-V5 | +0.179 | p<0.001 ✅ |
 | Cohere embed-v4.0 vs KazEmbed-V5 | +0.158 | p<0.001 ✅ |
-| E5 vs KazEmbed-V5 | +0.142 | p<0.001 ✅ |
+| E5 vs KazEmbed-V5 | +0.143 | p<0.001 ✅ |
 | BM25+Stemmer vs KazEmbed-V5 | +0.112 | p<0.001 ✅ |
 | kazakh-e5 vs KazEmbed-V5 | +0.105 | p<0.001 ✅ |
 | Qwen3-0.6B vs KazEmbed-V5 | +0.048 | p=0.003 ✅ |
@@ -40,7 +40,7 @@ Numbers in this file are a summary; canonical tables are in
 Positive Δ = the other system is better.
 
 **Headline Wikipedia result:** kazembed-v5 is **significantly below the base model e5** on
-every comparison above (Δ=+0.142, p<0.001), and also significantly below kazakh-e5
+every comparison above (Δ=+0.143, p<0.001), and also significantly below kazakh-e5
 (Δ=+0.105, p<0.001) — a different fine-tune of the same base model. It is statistically
 tied with Granite R2-311M (p=0.153, n.s.) and significantly above only Granite R2-97M and
 Nomic v1.5. vocabulary-gap score (0.284) is the third-weakest of all models after Nomic
@@ -114,7 +114,7 @@ KazEmbed-V5 is fine-tuned from `intfloat/multilingual-e5-base` on Kazakh retriev
 (KazQAD + Powerful-Kazakh-Dialogue, 61 255 pairs) and claims +2.1% MRR over e5-base on the
 KazQAD test set. **That in-domain gain does not transfer to this benchmark on either domain.**
 On Wikipedia (n=300, OOD from training), kazembed-v5 (0.642) is significantly below the
-base model (0.785, Δ=+0.142, p<0.001) and below kazakh-e5 (0.747), a competing Kazakh
+base model (0.785, Δ=+0.143, p<0.001) and below kazakh-e5 (0.747), a competing Kazakh
 fine-tune. On Akorda (formal political Kazakh, strongly OOD), the same pattern holds:
 kazembed-v5 (0.389) < e5 (0.509, p<0.001) < kazakh-e5 (0.426, p<0.001).
 
