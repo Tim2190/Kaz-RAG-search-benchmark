@@ -62,6 +62,10 @@ DENSE_MODELS: Dict[str, Tuple[str, str, str]] = {
                        "", ""),
     "shyngys-e5":     ("shyngys879/kazakh-e5-rag-embedding",
                        "query: ", "passage: "),
+    # KazEmbed-V5: дообучен от multilingual-e5-base (KazQAD + диалоги),
+    # e5-префиксы query:/passage:
+    "kazembed-v5":    ("Nurlykhan/kazembed-v5",
+                       "query: ", "passage: "),
     # Jina v3: task-based encoding, no string prefixes
     "jina-v3":        ("jinaai/jina-embeddings-v3", "", ""),
     # Nomic v1.5: string prefixes (e5-style) + trust_remote_code
@@ -422,6 +426,7 @@ def main() -> None:
                             + list(COHERE_MODELS) + ["hybrid-e5",
                              "hybrid-granite-r1", "hybrid-granite-r2-97m",
                              "hybrid-granite-r2-311m", "hybrid-shyngys-e5",
+                             "hybrid-kazembed-v5",
                              "hybrid-jina-v3", "hybrid-nomic-v1.5",
                              "hybrid-bge-m3", "hybrid-qwen3-0.6b",
                              "hybrid-cohere-v4"])
