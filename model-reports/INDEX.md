@@ -17,3 +17,4 @@ Numbers are not duplicated here; each report links to the canonical result table
 | BGE-M3 | [`bge-m3.md`](bge-m3.md) | Best model on both domains (Wiki 0.866, Akorda 0.679); beats Jina v3 (Δ=+0.045, p=0.0001 on Wiki); first model where dense alone beats its hybrid |
 | Qwen3-Embedding-0.6B | [`qwen3-embed-0.6b.md`](qwen3-embed-0.6b.md) | 2nd-largest cross-domain drop (Wiki 0.690 → Akorda 0.330, −0.360); byte-level BPE fragmentation (6.20 sub-words/word) for Kazakh |
 | Cohere embed-v4.0 | [`cohere-embed-v4.md`](cohere-embed-v4.md) | Largest cross-domain drop in benchmark (Wiki 0.800 → Akorda 0.367, −0.433) despite cross-lingual marketing; byte-level BPE fertility identical to Qwen3 (6.20) |
+| KazEmbed-V5 | [`kazembed-v5.md`](kazembed-v5.md) | Fine-tuned from e5-base for Kazakh; below the base model on both domains (Wiki 0.642 vs e5 0.785; Akorda 0.389 vs e5 0.509) — in-domain KazQAD gain does not transfer |

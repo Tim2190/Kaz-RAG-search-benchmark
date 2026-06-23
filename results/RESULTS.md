@@ -31,6 +31,7 @@
 | Dense Nomic v1.5 | 0.144 | 0.297 | 0.071 | 0.171 |
 | Dense Qwen3-0.6B | 0.792 | 0.927 | 0.352 | 0.690 |
 | Dense Cohere embed-v4.0 | 0.864 | 0.965 | 0.570 | 0.800 |
+| Dense KazEmbed-V5 | 0.778 | 0.865 | 0.284 | 0.642 |
 | Hybrid ⊕ kazakh-e5 | 0.862 | 0.869 | 0.694 | 0.808 |
 | Hybrid ⊕ Granite R1 | 0.824 | 0.877 | 0.525 | 0.742 |
 | Hybrid ⊕ Granite R2-311M | 0.821 | 0.894 | 0.504 | 0.740 |
@@ -167,6 +168,28 @@ p<0.001), but significantly below BGE-M3 (Δ=−0.066, p<0.001). Note: its Wikip
 strength does **not** carry to Akorda, where it collapses to 0.367 (the largest
 cross-domain drop in the benchmark, −0.433) — its tokenizer fragments Kazakh at the byte
 level identically to Qwen3 (fertility 6.20). See `model-reports/cohere-embed-v4.md`.
+
+### Dense KazEmbed-V5 — n=300
+
+| category | recall@1 | recall@5 | recall@10 | mrr@10 | ndcg@10 |
+|----------|--------:|---------:|----------:|-------:|--------:|
+| inflected | 0.56 | 0.94 | 0.96 | 0.717 | 0.778 |
+| natural | 0.73 | 0.95 | 0.98 | 0.827 | 0.865 |
+| vocabulary-gap | 0.15 | 0.30 | 0.46 | 0.231 | 0.284 |
+| **ALL** | 0.48 | 0.73 | 0.80 | 0.592 | 0.642 |
+
+`Nurlykhan/kazembed-v5` is fine-tuned from `intfloat/multilingual-e5-base` on Kazakh
+retrieval data (KazQAD + Powerful-Kazakh-Dialogue, 61 255 pairs). Despite a claimed +2.1%
+MRR improvement over e5-base on KazQAD, it is **significantly below the base e5 model on
+this benchmark** (Δ=+0.142, p<0.001) and below every stronger system: BGE-M3
+(Δ=+0.223, p<0.001), Jina v3 (Δ=+0.179, p<0.001), Cohere (Δ=+0.158, p<0.001),
+BM25+Stemmer (Δ=+0.112, p<0.001), and kazakh-e5 (Δ=+0.105, p<0.001 — a different
+Kazakh e5 fine-tune that also outperforms kazembed-v5 significantly). kazembed-v5 is
+**statistically tied with Granite R2-311M** (Δ=+0.017, p=0.153, n.s.) and significantly
+above Granite R2-97M (Δ=−0.054, p=0.002) and Nomic (p<0.001). The vocabulary-gap score
+(0.284) is particularly weak — lower than every system except Nomic (0.071) and Granite
+R2-97M (0.175). The in-domain KazQAD gain does not transfer to this benchmark.
+See `model-reports/kazembed-v5.md`.
 
 ---
 

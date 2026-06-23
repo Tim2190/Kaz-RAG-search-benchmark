@@ -28,10 +28,12 @@
 | bm25+stemmer | 0.5166 | **0.9063** | 0.3144 | 0.3316 |
 | e5 (multilingual-e5-base) | 0.5090 | 0.6743 | 0.4408 | 0.4129 |
 | hybrid: bm25+stemmer ⊕ cohere-v4 (RRF) | 0.5007 | 0.8073 | 0.3860 | 0.3111 |
+| hybrid: bm25+stemmer ⊕ kazembed-v5 (RRF) | 0.4927 | 0.7085 | 0.4194 | 0.3518 |
 | bm25+identity | 0.4844 | 0.9010 | 0.2777 | 0.2770 |
 | granite-r1 (278M) | 0.4305 | 0.5481 | 0.4061 | 0.3385 |
 | shyngys-e5 | 0.4263 | 0.5368 | 0.4103 | 0.3330 |
 | granite-r2-311m | 0.3989 | 0.5236 | 0.3809 | 0.2936 |
+| kazembed-v5 | 0.3892 | 0.5045 | 0.3694 | 0.2948 |
 | cohere embed-v4.0 | 0.3670 | 0.6266 | 0.2633 | 0.2131 |
 | qwen3-0.6b | 0.3304 | 0.5163 | 0.2560 | 0.2203 |
 | granite-r2-97m | 0.2585 | 0.4387 | 0.1755 | 0.1624 |
@@ -61,6 +63,7 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | granite-r1 (278M) | 0.4305 | 0.3536 | 0.5369 | 0.6762 |
 | shyngys-e5 | 0.4263 | 0.3627 | 0.5287 | 0.6270 |
 | granite-r2-311m | 0.3989 | 0.3291 | 0.4713 | 0.6270 |
+| kazembed-v5 | 0.3892 | 0.3308 | 0.4590 | 0.5779 |
 | cohere embed-v4.0 | 0.3670 | 0.3120 | 0.4631 | 0.5410 |
 | qwen3-0.6b | 0.3304 | 0.2793 | 0.3852 | 0.4959 |
 | granite-r2-97m | 0.2585 | 0.2142 | 0.3115 | 0.4016 |
@@ -100,6 +103,13 @@ complementing it. Full significance pending JSON upload; narrative in Key Findin
 | jina-v3 → cohere-v4 | −0.2460 | <0.001 | ✓ |
 | bge-m3 → cohere-v4 | −0.3120 | <0.001 | ✓ |
 | qwen3-0.6b → cohere-v4 | +0.0366 | 0.058 | — |
+| bm25+stemmer → kazembed-v5 | −0.1275 | <0.001 | ✓ |
+| e5 → kazembed-v5 | −0.1198 | <0.001 | ✓ |
+| shyngys-e5 → kazembed-v5 | −0.0372 | <0.001 | ✓ |
+| granite-r1 → kazembed-v5 | −0.0414 | 0.045 | ✓ |
+| granite-r2-311m → kazembed-v5 | −0.0097 | 0.346 | — |
+| kazembed-v5 → cohere-v4 | +0.0221 | 0.215 | — |
+| kazembed-v5 → qwen3-0.6b | +0.0587 | 0.021 | ✓ |
 
 Positive Δ = B is better than A. Threshold: p < 0.05 (two-tailed paired bootstrap).
 **BGE-M3 is significantly the best single model on Akorda** — it beats Jina v3
@@ -139,9 +149,12 @@ so no score calibration is involved. Pure CPU re-ranking of the already-computed
 | granite-r2-97m | 0.5166 | 0.2585 | 0.4073 | ✗ | ✗ |
 | qwen3-0.6b | 0.5166 | 0.3304 | 0.4637 | ✗ | ✗ |
 | cohere-v4 | 0.5166 | 0.3670 | 0.5007 | ✗ | ✗ |
+| kazembed-v5 | 0.5166 | 0.3892 | 0.4927 | ✗ | ✓ |
 | nomic-v1.5 | 0.5166 | 0.0658 | 0.2278 | ✗ | ✗ |
 
-Both pre-registered success criteria are met for **4 of 10** dense channels (bge-m3, jina-v3, e5, shyngys-e5).
+Both pre-registered success criteria are met for **4 of 11** dense channels
+(jina-v3, e5, shyngys-e5, granite-r1). bge-m3, granite-r2-311m, and kazembed-v5 each meet
+criterion 2 only (low_overlap hybrid ≥ BM25) but fail criterion 1 (hybrid ALL < max channel).
 **BGE-M3 alone (0.679) is now the best system overall**, but its hybrid (0.633) *fails*
 criterion 1 — the dense channel is stronger than the fusion. This is the first model in
 this benchmark where the dense model alone beats BM25 cleanly enough that RRF with BM25
@@ -272,6 +285,35 @@ channels (0.386, p=0.005 vs BM25). But the dense channel (0.367) is too weak on 
 Cohere dense alone (+0.134, p<0.001) — fusion *rescues* the weak dense channel but cannot
 lift it past the strong lexical baseline.
 
+### KazEmbed-V5 hybrid: criterion 1 fails, criterion 2 passes
+
+| Slice | hybrid | Δ vs bm25 | p | Δ vs dense | p |
+|-------|-------:|----------:|--:|-----------:|--:|
+| factoid (n=81) | 0.709 | −0.197 | **<0.001** | +0.204 | **<0.001** |
+| paraphrase (n=81) | 0.419 | +0.105 | **<0.001** | +0.050 | 0.126 n.s. |
+| low_overlap (n=82) | 0.352 | +0.020 | 0.259 n.s. | +0.057 | 0.059 n.s. |
+| **ALL (n=244)** | **0.493** | −0.024 | 0.123 n.s. | **+0.104** | **<0.001** |
+
+The hybrid significantly improves on KazEmbed-V5 dense (+0.104, p<0.001), but falls short
+of BM25+stemmer overall (numerically −0.024, not significant at p=0.123). Criterion 1 fails
+(hybrid 0.493 < BM25 0.517), but **criterion 2 passes**: low_overlap hybrid (0.352) exceeds
+BM25+stemmer (0.332), unlike Cohere and Qwen3 where both criteria fail.
+
+On paraphrase the hybrid significantly beats BM25+stemmer (+0.105, p<0.001). On factoid
+BM25+stemmer dominates strongly (BM25 0.906 vs dense 0.505), dragging the fusion below BM25
+overall. The KazEmbed-V5 dense (0.389) is comparable to Cohere dense (0.367, not significantly
+different, p=0.215), and the hybrid pattern is similar: rescues the weak dense channel on
+paraphrase but cannot overcome BM25's factoid advantage.
+
+The **key finding for KazEmbed-V5** is the Wikipedia comparison: despite being fine-tuned
+specifically for Kazakh retrieval, kazembed-v5 (0.642) is significantly below both the base
+model e5 (0.785, Δ=+0.142, p<0.001) and the other Kazakh e5 fine-tune shyngys-e5 (0.747,
+Δ=+0.105, p<0.001). On Akorda, shyngys-e5 (0.426) also significantly outperforms
+kazembed-v5 (0.389, Δ=+0.037, p<0.001). The in-domain KazQAD gain (+2.1% MRR) does not
+transfer to this benchmark on either domain.
+
+See `model-reports/kazembed-v5.md`.
+
 The striking result is the dense model itself: **Cohere embed-v4.0, marketed specifically
 for cross-lingual retrieval (100+ languages), has the largest absolute cross-domain drop in
 the entire benchmark — Wiki 0.800 → Akorda 0.367, −0.433** — exceeding even Qwen3 (−0.360).
@@ -360,10 +402,11 @@ fusion is net-negative.**
 
 For models where dense and BM25 are complementary (e5, Jina), the hybrid is still
 the safest choice: the e5 hybrid (0.562) significantly beats both channels, and the Jina
-hybrid (0.615) matches Jina alone while gaining robustness on factoid. 3 of 8 dense
-channels (e5, jina, shyngys + near-miss granite-r1) yield a hybrid that beats their best
-single channel. **BGE-M3 alone is the single best choice for Akorda**; whether that
-generalises to other formal domains requires further evaluation.
+hybrid (0.615) matches Jina alone while gaining robustness on factoid. 4 of 11 dense
+channels (jina-v3, e5, shyngys-e5, granite-r1) meet both pre-registered criteria and yield
+a hybrid that numerically beats their best single channel. **BGE-M3 alone is the single
+best choice for Akorda**; whether that generalises to other formal domains requires further
+evaluation.
 
 ---
 
@@ -424,6 +467,7 @@ Akorda fertility not measured for Nomic (numbers not meaningful when most tokens
 | granite-r2-97m | 0.589 | 0.259 | −0.330 |
 | cohere embed-v4.0 | 0.800 | 0.367 | **−0.433** |
 | qwen3-0.6b | 0.690 | 0.330 | −0.360 |
+| kazembed-v5 | 0.642 | 0.389 | −0.253 |
 | nomic-v1.5 | 0.171 | 0.066 | −0.105 |
 
 All systems drop substantially on Akorda. BGE-M3 shows the **smallest absolute drop among
