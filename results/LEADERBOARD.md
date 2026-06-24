@@ -9,6 +9,7 @@
 > - Wikipedia: [`RESULTS.md`](RESULTS.md)
 > - Akorda (OOD): [`akorda/AKORDA_RESULTS.md`](akorda/AKORDA_RESULTS.md)
 > - Per-model deep dives: [`../model-reports/INDEX.md`](../model-reports/INDEX.md)
+> - Input preprocessing (no fine-tuning): [`../input-preprocessing/PREPROCESSING.en.md`](../input-preprocessing/PREPROCESSING.en.md)
 
 ---
 
@@ -59,7 +60,34 @@ Sorted by Akorda nDCG@10 (more complete coverage). Scores link to the hybrid sec
 
 ---
 
-## 3. Notes & Benchmark Caveats
+## 3. Input Preprocessing (text-to-text, no fine-tuning)
+
+Can broken tokenization be worked around by transforming **only the input text** —
+Kazakh stemming and/or Cyrillic→Latin transliteration (official 2021 standard) —
+with no fine-tuning? Full study (4 lines × {e5, qwen3-0.6b} × {Wiki, Akorda},
+nDCG@10, paired bootstrap 10 000):
+[`../input-preprocessing/PREPROCESSING.en.md`](../input-preprocessing/PREPROCESSING.en.md).
+
+**Result: no.** 15 of 16 line-vs-baseline comparisons are significantly negative;
+the raw baseline is best in every configuration (Δ vs baseline shown):
+
+| Line | e5 Wiki | qwen3 Wiki | e5 Akorda | qwen3 Akorda |
+|------|:-------:|:----------:|:---------:|:------------:|
+| **baseline** | 0.785 | 0.690 | 0.509 | 0.330 |
+| stem        | −0.117 * | −0.020 | −0.081 * | −0.029 * |
+| latin       | −0.310 * | −0.076 * | −0.303 * | −0.114 * |
+| stem+latin  | −0.385 * | −0.104 * | −0.325 * | −0.175 * |
+
+Tying into the byte-level-BPE note in §4: transliterating Kazakh to Latin gives
+Qwen3 **fewer** sub-word tokens (fertility 6.20 → 4.46) yet retrieval still drops —
+so Qwen3's failure is **representational, not fragmentation**: wholer Latin tokens
+carry no Kazakh meaning. For e5 the opposite holds (Latin *doubles* fragmentation,
+1.81 → 3.61), so its collapse is tokenization-driven. Transliteration does not
+rescue byte-fallback models; only a Cyrillic-aware tokenizer or fine-tuning does.
+
+---
+
+## 4. Notes & Benchmark Caveats
 
 **Metric & method.** Primary metric is nDCG@10. All significance tests are paired bootstrap
 with 10 000 resamples, p<0.05 two-tailed. Hybrid = BM25+Kazakh-Stemmer ⊕ dense via
