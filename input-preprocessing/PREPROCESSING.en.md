@@ -76,10 +76,12 @@ preprocessing is neutral, typically it hurts.
    hypothesis fails: Latin significantly *worsens* qwen3 on both domains
    (wiki −0.076, akorda −0.114) rather than lifting it. This is one of the
    pre-registered publishable outcomes.
-   *Mechanism* (likely, not proven by retrieval alone): the tokenizer never saw
-   Kazakh Latin in pretraining, so transliteration does not yield "wholer"
-   tokens. This is inferred from the result, not measured directly — checked
-   separately with a fertility measurement (below), not asserted.
+   *Mechanism* (now measured via fertility below — the naive version is refuted):
+   for qwen3, Latin yields *fewer* tokens than Cyrillic (6.2→4.5), yet retrieval
+   still dropped. So it is NOT about fragmentation: wholer Latin tokens carry no
+   Kazakh meaning. The byte-fallback problem is **representational**, not about
+   the writing system. (For e5 the opposite holds — Latin fragments ~2× more, so
+   there the collapse is genuinely tokenization-driven.)
 
 2. **Stemmer preprocessing hurts dense models.** Stripping agglutinative
    suffixes destroys the sub-word signal embeddings rely on. The "good" e5
@@ -131,21 +133,39 @@ does not give the tokenizer wholer tokens — confirming the result with data.
 (Note: in raw UTF-8 bytes Latin is actually *shorter*, so this is not about byte
 count but about learned BPE merges — which is exactly what the measurement tests.)
 
-| tokenizer | domain | cyr (bare) | lat (bare) | Δ | verdict |
+| tokenizer | domain | cyr (bare) | lat (bare) | Δ | meaning |
 |---|---|---:|---:|---:|---|
-| qwen3-0.6b | wiki | _TBD_ | _TBD_ | _TBD_ | _fill from Kaggle_ |
-| qwen3-0.6b | akorda | _TBD_ | _TBD_ | _TBD_ | |
-| e5-base | wiki | _TBD_ | _TBD_ | _TBD_ | |
-| e5-base | akorda | _TBD_ | _TBD_ | _TBD_ | |
+| qwen3-0.6b | wiki   | 6.20 | 4.46 | **−1.74** | Latin is *wholer*, yet retrieval still dropped |
+| qwen3-0.6b | akorda | 6.27 | 4.75 | **−1.52** | same |
+| e5-base    | wiki   | 1.81 | 3.61 | **+1.80** | Latin fragments ~2× more than Cyrillic |
+| e5-base    | akorda | 1.82 | 3.96 | **+2.14** | same |
+
+**The measurement overturns the naive explanation — and strengthens the
+conclusion:**
+
+- **e5** splits Cyrillic almost one-token-per-word (1.81 sub-words — excellent
+  XLM-R/SentencePiece coverage). Transliteration **doubles** fragmentation
+  (3.6–4.0). → e5's Latin collapse = **loss of its strong Cyrillic tokenizer**.
+  Here the "tokenization damage" story holds.
+- **qwen3** fragments Cyrillic catastrophically (6.20 — 3.4× worse than e5; hence
+  its low baseline). But Latin gives it **fewer** tokens (4.46), i.e. wholer —
+  **and retrieval still dropped significantly**. So qwen3's Latin failure is
+  **not explained by fragmentation**: even wholer Latin tokens carry no Kazakh
+  meaning in the embedding space. This refutes the naive "Latin doesn't help
+  because it shreds" and replaces it with a stronger claim: **the byte-fallback
+  problem is representational, not about token count and not about the writing
+  system.** Handing the model "readable" Latin is not enough — you need a
+  tokenizer/model that has seen Kazakh, or fine-tuning.
 
 ### Practical takeaway
 
 Improving Kazakh retrieval for free with text-to-text preprocessing (stemmer /
 transliteration) **does not work** — you need either a proper Cyrillic tokenizer
-(XLM-R family) or fine-tuning for Kazakh. Kazakhstan's switch to Latin will
-likely not fix the model on its own: per these results (and pending the
-fertility measurement above), transliteration does not give the tokenizer wholer
-Kazakh tokens.
+(XLM-R family) or fine-tuning for Kazakh. Kazakhstan's switch to Latin will not
+fix the model on its own — and this is **measured**: even where transliteration
+gives qwen3 wholer tokens (6.2→4.5), they carry no meaning and retrieval does not
+improve. It is not about the writing system or token count, but about whether the
+model has seen Kazakh.
 
 > ⚠️ This layer is a standalone negative result; it is NOT merged into the main
 > leaderboard. After review, a link can be added from `results/LEADERBOARD.md`.

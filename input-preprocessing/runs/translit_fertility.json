@@ -1,0 +1,15 @@
+{
+  "metric": "avg sub-words per word (fertility)",
+  "words": "100 frequent len>=9 forms per domain (cached, same as tokenization_test)",
+  "tokenizers": {
+    "qwen3-0.6b": {
+      "wiki":   {"cyr_bare": 6.20, "lat_bare": 4.46, "delta_bare": -1.74, "cyr_sp": 6.50, "lat_sp": 4.38, "delta_sp": -2.12},
+      "akorda": {"cyr_bare": 6.27, "lat_bare": 4.75, "delta_bare": -1.52, "cyr_sp": 6.63, "lat_sp": 4.73, "delta_sp": -1.90}
+    },
+    "e5-base": {
+      "wiki":   {"cyr_bare": 1.81, "lat_bare": 3.61, "delta_bare": 1.80, "cyr_sp": 1.81, "lat_sp": 3.61, "delta_sp": 1.80},
+      "akorda": {"cyr_bare": 1.82, "lat_bare": 3.96, "delta_bare": 2.14, "cyr_sp": 1.82, "lat_sp": 3.96, "delta_sp": 2.14}
+    }
+  },
+  "finding": "qwen3: Latin is WHOLER than Cyrillic (delta<0) yet retrieval still dropped -> failure is representational, not fragmentation. e5: Latin fragments ~2x more (delta>0) -> its collapse is tokenization-driven (loss of Cyrillic coverage)."
+}
