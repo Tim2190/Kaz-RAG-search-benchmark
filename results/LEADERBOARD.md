@@ -122,7 +122,7 @@ on formal, morphologically dense Kazakh.
 **Side study — fixing the input without fine-tuning (attempt #1).** Can stemming or
 Cyrillic→Latin transliteration repair byte-fallback tokenizers (Qwen3) without training?
 A self-contained study (4 lines × e5/qwen3 × Wiki/Akorda, paired bootstrap) finds **no**:
-every transform significantly hurts, and a direct fertility measurement shows the
+every transform hurts (11 of 12 line-vs-baseline comparisons significantly), and a direct fertility measurement shows the
 byte-fallback failure is representational, not script-level (transliteration even gives
 Qwen3 *fewer* tokens, yet retrieval still drops). Self-contained in
 [`../input-preprocessing/`](../input-preprocessing/PREPROCESSING.en.md); not part of the
