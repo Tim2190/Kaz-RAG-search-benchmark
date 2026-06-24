@@ -65,7 +65,7 @@ they are English instructions, appended after the Kazakh text is transformed.
 | e5         | 0.5090 | 0.4277 (−0.081 *) | 0.2058 (−0.303 *) | 0.1837 (−0.325 *) |
 | qwen3-0.6b | 0.3304 | 0.3011 (−0.029 *) | 0.2162 (−0.114 *) | 0.1555 (−0.175 *) |
 
-Of 16 comparisons (line vs baseline, ALL), **15 are significantly negative**;
+Of 12 comparisons (line vs baseline, ALL), **11 are significantly negative**;
 the only non-significant one is wiki/qwen3 stem (Δ −0.020, p=0.081). At best the
 preprocessing is neutral, typically it hurts.
 
