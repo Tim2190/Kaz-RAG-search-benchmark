@@ -10,6 +10,9 @@ venv/
 *.npy
 models/
 
+# кэши эмбеддингов input-preprocessing (регенерируются; .npy уже выше)
+input-preprocessing/emb/
+
 # сырые данные могут быть большими; держим только корпус и qrels
 data/raw/*.html
 
