@@ -278,6 +278,18 @@ inflected, p≤0.0017, n=300). Прогнаны пять систем поиск
   n=244 запроса). Ранжирование в целом сохраняется (ρ=0.89); порядок dense-моделей
   OOD-устойчив, баланс BM25 vs dense зависит от лексического overlap домена:
   [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
+- **Предобработка входа без дообучения** (попытка №1 починить вход) — можно ли
+  стеммингом или транслитерацией кириллица→латиница починить byte-fallback
+  токенизаторы (Qwen3) без обучения? Самодостаточное исследование (4 линии ×
+  e5/qwen3 × Wiki/Akorda, paired bootstrap): **нет** — каждое преобразование
+  вредит; прямой замер fertility показывает, что провал byte-fallback —
+  репрезентационный, а не про письменность.
+  [English](input-preprocessing/PREPROCESSING.en.md) ·
+  [Русский](input-preprocessing/PREPROCESSING.md).
+- **[Препринт 2](PREPRINT2.md)** — полный разбор: новые модели (Granite R2,
+  kazakh-e5), результаты гибридов RRF, OOD-валидация и анализ fertility
+  токенизаторов.
+  [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20781386-blue)](https://doi.org/10.5281/zenodo.20781386)
 
 ---
 
