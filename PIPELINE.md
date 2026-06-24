@@ -138,5 +138,5 @@ python -m src.eval.sprint3_rescore --runs results/sprint3_runs.json --out result
 ### Проверка кода без сети
 Метрики, токенизация, чанкинг, стем-клиент, dense и RAG-скоринг покрыты тестами:
 ```bash
-python -m unittest discover tests      # 51 тест
+python -m unittest discover tests      # 79 тестов
 ```
