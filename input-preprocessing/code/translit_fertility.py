@@ -20,15 +20,21 @@ byte-fallback модель (Qwen3) — латиница значимо ХУЖЕ 
 (Kaggle/Colab; в egress-allowlist huggingface.co обычно закрыт).
 
 ЗАПУСК:
-    python -m src.eval.translit_fertility
+    python input-preprocessing/code/translit_fertility.py
 """
 
 from __future__ import annotations
 
 import os
+import sys
 
-from .fertility_compare import CORPORA, harvest_words, _avg_subwords
-from ..preprocess.translit import transliterate
+# Соседний модуль translit + пакет репозитория (src.eval.fertility_compare).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _HERE)
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, "..", "..")))
+
+from src.eval.fertility_compare import CORPORA, harvest_words, _avg_subwords
+from translit import transliterate
 
 # Сравниваем «сломанную» (byte-fallback) и «нормальную» (XLM-R) модели.
 TOKENIZERS = {

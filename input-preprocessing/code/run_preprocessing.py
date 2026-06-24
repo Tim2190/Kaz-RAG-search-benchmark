@@ -20,20 +20,20 @@ input-preprocessing/emb/{model}_{domain}_{line}. Без этого линия la
 считает Δ nDCG@10 ОТНОСИТЕЛЬНО baseline (0) + paired bootstrap (10 000), по
 категориям и в целом. Это и есть главный результат слоя.
 
-ЗАПУСК (GPU; Kaggle/Colab, см. notebooks/preprocessing_kaggle.py):
+ЗАПУСК (GPU; Kaggle/Colab, см. input-preprocessing/code/preprocessing_kaggle.py):
     # один прогон линии
-    python -m src.eval.run_preprocessing run \\
+    python input-preprocessing/code/run_preprocessing.py run \\
         --domain wiki --model e5 --line latin \\
         --out input-preprocessing/runs/wiki_e5_latin.json
 
     # baseline можно переиспользовать из готовых ранжировок (без GPU):
-    python -m src.eval.run_preprocessing run \\
+    python input-preprocessing/code/run_preprocessing.py run \\
         --domain wiki --model e5 --line baseline \\
         --reuse-run results/runs_dense_e5.json \\
         --out input-preprocessing/runs/wiki_e5_baseline.json
 
     # сравнение линий против baseline
-    python -m src.eval.run_preprocessing compare \\
+    python input-preprocessing/code/run_preprocessing.py compare \\
         --domain wiki --model e5 \\
         --runs-dir input-preprocessing/runs \\
         --out input-preprocessing/runs/wiki_e5_compare.json
@@ -46,17 +46,22 @@ import json
 import os
 from typing import Dict, List, Set, Tuple
 
+import sys
+
 import numpy as np
 
-from ..retrieval.dense import DenseIndex
-from ..eval import metrics
-from ..preprocess.input_preprocess import (
-    LINES, build_transform, collect_tokens, needs_stemmer,
-)
-from .run_dense import MODELS, MODEL_EXTRA
-
+# Соседние модули (input_preprocess) + пакет репозитория (src.*).
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+sys.path.insert(0, HERE)
+sys.path.insert(0, ROOT)
+
+from src.retrieval.dense import DenseIndex
+from src.eval import metrics
+from src.eval.run_dense import MODELS, MODEL_EXTRA
+from input_preprocess import (
+    LINES, build_transform, collect_tokens, needs_stemmer,
+)
 
 
 # ── загрузка доменов ──────────────────────────────────────────────────────────
@@ -64,7 +69,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 
 def _load_wiki() -> Tuple[List[Tuple[str, str]], Dict[str, str],
                           Dict[str, Set[str]], Dict[str, str]]:
-    from ..queries import dataset
+    from src.queries import dataset
     corpus = dataset.load_corpus(os.path.join(ROOT, "data/corpus/corpus.jsonl"))
     queries = dataset.load_queries(os.path.join(ROOT, "data/queries/queries.jsonl"))
     qmap = dataset.queries_as_map(queries)
@@ -109,7 +114,7 @@ def _make_stemmer(corpus_texts, query_texts):
     """Готовит казахский стеммер: прогрев кэша по всем токенам.
     Если API стеммера недоступен — переключаемся на cache-only (как run_akorda).
     """
-    from ..preprocess.stemmer import get_stemmer
+    from src.preprocess.stemmer import get_stemmer
     stemmer = get_stemmer("kazakh")
     toks = collect_tokens(list(corpus_texts) + list(query_texts))
     print(f"Прогрев стеммера: {len(toks)} уникальных токенов…", flush=True)

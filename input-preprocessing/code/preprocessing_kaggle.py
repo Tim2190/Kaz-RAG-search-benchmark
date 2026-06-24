@@ -22,17 +22,17 @@ qwen3-0.6b — «сломанная» (главная гипотеза).
 # ─── BASELINE (0): wiki переиспользуем готовые ранжировки (без лишнего GPU) ───
 
 # %% [2] Wiki baseline из готовых dense-ранжировок
-# !python -m src.eval.run_preprocessing run --domain wiki --model e5 --line baseline \
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki --model e5 --line baseline \
 #     --reuse-run results/runs_dense_e5.json \
 #     --out input-preprocessing/runs/wiki_e5_baseline.json
-# !python -m src.eval.run_preprocessing run --domain wiki --model qwen3-0.6b --line baseline \
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki --model qwen3-0.6b --line baseline \
 #     --reuse-run results/runs_dense_qwen3_0.6b.json \
 #     --out input-preprocessing/runs/wiki_qwen3-0.6b_baseline.json
 
 # %% [3] Akorda baseline (dense-ранжировок в репо нет — считаем; ~10 мин/модель)
-# !python -m src.eval.run_preprocessing run --domain akorda --model e5 --line baseline \
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model e5 --line baseline \
 #     --out input-preprocessing/runs/akorda_e5_baseline.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model qwen3-0.6b --line baseline \
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model qwen3-0.6b --line baseline \
 #     --out input-preprocessing/runs/akorda_qwen3-0.6b_baseline.json
 
 # ─── ЛИНИЯ 1: STEM ───────────────────────────────────────────────────────────
@@ -41,37 +41,37 @@ qwen3-0.6b — «сломанная» (главная гипотеза).
 # %% [4] stem — e5 + qwen3, оба домена
 # for DOM in wiki akorda:
 #   for M in e5 qwen3-0.6b:
-# !python -m src.eval.run_preprocessing run --domain wiki   --model e5         --line stem --out input-preprocessing/runs/wiki_e5_stem.json
-# !python -m src.eval.run_preprocessing run --domain wiki   --model qwen3-0.6b --line stem --out input-preprocessing/runs/wiki_qwen3-0.6b_stem.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model e5         --line stem --out input-preprocessing/runs/akorda_e5_stem.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model qwen3-0.6b --line stem --out input-preprocessing/runs/akorda_qwen3-0.6b_stem.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model e5         --line stem --out input-preprocessing/runs/wiki_e5_stem.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model qwen3-0.6b --line stem --out input-preprocessing/runs/wiki_qwen3-0.6b_stem.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model e5         --line stem --out input-preprocessing/runs/akorda_e5_stem.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model qwen3-0.6b --line stem --out input-preprocessing/runs/akorda_qwen3-0.6b_stem.json
 
 # ─── ЛИНИЯ 2: LATIN (главная гипотеза) ───────────────────────────────────────
 
 # %% [5] latin — e5 + qwen3, оба домена
-# !python -m src.eval.run_preprocessing run --domain wiki   --model e5         --line latin --out input-preprocessing/runs/wiki_e5_latin.json
-# !python -m src.eval.run_preprocessing run --domain wiki   --model qwen3-0.6b --line latin --out input-preprocessing/runs/wiki_qwen3-0.6b_latin.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model e5         --line latin --out input-preprocessing/runs/akorda_e5_latin.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model qwen3-0.6b --line latin --out input-preprocessing/runs/akorda_qwen3-0.6b_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model e5         --line latin --out input-preprocessing/runs/wiki_e5_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model qwen3-0.6b --line latin --out input-preprocessing/runs/wiki_qwen3-0.6b_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model e5         --line latin --out input-preprocessing/runs/akorda_e5_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model qwen3-0.6b --line latin --out input-preprocessing/runs/akorda_qwen3-0.6b_latin.json
 
 # ─── ЛИНИЯ 3: STEM + LATIN ───────────────────────────────────────────────────
 
 # %% [6] stem_latin — e5 + qwen3, оба домена
-# !python -m src.eval.run_preprocessing run --domain wiki   --model e5         --line stem_latin --out input-preprocessing/runs/wiki_e5_stem_latin.json
-# !python -m src.eval.run_preprocessing run --domain wiki   --model qwen3-0.6b --line stem_latin --out input-preprocessing/runs/wiki_qwen3-0.6b_stem_latin.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model e5         --line stem_latin --out input-preprocessing/runs/akorda_e5_stem_latin.json
-# !python -m src.eval.run_preprocessing run --domain akorda --model qwen3-0.6b --line stem_latin --out input-preprocessing/runs/akorda_qwen3-0.6b_stem_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model e5         --line stem_latin --out input-preprocessing/runs/wiki_e5_stem_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain wiki   --model qwen3-0.6b --line stem_latin --out input-preprocessing/runs/wiki_qwen3-0.6b_stem_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model e5         --line stem_latin --out input-preprocessing/runs/akorda_e5_stem_latin.json
+# !python input-preprocessing/code/run_preprocessing.py run --domain akorda --model qwen3-0.6b --line stem_latin --out input-preprocessing/runs/akorda_qwen3-0.6b_stem_latin.json
 
 # ─── СРАВНЕНИЕ: Δ линий против baseline + paired bootstrap ────────────────────
 
 # %% [7] compare (главный результат)
-# !python -m src.eval.run_preprocessing compare --domain wiki   --model e5         --out input-preprocessing/runs/wiki_e5_compare.json
-# !python -m src.eval.run_preprocessing compare --domain wiki   --model qwen3-0.6b --out input-preprocessing/runs/wiki_qwen3-0.6b_compare.json
-# !python -m src.eval.run_preprocessing compare --domain akorda --model e5         --out input-preprocessing/runs/akorda_e5_compare.json
-# !python -m src.eval.run_preprocessing compare --domain akorda --model qwen3-0.6b --out input-preprocessing/runs/akorda_qwen3-0.6b_compare.json
+# !python input-preprocessing/code/run_preprocessing.py compare --domain wiki   --model e5         --out input-preprocessing/runs/wiki_e5_compare.json
+# !python input-preprocessing/code/run_preprocessing.py compare --domain wiki   --model qwen3-0.6b --out input-preprocessing/runs/wiki_qwen3-0.6b_compare.json
+# !python input-preprocessing/code/run_preprocessing.py compare --domain akorda --model e5         --out input-preprocessing/runs/akorda_e5_compare.json
+# !python input-preprocessing/code/run_preprocessing.py compare --domain akorda --model qwen3-0.6b --out input-preprocessing/runs/akorda_qwen3-0.6b_compare.json
 
 # %% [8] Сводка (печать таблиц для PREPROCESSING.md) — см. _summary() ниже
-# !python notebooks/preprocessing_kaggle.py
+# !python input-preprocessing/code/preprocessing_kaggle.py
 
 # ─── КОММИТ ──────────────────────────────────────────────────────────────────
 

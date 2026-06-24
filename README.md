@@ -312,6 +312,13 @@ Work extending the original 300-query study (the conclusions above are unchanged
   Rankings largely hold (Spearman ρ=0.89); dense model ordering is OOD-stable,
   BM25 vs dense balance shifts with domain lexical overlap:
   [`results/akorda/AKORDA_RESULTS.md`](results/akorda/AKORDA_RESULTS.md).
+- **Input preprocessing without fine-tuning** (attempt #1 to fix the input) —
+  can stemming or Cyrillic→Latin transliteration repair byte-fallback tokenizers
+  (Qwen3) without training? Self-contained study (4 lines × e5/qwen3 × Wiki/Akorda,
+  paired bootstrap): **no** — every transform hurts; a direct fertility measurement
+  shows the byte-fallback failure is representational, not script-level.
+  [English](input-preprocessing/PREPROCESSING.en.md) ·
+  [Русский](input-preprocessing/PREPROCESSING.md).
 - **[Preprint 2](PREPRINT2.md)** — full write-up combining new models (Granite R2,
   kazakh-e5), hybrid RRF results, OOD validation, and tokenizer fertility analysis.
   [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20781386-blue)](https://doi.org/10.5281/zenodo.20781386)

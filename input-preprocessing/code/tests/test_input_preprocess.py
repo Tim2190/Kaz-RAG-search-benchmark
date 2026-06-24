@@ -7,12 +7,12 @@ import os
 import sys
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))  # code/
 
-from src.preprocess.input_preprocess import (  # noqa: E402
+from input_preprocess import (  # noqa: E402
     LINES, build_transform, collect_tokens, needs_stemmer, stem_inline,
 )
-from src.preprocess.translit import transliterate  # noqa: E402
+from translit import transliterate  # noqa: E402
 
 
 class FakeStemmer:

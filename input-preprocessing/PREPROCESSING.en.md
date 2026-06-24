@@ -26,7 +26,7 @@ model (text-to-text), with no fine-tuning at all? This layer answers that.
 
 **Symmetry (critical):** in every line the query AND the corpus go through the
 same function — otherwise a Latin query against a Cyrillic corpus is an
-artificial false failure. `src/preprocess/input_preprocess.py` returns one
+artificial false failure. `input-preprocessing/code/input_preprocess.py` returns one
 `transform` applied to both sides.
 
 ## Models and domains
@@ -45,8 +45,8 @@ they are English instructions, appended after the Kazakh text is transformed.
 - Metric **nDCG@10**, significance via paired bootstrap, 10,000 (`*` = p<0.05).
 - Main comparison: Δ of each line (1,2,3) vs baseline (0), per slice.
 - Transliteration is a hard-coded 2021-standard table
-  (`src/preprocess/translit.py`), deterministic, no network / no external library.
-- Run: `notebooks/preprocessing_kaggle.py` (GPU T4). Raw per-query rankings and
+  (`input-preprocessing/code/translit.py`), deterministic, no network / no external library.
+- Run: `input-preprocessing/code/preprocessing_kaggle.py` (GPU T4). Raw per-query rankings and
   `*_compare.json` are in `runs/`.
 
 ## Results
@@ -117,7 +117,7 @@ The hardest slice drops the most under Latin:
 
 To separate a tokenization cause from a semantic one, we measure **fertility**
 (sub-words per word) of Cyrillic vs its transliteration on the same 100 frequent
-forms per domain (`python -m src.eval.translit_fertility`). In raw UTF-8 bytes
+forms per domain (`python input-preprocessing/code/translit_fertility.py`). In raw UTF-8 bytes
 Latin is shorter than Cyrillic, so the measurement isolates learned BPE merges,
 not byte count.
 

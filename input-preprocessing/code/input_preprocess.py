@@ -23,10 +23,17 @@ run_preprocessing вешает на обе стороны.
 
 from __future__ import annotations
 
+import os
+import sys
 from typing import Callable, Iterable, List, Optional
 
-from .tokenize import _TOKEN_RE
-from .translit import transliterate
+# Делаем доступными и соседний модуль translit, и пакет репозитория (src.*).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _HERE)                                             # соседи
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, "..", "..")))  # корень репо
+
+from src.preprocess.tokenize import _TOKEN_RE
+from translit import transliterate
 
 #: канонические имена линий (используются в путях и таблицах результатов)
 LINES = ("baseline", "stem", "latin", "stem_latin")
